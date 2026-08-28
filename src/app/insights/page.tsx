@@ -9,6 +9,10 @@ export const dynamic = 'force-dynamic';
 
 export default async function Page() {
   const initialPosts = await prisma.blogPost.findMany({ where: { status: "Published" }, orderBy: { publishedAt: "desc" } });
+  const caseStudies = await prisma.blogPost.findMany({
+    where: { status: "Published", category: "Case Studies" },
+    orderBy: { publishedAt: "desc" }
+  });
   return (
     <>
       <PublicNav />
@@ -24,34 +28,42 @@ export default async function Page() {
             </div>
           </div>
         </div>
-        {/*  ===================== FEATURED INSIGHT =====================  */}
+        {/*  ===================== CASE STUDIES =====================  */}
         <section className="section section-alt">
           <div className="container">
-            <div className="eyebrow reveal">Featured Insight</div>
-            {initialPosts && initialPosts.length > 0 ? (
-              <div className="featured-insight reveal">
-                <div className="fi-img">
-                  {initialPosts[0].coverImage ? (
-                    <Image width={800} height={800} alt={initialPosts[0].title} src={initialPosts[0].coverImage} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  ) : (
-                    <div style={{ width: '100%', height: '100%', background: 'var(--brass-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <span style={{ color: 'var(--brass-deep)', fontWeight: 600 }}>{initialPosts[0].category}</span>
+            <div className="section-head reveal">
+              <div className="eyebrow">Case Studies</div>
+              <h2 className="section-title">Real results from real engagements</h2>
+              <p className="lead" style={{ marginTop: 8 }}>A selection of strategic outcomes delivered across growth, transformation, and partnerships.</p>
+            </div>
+            {caseStudies && caseStudies.length > 0 ? (
+              <div className="grid grid-3">
+                {caseStudies.map((post: any) => (
+                  <a key={post.id} href={`/blog/${post.slug}`} className="article-card reveal" style={{ textDecoration: 'none', color: 'inherit' }}>
+                    {post.coverImage ? (
+                      <div className="thumb">
+                        <Image width={800} height={800} alt={post.title} src={post.coverImage} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      </div>
+                    ) : (
+                      <div className="thumb" style={{ background: 'var(--brass-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <span style={{ color: 'var(--brass-deep)', fontWeight: 700, fontSize: 13, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Case Study</span>
+                      </div>
+                    )}
+                    <div className="abody">
+                      <span className="tag" style={{ border: '1px solid var(--surface-border)' }}>Case Study</span>
+                      <h4 style={{ margin: '12px 0 8px' }}>{post.title}</h4>
+                      <p>{post.excerpt}</p>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 12, fontSize: 13, fontWeight: 600, color: 'var(--brass-deep)' }}>
+                        Read Case Study
+                        <svg fill="none" stroke="currentColor" strokeLinecap="round" strokeWidth="2" style={{ width: 13, height: 13 }} viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+                      </span>
                     </div>
-                  )}
-                </div>
-                <div className="fi-body">
-                  <span className="tag" style={{ border: '1px solid var(--surface-border)' }}>{initialPosts[0].category}</span>
-                  <h2 className="section-title" style={{ marginBottom: '14px', fontSize: '2.5rem', lineHeight: 1.1 }}>{initialPosts[0].title}</h2>
-                  <p style={{ color: 'var(--ink-soft)', fontSize: '15.5px', lineHeight: '1.65', marginBottom: '22px' }}>{initialPosts[0].excerpt}</p>
-                  <a className="btn btn-ghost btn-sm" href={`/blog/${initialPosts[0].slug}`}>
-                    Read the Full Insight
-                    <svg fill="none" stroke="currentColor" strokeLinecap="round" strokeWidth="2" style={{ width: '15px', height: '15px', marginLeft: '6px' }} viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
                   </a>
-                </div>
+                ))}
               </div>
             ) : (
-              <div style={{ padding: '60px', textAlign: 'center', color: 'var(--ink-soft)' }}>
-                Featured insight will appear here shortly.
+              <div style={{ padding: '60px', textAlign: 'center', color: 'var(--ink-soft)', border: '2px dashed var(--line)', borderRadius: 16 }}>
+                No case studies published yet. Add a blog post with category <strong>"Case Studies"</strong> to populate this section.
               </div>
             )}
           </div>
