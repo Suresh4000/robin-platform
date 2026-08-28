@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/shared/lib/prisma';
 import { createLeadSchema } from '@/features/leads/schema';
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 
 export async function GET() {
     try {

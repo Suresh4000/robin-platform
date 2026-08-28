@@ -1,0 +1,1 @@
+import { PrismaClient } from '@prisma/client'; const prisma = new PrismaClient(); async function main() { const posts = await prisma.blogPost.findMany(); posts.forEach(p => console.log('SLUG: ' + p.slug + '\n' + p.content.slice(0, 150) + '\n')); } main();

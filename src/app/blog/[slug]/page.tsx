@@ -44,7 +44,9 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
                     <div
                         className="prose"
                         style={{ fontSize: '1.15rem', lineHeight: '1.8', color: 'var(--ink)' }}
-                        dangerouslySetInnerHTML={{ __html: post.content }}
+                        dangerouslySetInnerHTML={{
+                            __html: post.content.replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+                        }}
                     />
                 </div>
             </main>

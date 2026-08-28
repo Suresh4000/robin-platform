@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/shared/lib/prisma';
 import { updateBlogSchema } from '@/features/blog/schema';
-
-const prisma = new PrismaClient();
 
 export async function GET(request: Request, context: { params: Promise<{ id: string }> }) {
     const params = await context.params;

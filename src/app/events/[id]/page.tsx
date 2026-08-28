@@ -7,9 +7,6 @@ import { EventRegistrationForm } from './EventRegistrationForm';
 export default async function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const resolvedParams = await params;
 
-    const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
-    const prisma = globalForPrisma.prisma || new PrismaClient();
-    if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 
     const event: any = await prisma.event.findUnique({
         where: { id: resolvedParams.id }

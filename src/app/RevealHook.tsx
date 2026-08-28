@@ -13,8 +13,8 @@ export function RevealHook() {
         });
       }, { threshold: 0.1 });
       document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-      
-      const handleAccordionClick = (e) => {
+
+      const handleAccordionClick = (e: any) => {
         const target = e.target.closest('.tl-toggle');
         if (!target) return;
         const entry = target.closest('.tl-entry');
@@ -22,7 +22,7 @@ export function RevealHook() {
           const isO = entry.classList.contains('is-open');
           const accordion = entry.closest('.tl-accordion');
           if (accordion) {
-            accordion.querySelectorAll('.tl-entry').forEach(el => {
+            accordion.querySelectorAll('.tl-entry').forEach((el: any) => {
               el.classList.remove('is-open');
               const toggle = el.querySelector('.tl-toggle');
               if (toggle) toggle.setAttribute('aria-expanded', 'false');
@@ -36,10 +36,10 @@ export function RevealHook() {
       };
 
       document.querySelectorAll('.tl-accordion').forEach(acc => {
-         acc.removeEventListener('click', handleAccordionClick);
-         acc.addEventListener('click', handleAccordionClick);
+        acc.removeEventListener('click', handleAccordionClick);
+        acc.addEventListener('click', handleAccordionClick);
       });
-      
+
     }, 100);
   }, []);
   return null;

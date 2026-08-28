@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/shared/lib/prisma';
 import { z } from 'zod';
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
 
 const createSchema = z.object({
     description: z.string().min(1),
