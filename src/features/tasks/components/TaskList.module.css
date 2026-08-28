@@ -1,0 +1,122 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.title {
+    font-size: 24px;
+}
+
+.btnPrimary {
+    background-color: var(--color-primary);
+    color: #fff;
+    border: none;
+    border-radius: var(--border-radius);
+    padding: 10px 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.listWrapper {
+    background-color: var(--surface-default);
+    border: 1px solid var(--surface-border);
+    border-radius: var(--border-radius);
+    display: flex;
+    flex-direction: column;
+}
+
+.taskItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--surface-border);
+    transition: background-color 0.2s;
+}
+
+.taskItem:last-child {
+    border-bottom: none;
+}
+
+.taskItem:hover {
+    background-color: var(--surface-hover);
+}
+
+.taskLeft {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.checkbox {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--surface-border);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: transparent;
+    transition: all 0.2s;
+}
+
+.checkbox.done {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+    color: white;
+}
+
+.taskDetails {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.taskTitle {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 15px;
+}
+
+.taskContext {
+    font-size: 12px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.badge {
+    background-color: var(--surface-hover);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.statusInProgress {
+    background-color: #E2FBF6;
+    color: var(--color-secondary);
+}
+
+.taskRight {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.dueDate {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--text-muted);
+}

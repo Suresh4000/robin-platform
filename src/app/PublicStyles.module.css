@@ -1,0 +1,655 @@
+.publicShell {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--surface-default);
+    color: var(--text-primary);
+}
+
+.headerWrapper {
+    background: linear-gradient(135deg, #0a9fe757, #01bfba00);
+    width: 100%;
+    /* background: var(--brand-gradient); */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 48px;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.brand {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: -0.02em;
+}
+
+.nav {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+}
+
+.nav a {
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.85);
+    /* Changed to slightly transparent white */
+    transition: color 0.2s, background-color 0.2s;
+    text-decoration: none;
+}
+
+.nav a:ho ver {
+    color: #02BAC1;
+    /* Changed strictly white on hover */
+}
+
+.loginBtn {
+    background-color: var(--surface-hover);
+    padding: 8px 16px;
+    border-radius: 20px;
+    color: var(--text-primary) !important;
+    font-size: 13px !important;
+    border: 1px solid var(--surface-border);
+}
+
+.main {
+    flex: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 60px 48px;
+}
+
+.heroSection {
+    position: relative;
+    padding: 100px 0;
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    z-index: 2;
+}
+
+.heroBadge {
+    display: inline-block;
+    padding: 8px 16px;
+    background: rgba(10, 159, 231, 0.1);
+    color: var(--color-primary);
+    border: 1px solid rgba(10, 159, 231, 0.2);
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.heroHeadline {
+    font-family: var(--font-heading);
+    font-size: 72px;
+    line-height: 1.1;
+    letter-spacing: -0.04em;
+    color: var(--text-primary);
+}
+
+.heroSubhead {
+    font-size: 20px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    max-width: 700px;
+}
+
+.heroActions {
+    display: flex;
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.btnPrimaryLg {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--brand-gradient);
+    color: #fff;
+    padding: 16px 28px;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 16px;
+    transition: opacity 0.2s, transform 0.2s;
+    box-shadow: 0 4px 20px rgba(10, 159, 231, 0.25);
+}
+
+.btnPrimaryLg:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+
+.btnSecondaryLg {
+    display: flex;
+    align-items: center;
+    background-color: var(--surface-default);
+    color: var(--text-title);
+    border: 1px solid var(--surface-border);
+    padding: 16px 28px;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 16px;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.btnSecondaryLg:hover {
+    border-color: var(--color-primary);
+}
+
+.glowBg {
+    position: absolute;
+    top: -10%;
+    left: 0;
+    right: 0;
+    padding-bottom: 600px;
+    overflow: hidden;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.blob1 {
+    position: absolute;
+    top: 50px;
+    left: 20%;
+    width: 400px;
+    height: 400px;
+    background: rgba(10, 159, 231, 0.15);
+    /* primary */
+    border-radius: 50%;
+    filter: blur(80px);
+}
+
+.blob2 {
+    position: absolute;
+    top: 150px;
+    right: 20%;
+    width: 350px;
+    height: 350px;
+    background: rgba(1, 191, 186, 0.12);
+    /* secondary */
+    border-radius: 50%;
+    filter: blur(80px);
+}
+
+/* SECTION HEADERS */
+.sectionHeaderCentered {
+    text-align: center;
+    margin-bottom: 64px;
+}
+
+.sectionHeaderCentered h2 {
+    font-size: 40px;
+    font-family: var(--font-heading);
+    color: var(--text-title);
+    margin-bottom: 12px;
+    letter-spacing: -0.02em;
+}
+
+.sectionHeaderCentered p {
+    font-size: 18px;
+    color: var(--text-secondary);
+}
+
+/* BENTO UI GRID */
+.bentoSection {
+    padding: 120px 0;
+    position: relative;
+    z-index: 2;
+}
+
+.bentoGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: 280px;
+    gap: 24px;
+}
+
+.bentoCard {
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--surface-border);
+    border-radius: 24px;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    grid-column: span 1;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.bentoCard:hover {
+    transform: translateY(-4px);
+    border-color: var(--color-primary);
+    box-shadow: 0 12px 30px rgba(10, 159, 231, 0.05);
+}
+
+.bentoSpan2 {
+    grid-column: span 2;
+}
+
+.bentoDark {
+    background: #171B29;
+    border-color: #2D3345;
+    color: white;
+}
+
+.bentoGradient {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.9) 0%, rgba(247, 248, 250, 0.4) 100%);
+}
+
+.bentoIconWrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: rgba(10, 159, 231, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: auto;
+}
+
+.bentoIconWrapperDark {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: auto;
+}
+
+.bentoTitle {
+    font-size: 22px;
+    font-family: var(--font-heading);
+    margin: 16px 0 8px 0;
+    color: var(--text-title);
+}
+
+.bentoDesc {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* STATS */
+.statsStrip {
+    padding: 60px 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    text-align: center;
+    border-top: 1px solid var(--surface-border);
+    border-bottom: 1px solid var(--surface-border);
+}
+
+.statItem {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.statNumber {
+    font-size: 48px;
+    font-family: var(--font-heading);
+    background: var(--brand-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700;
+}
+
+.statLabel {
+    color: var(--text-secondary);
+    font-size: 15px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* CTA SECTION */
+.ctaSection {
+    padding: 120px 0;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.ctaHeadline {
+    font-size: 40px;
+    font-family: var(--font-heading);
+    color: var(--text-title);
+    margin-bottom: 16px;
+    letter-spacing: -0.02em;
+}
+
+.ctaSubhead {
+    font-size: 20px;
+    color: var(--text-secondary);
+    margin-bottom: 40px;
+}
+
+.principlesGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+}
+
+.principleCard {
+    background-color: var(--surface-hover);
+    padding: 32px;
+    border-radius: 8px;
+}
+
+.principleCard h3 {
+    font-size: 18px;
+    margin-bottom: 12px;
+    color: var(--text-primary);
+}
+
+.principleCard p {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.servicesDesc {
+    font-size: 20px;
+    color: var(--text-secondary);
+    margin-bottom: 48px;
+    max-width: 700px;
+}
+
+.servicesGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 32px;
+}
+
+.serviceCard {
+    background-color: var(--surface-default);
+    border: 1px solid var(--surface-border);
+    padding: 40px 32px;
+    border-radius: 12px;
+    transition: border-color 0.2s;
+}
+
+.serviceCard:hover {
+    border-color: var(--color-primary);
+}
+
+.serviceCard h3 {
+    font-family: var(--font-heading);
+    font-size: 22px;
+    color: var(--text-title);
+    margin-bottom: 16px;
+}
+
+.serviceCard p {
+    color: var(--text-secondary);
+    line-height: 1.7;
+}
+
+.sectionHeader {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 40px;
+    color: var(--text-title);
+}
+
+.sectionHeader h2 {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 32px;
+}
+
+.empty {
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.card {
+    display: block;
+    text-decoration: none;
+    border: 1px solid var(--surface-border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    background-color: var(--surface-default);
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-sm);
+    border-color: var(--color-primary);
+}
+
+.cardContent {
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.tags {
+    display: flex;
+    gap: 8px;
+}
+
+.tag {
+    font-size: 12px;
+    font-family: var(--font-mono);
+    background-color: var(--surface-hover);
+    color: var(--text-secondary);
+    padding: 4px 10px;
+    border-radius: 4px;
+}
+
+.cardTitle {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.cardSummary {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    font-size: 15px;
+}
+
+.footer {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-muted);
+    font-size: 14px;
+    border-top: 1px solid var(--surface-border);
+}
+
+@media (max-width: 900px) {
+    .header {
+        flex-direction: column;
+        gap: 16px;
+        align-items: flex-start;
+        padding: 24px;
+    }
+
+    .nav {
+        flex-wrap: wrap;
+        gap: 16px;
+    }
+}
+
+@media (max-width: 768px) {
+    .heroHeadline {
+        font-size: 42px;
+    }
+
+    .heroSubhead {
+        font-size: 16px;
+    }
+
+    .main {
+        padding: 24px;
+    }
+
+    .heroActions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .heroActions a {
+        justify-content: center;
+        text-align: center;
+        width: 100%;
+    }
+
+    .bentoGrid {
+        grid-template-columns: 1fr;
+        grid-auto-rows: auto;
+    }
+
+    .bentoSpan2 {
+        grid-column: span 1;
+    }
+
+    .statsStrip {
+        grid-template-columns: 1fr;
+    }
+
+    .ctaHeadline {
+        font-size: 32px;
+    }
+
+    .ctaSubhead {
+        font-size: 18px;
+    }
+
+    .aboutSection,
+    .servicesSection,
+    .workSection {
+        padding: 40px 0;
+    }
+
+    .principlesGrid,
+    .servicesGrid,
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    .enquiryForm {
+        padding: 24px;
+    }
+}
+
+/* Enquiry Form specific */
+.enquiryForm {
+    background-color: var(--surface-default);
+    padding: 32px;
+    border-radius: 12px;
+    border: 1px solid var(--surface-border);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.enquiryForm .formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.enquiryForm label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.enquiryForm input,
+.enquiryForm textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--surface-border);
+    border-radius: var(--border-radius);
+    background-color: var(--surface-default);
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+.enquiryForm input:focus,
+.enquiryForm textarea:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}
+
+.enquiryForm button {
+    background-color: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 14px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: opacity 0.2s;
+}
+
+.enquiryForm button:hover {
+    opacity: 0.9;
+}
+
+.enquiryForm button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.successBox {
+    background-color: #E2FBF6;
+    color: var(--color-secondary);
+    padding: 32px;
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid rgba(13, 148, 136, 0.2);
+    margin: 0 auto;
+    max-width: 600px;
+}
+
+.successBox h3 {
+    font-size: 20px;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.errorText {
+    color: #ef4444;
+    font-size: 13px;
+    font-weight: 600;
+}

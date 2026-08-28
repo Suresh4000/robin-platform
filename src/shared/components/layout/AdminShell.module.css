@@ -1,0 +1,36 @@
+.adminMain {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+@media (min-width: 901px) {
+    .adminMain {
+        margin-left: var(--sidebar-width);
+    }
+}
+
+.contentPadding {
+    flex: 1;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 40px;
+}
+
+@media (max-width: 600px) {
+    .contentPadding {
+        padding: 28px !important;
+    }
+}
+
+@media print {
+    .adminMain {
+        margin-left: 0 !important;
+    }
+
+    .contentPadding {
+        padding: 0 !important;
+        max-width: 100% !important;
+    }
+}

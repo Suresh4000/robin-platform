@@ -1,0 +1,84 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.title {
+    font-size: 24px;
+}
+
+.btnPrimary {
+    background-color: var(--color-primary);
+    color: #fff;
+    border: none;
+    border-radius: var(--border-radius);
+    padding: 10px 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tableWrapper {
+    background-color: var(--surface-default);
+    border: 1px solid var(--surface-border);
+    border-radius: var(--border-radius);
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    padding: 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--surface-border);
+}
+
+.table th {
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-size: 14px;
+    background-color: var(--surface-hover);
+}
+
+.clientName {
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.statusBadge {
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.statusActive {
+    background-color: #E2FBF6;
+    color: var(--color-secondary);
+}
+
+.statusHold {
+    background-color: #FFF2eb;
+    color: var(--color-accent);
+}
+
+.statusCompleted {
+    background-color: var(--surface-hover);
+    color: var(--text-secondary);
+}

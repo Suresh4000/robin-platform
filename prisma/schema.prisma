@@ -1,0 +1,156 @@
+generator client {
+  provider = "prisma-client-js"
+}
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Admin {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Lead {
+  id             String    @id @default(cuid())
+  name           String
+  company        String?
+  email          String?
+  phone          String?
+  source         String
+  status         String
+  expectedValue  Float     @default(0.0)
+  notes          String?
+  client         Client?   @relation(fields: [clientId], references: [id])
+  clientId       String?   @unique
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model Client {
+  id             String    @id @default(cuid())
+  name           String
+  company        String
+  email          String?
+  phone          String?
+  status         String    @default("Active")
+  engagementDate DateTime?
+  lead           Lead?
+  projects       Project[]
+  invoices       Invoice[]
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model Project {
+  id        String       @id @default(cuid())
+  title     String
+  status    String
+  clientId  String
+  client    Client       @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  tasks     Task[]
+  timeLogs  TimeEntry[]
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+}
+
+model Task {
+  id        String    @id @default(cuid())
+  title     String
+  status    String
+  dueDate   DateTime?
+  projectId String
+  project   Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model TimeEntry {
+  id          String   @id @default(cuid())
+  description String
+  hours       Float
+  isBillable  Boolean  @default(true)
+  date        DateTime
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  invoiceId   String?
+  invoice     Invoice? @relation(fields: [invoiceId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Invoice {
+  id          String      @id @default(cuid())
+  status      String
+  totalAmount Float
+  dueDate     DateTime
+  clientId    String
+  client      Client      @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  timeEntries TimeEntry[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+// ------------------------------------
+// Events & Content
+// ------------------------------------
+model Event {
+  id             String      @id @default(cuid())
+  title          String
+  type           String      // Workshop, Webinar, Conference, Academy Program
+  date           DateTime
+  duration       Int         // Minutes
+  location       String
+  description    String?
+  bannerImage    String?
+  capacity       Int
+  status         String      // Draft, Published, Completed, Cancelled
+  attendees      Attendee[]
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+}
+
+model Attendee {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  attended  Boolean  @default(false)
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ------------------------------------
+// Public Content (CMS)
+// ------------------------------------
+model PortfolioItem {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  summary     String
+  content     String
+  coverImage  String?
+  tags        String   // Comma separated
+  status      String   @default("Draft") // Draft, Published
+  publishedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model BlogPost {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  excerpt     String
+  content     String
+  coverImage  String?
+  category    String   @default("Thoughts")
+  status      String   @default("Draft") // Draft, Published
+  publishedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
