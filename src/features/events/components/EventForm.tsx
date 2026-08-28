@@ -77,7 +77,21 @@ export function EventForm({ onSuccess, initialData }: { onSuccess: () => void; i
     };
 
     useEffect(() => {
-        if (initialData) reset({ ...initialData, date: new Date(initialData.date).toISOString().slice(0, 16) });
+        if (initialData) {
+            reset({ ...initialData, date: new Date(initialData.date).toISOString().slice(0, 16) });
+        } else {
+            reset({
+                status: 'Draft',
+                type: 'Workshop',
+                capacity: 100,
+                duration: 60,
+                description: '',
+                bannerImage: '',
+                title: '',
+                location: '',
+                date: ''
+            });
+        }
     }, [initialData, reset]);
 
     return (

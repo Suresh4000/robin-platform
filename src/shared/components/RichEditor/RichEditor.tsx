@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
@@ -51,6 +51,12 @@ export function RichEditor({ value, onChange, placeholder = 'Start writing...' }
             attributes: { class: styles.editorArea },
         },
     });
+
+    useEffect(() => {
+        if (editor && value !== editor.getHTML()) {
+            editor.commands.setContent(value || '');
+        }
+    }, [editor, value]);
 
     const addImage = useCallback(() => {
         const url = window.prompt('Image URL:');

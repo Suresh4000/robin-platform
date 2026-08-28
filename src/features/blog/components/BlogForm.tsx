@@ -77,7 +77,21 @@ export function BlogForm({ onSuccess, initialData }: { onSuccess: () => void; in
         }
     };
 
-    useEffect(() => { if (initialData) reset(initialData); }, [initialData, reset]);
+    useEffect(() => {
+        if (initialData) {
+            reset(initialData);
+        } else {
+            reset({
+                status: 'Draft',
+                category: 'Thoughts',
+                content: '',
+                coverImage: '',
+                title: '',
+                slug: '',
+                excerpt: ''
+            });
+        }
+    }, [initialData, reset]);
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
