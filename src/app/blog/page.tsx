@@ -26,20 +26,6 @@ export default async function Page() {
           </div>
         </div>
       </div>
-      {/*  ===================== TOPICS =====================  */}
-      <section className="section tight">
-        <div className="container">
-          <div className="eyebrow reveal">Browse by Topic</div>
-          <div className="field-row reveal">
-            <span className="field-chip">All Posts</span>
-            <span className="field-chip">Growth &amp; Strategy</span>
-            <span className="field-chip">Transformation</span>
-            <span className="field-chip">Strategic Partnerships</span>
-            <span className="field-chip">Enterprise Value</span>
-            <span className="field-chip">Leadership</span>
-          </div>
-        </div>
-      </section>
       {/*  ===================== ARTICLE GRID =====================  */}
       <section className="section section-alt" id="blog-list">
         <div className="container">
