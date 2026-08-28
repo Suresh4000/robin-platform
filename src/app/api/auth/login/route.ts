@@ -5,7 +5,15 @@ import { cookies } from 'next/headers';
 
 export async function POST(request: Request) {
     try {
-        const { email, password } = await request.json();
+        let email = '';
+        let password = '';
+        try {
+            const body = await request.json();
+            email = body?.email || '';
+            password = body?.password || '';
+        } catch (e) {
+            return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+        }
 
         if (!email || !password) {
             return NextResponse.json({ error: 'Missing credentials' }, { status: 400 });
