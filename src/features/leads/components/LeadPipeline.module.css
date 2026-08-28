@@ -35,14 +35,16 @@
 
 .board {
     flex: 1;
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
     gap: 16px;
-    overflow-x: auto;
+    overflow-x: hidden;
     padding-bottom: 16px;
 }
 
 .column {
-    min-width: 300px;
+    min-width: 0;
+    /* Prevents overflow issues in grid */
     background-color: var(--surface-hover);
     border-radius: var(--border-radius);
     display: flex;
