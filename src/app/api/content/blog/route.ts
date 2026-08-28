@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/shared/lib/prisma';
 import { createBlogSchema } from '@/features/blog/schema';
-
-const prisma = new PrismaClient();
 
 export async function GET() {
     try {

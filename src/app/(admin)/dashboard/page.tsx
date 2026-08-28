@@ -1,12 +1,10 @@
 import React from 'react';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/shared/lib/prisma';
 import { Users, HardHat, Target, ArrowRight, Activity, Calendar } from 'lucide-react';
 import Link from 'next/link';
 import styles from '@/features/portfolio/components/PortfolioList.module.css';
 
 export const dynamic = 'force-dynamic';
-
-const prisma = new PrismaClient();
 
 // Awaited type for Next 15 searchParams behavior if necessary, or just standard type
 export default async function DashboardPage({ searchParams }: { searchParams: Promise<{ filter?: string }> }) {
