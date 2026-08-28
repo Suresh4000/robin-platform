@@ -50,7 +50,7 @@ export default async function Page() {
                       </div>
                     )}
                     <div className="abody">
-                      <span className="tag" style={{ border: '1px solid var(--surface-border)' }}>Case Study</span>
+                      <span className="tag">Case Study</span>
                       <h4 style={{ margin: '12px 0 8px' }}>{post.title}</h4>
                       <p>{post.excerpt}</p>
                       <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 12, fontSize: 13, fontWeight: 600, color: 'var(--brass-deep)' }}>
