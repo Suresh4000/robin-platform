@@ -1,8 +1,6 @@
 import React from 'react';
 import { notFound } from 'next/navigation';
 import { PublicNav, PublicFooter } from '@/app/PublicLayout';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
 import '@/app/public-contour.css';
 import { prisma } from '@/shared/lib/prisma';
 
@@ -43,9 +41,11 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
                 )}
 
                 <div className="section" style={{ border: 'none', padding: 0 }}>
-                    <div style={{ fontSize: '1.25rem', lineHeight: '1.7', color: 'var(--ink-light)' }}>
-                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{post.content}</ReactMarkdown>
-                    </div>
+                    <div
+                        className="prose"
+                        style={{ fontSize: '1.15rem', lineHeight: '1.8', color: 'var(--ink)' }}
+                        dangerouslySetInnerHTML={{ __html: post.content }}
+                    />
                 </div>
             </main>
             {/* <PublicFooter /> */}
