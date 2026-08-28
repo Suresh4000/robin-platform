@@ -14,9 +14,8 @@ const ROUTES = [
     { path: '/ops/calendar', label: 'Calendar', Icon: Calendar, num: '05' },
     { path: '/ops/events', label: 'Events', Icon: Building, num: '06' },
     { path: '/ops/documents', label: 'Documents', Icon: FolderOpen, num: '07' },
-    { path: '/content/portfolio', label: 'Case Studies', Icon: Briefcase, num: '08' },
-    { path: '/content/blog', label: 'Blog CMS', Icon: FileText, num: '09' },
-    { path: '/settings', label: 'Settings', Icon: Settings, num: '10' },
+    { path: '/content/blog', label: 'Blog CMS', Icon: FileText, num: '08' },
+    { path: '/settings', label: 'Settings', Icon: Settings, num: '09' },
 ];
 
 export function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {

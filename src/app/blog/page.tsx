@@ -9,7 +9,10 @@ export const dynamic = 'force-dynamic';
 
 export default async function Page() {
   const initialPosts = await prisma.blogPost.findMany({
-    where: { status: "Published" },
+    where: {
+      status: "Published",
+      NOT: { category: "Case Studies" }
+    },
     orderBy: { publishedAt: "desc" }
   });
 

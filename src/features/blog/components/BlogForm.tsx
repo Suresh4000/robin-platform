@@ -14,8 +14,8 @@ const CATEGORIES = [
     'Partnerships',
     'Transformation',
     'Enterprise Value',
-    'Case Studies',
     'Thoughts',
+    'Case Studies', // Shows on Insights & Media page only
 ];
 
 export function BlogForm({ onSuccess, initialData }: { onSuccess: () => void; initialData?: any }) {
