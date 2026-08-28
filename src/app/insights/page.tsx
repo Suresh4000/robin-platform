@@ -79,8 +79,8 @@ export default async function Page() {
                 <p className="lead">I speak on growth, transformation, strategic partnerships, and enterprise value -for leadership events, executive education, podcasts, and panels.</p>
                 <p style={{ "fontSize": "14.5px", "color": "var(--ink-soft)", "margin": "18px 0 0" }}><strong style={{ "color": "var(--ink)" }}>Speaking topics include:</strong> Finding New Sources of Enterprise Value · Building New Business Lines · Strategic Partnerships as a Growth Engine · Leading Transformation · Navigating Growth in Uncertain Markets</p>
                 <div className="hero-actions">
-                  <a className="btn btn-brass" href="/">Invite Me to Speak</a>
-                  <a className="btn btn-ghost" href="/">Media &amp; Press Enquiries</a>
+                  <a className="btn btn-brass" href="/contact">Invite Me to Speak</a>
+                  <a className="btn btn-ghost" href="/contact">Media &amp; Press Enquiries</a>
                 </div>
               </div>
               <div className="reveal" style={{ "borderRadius": "20px", "overflow": "hidden", "aspectRatio": "4/3", "boxShadow": "0 30px 60px -20px rgba(20,15,5,.3)" }}>
