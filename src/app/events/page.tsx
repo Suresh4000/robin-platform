@@ -23,8 +23,8 @@ export default async function Page() {
             <h1 style={{ "marginBottom": "20px" }}>Talks, workshops &amp; <em>conversations that move rooms</em></h1>
             <p className="lead">Upcoming appearances, panels, and workshops -plus a look at where I've spoken before. Available for leadership events, executive education, and podcasts.</p>
             <div className="hero-actions">
-              <a className="btn btn-brass" href="/">See Upcoming Events</a>
-              <a className="btn btn-ghost" href="/">Invite Me to Speak</a>
+              <a className="btn btn-brass" href="#upcoming-events">See Upcoming Events</a>
+              <a className="btn btn-ghost" href="/contact">Invite Me to Speak</a>
             </div>
           </div>
         </div>
@@ -124,7 +124,7 @@ export default async function Page() {
               <p>I speak on growth, transformation, strategic partnerships, and enterprise value -for leadership events, executive education, podcasts, and panels.</p>
             </div>
             <div className="cta-band-actions">
-              <a className="btn btn-brass" href="/">Invite Me to Speak</a>
+              <a className="btn btn-brass" href="/contact">Invite Me to Speak</a>
             </div>
           </div>
         </div>

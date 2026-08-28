@@ -38,7 +38,7 @@ export default function Page() {
                             <div className="eyebrow">Experience &amp; Impact</div>
                             <h1 style={{ "marginBottom": "20px" }}>Turning strategic challenges into <em>growth opportunities</em></h1>
                             <p className="lead" style={{ "maxWidth": "680px" }}>My experience spans growth strategy, transformation, business development, partnerships, and enterprise value -helping organizations find the opportunity, make the call, build the capability, and move from intention to execution.</p>
-                            <div className="hero-actions"><a className="btn btn-brass" href="/">Start a Conversation</a></div>
+                            <div className="hero-actions"><a className="btn btn-brass" href="/contact">Start a Conversation</a></div>
                         </div>
                     </div>
                 </div>
@@ -470,8 +470,8 @@ export default function Page() {
                                 <p>A new business line, a stronger partnership, or an overlooked capability could be your next source of value.</p>
                             </div>
                             <div className="cta-band-actions">
-                                <a className="btn btn-brass" href="/">Talk to Me</a>
-                                <a className="btn btn-ghost-invert" href="/">Explore Services</a>
+                                <a className="btn btn-brass" href="/contact">Talk to Me</a>
+                                <a className="btn btn-ghost-invert" href="/services">Explore Services</a>
                             </div>
                         </div>
                     </div>

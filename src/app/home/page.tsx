@@ -4,10 +4,10 @@ import { RevealHook } from "@/app/RevealHook";
 import Image from "next/image";
 
 export default function Page() {
-    return (
-        <>
-            <PublicNav />
-            <div>
+  return (
+    <>
+      <PublicNav />
+      <div>
         {/*  ===================== HERO =====================  */}
         <header className="hero">
           <div className="container hero-grid">
@@ -22,7 +22,7 @@ export default function Page() {
               <p className="lead">I partner with founders, CEOs, and boards to build that value into growth: through strategic partnerships, new business lines, and organizational transformation.</p>
               <p className="italic-line">26+ years driving growth, partnerships, and transformation across business, government, and mission-driven organizations.</p>
               <div className="hero-actions">
-                <a className="btn btn-brass" href="/">Book a Discovery Conversation <svg fill="none" stroke="currentColor" strokeLinecap="round" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+                <a className="btn btn-brass" href="/contact">Book a Discovery Conversation <svg fill="none" stroke="currentColor" strokeLinecap="round" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
                 <a className="btn btn-ghost" href="/portfolio">View Experience &amp; Impact</a>
               </div>
             </div>
@@ -37,7 +37,7 @@ export default function Page() {
 <circle cx="220" cy="10" fill="#CDC4AE" r="3"></circle>
 </svg>  */}
               <div className="hero-photo">
-                <Image width={800} height={800} alt="Robin Jones, fractional executive and strategic growth advisor" priority src="https://svaantech.com/wp-content/uploads/2026/08/1780964714422.png"  style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                <Image width={800} height={800} alt="Robin Jones, fractional executive and strategic growth advisor" priority src="https://svaantech.com/wp-content/uploads/2026/08/1780964714422.png" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
               </div>
               <div className="float-card float-1"><div className="n">26+</div><div className="l">Years Experience</div></div>
               <div className="float-card float-2"><div className="n">3</div><div className="l">Ways to Engage</div></div>
@@ -122,7 +122,7 @@ export default function Page() {
               </div>
             </div>
             <div style={{ "marginTop": "28px" }}>
-              <a className="btn btn-ghost" href="/">Explore All Services <svg fill="none" stroke="currentColor" strokeLinecap="round" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
+              <a className="btn btn-ghost" href="/services">Explore All Services <svg fill="none" stroke="currentColor" strokeLinecap="round" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
             </div>
           </div>
         </section>
@@ -135,16 +135,16 @@ export default function Page() {
                 <p>Every meaningful shift starts with one conversation. Discovery calls are confidential, practical, and about understanding your business -not selling you a pre-packaged solution.</p>
               </div>
               <div className="cta-band-actions">
-                <a className="btn btn-brass" href="/">Book a Discovery Conversation</a>
+                <a className="btn btn-brass" href="/contact">Book a Discovery Conversation</a>
                 <a className="btn btn-ghost-invert" href="/portfolio">View Experience &amp; Impact</a>
               </div>
             </div>
           </div>
         </section>
       </div>
-      
-            <PublicFooter />
-            <RevealHook />
-        </>
-    );
+
+      <PublicFooter />
+      <RevealHook />
+    </>
+  );
 }

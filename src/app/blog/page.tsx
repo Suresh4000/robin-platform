@@ -76,7 +76,7 @@ export default async function Page() {
               <p>Practical ideas on growth, transformation, partnerships, and leadership -no unnecessary noise.</p>
             </div>
             <div className="cta-band-actions">
-              <a className="btn btn-brass" href="/">Subscribe</a>
+              <a className="btn btn-brass" href="/contact">Subscribe</a>
             </div>
           </div>
         </div>

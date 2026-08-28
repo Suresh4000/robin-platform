@@ -4,10 +4,10 @@ import { RevealHook } from "@/app/RevealHook";
 import Image from "next/image";
 
 export default function Page() {
-    return (
-        <>
-            <PublicNav />
-            <div>
+  return (
+    <>
+      <PublicNav />
+      <div>
         {/*  ===================== HERO =====================  */}
         <div className="hero">
           <div className="container">
@@ -16,7 +16,7 @@ export default function Page() {
               <h1 style={{ "marginBottom": "20px" }}>Strategic support built around <em>your challenge</em></h1>
               <p className="lead">You don&apos;t always need a permanent executive or a large consulting team. Sometimes you need experienced leadership, an outside view, and focused support to move something important forward.</p>
               <p className="lead">Every engagement starts by understanding the challenge -then finding the fastest path to real progress.</p>
-              <div className="hero-actions"><a className="btn btn-brass" href="/">Discuss Your Challenge</a></div>
+              <div className="hero-actions"><a className="btn btn-brass" href="/contact">Discuss Your Challenge</a></div>
             </div>
           </div>
         </div>
@@ -51,7 +51,7 @@ export default function Page() {
           <div className="container">
             <div className="featured-insight reveal">
               <div className="fi-img">
-                <Image width={800} height={800} alt="A team collaborating around a laptop in a modern office"  src="https://images.unsplash.com/photo-1758873268745-dd2cf0d677b5?q=80&w=1200&auto=format&fit=crop"  style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                <Image width={800} height={800} alt="A team collaborating around a laptop in a modern office" src="https://images.unsplash.com/photo-1758873268745-dd2cf0d677b5?q=80&w=1200&auto=format&fit=crop" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
               </div>
               <div className="fi-body">
                 <span className="tag">How I Work</span>
@@ -173,7 +173,7 @@ export default function Page() {
               <div className="step"><div className="dot">05</div><h4>Support</h4><p>Work alongside leadership to turn strategy into progress.</p></div>
             </div>
             <div className="reveal" style={{ "marginTop": "44px", "position": "relative", "borderRadius": "20px", "overflow": "hidden", "aspectRatio": "21/8", "boxShadow": "0 30px 60px -20px rgba(20,15,5,.28)" }}>
-              <Image width={800} height={800} alt="Team meeting around a table in a modern conference room"  src="https://images.unsplash.com/photo-1769739576456-0aefcff3f4b9?q=80&w=1600&auto=format&fit=crop" style={{ "width": "100%", "height": "100%", "objectFit": "cover" }} />
+              <Image width={800} height={800} alt="Team meeting around a table in a modern conference room" src="https://images.unsplash.com/photo-1769739576456-0aefcff3f4b9?q=80&w=1600&auto=format&fit=crop" style={{ "width": "100%", "height": "100%", "objectFit": "cover" }} />
             </div>
           </div>
         </section>
@@ -186,16 +186,16 @@ export default function Page() {
                 <p>You probably already know something needs to change. The harder question is what to do next. I help leaders clarify the opportunity, challenge assumptions, and build momentum around the decisions that matter.</p>
               </div>
               <div className="cta-band-actions">
-                <a className="btn btn-brass" href="/">Start a Conversation</a>
+                <a className="btn btn-brass" href="/contact">Start a Conversation</a>
                 <a className="btn btn-ghost-invert" href="/portfolio">Explore My Experience</a>
               </div>
             </div>
           </div>
         </section>
       </div>
-      
-            <PublicFooter />
-            <RevealHook />
-        </>
-    );
+
+      <PublicFooter />
+      <RevealHook />
+    </>
+  );
 }

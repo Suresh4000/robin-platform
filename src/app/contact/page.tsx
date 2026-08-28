@@ -186,16 +186,16 @@ export default function Page() {
             <div className="footer-col">
               <h5>Quick Links</h5>
               <a href="/">Home</a>
-              <a href="/">About</a>
+              <a href="/about">About</a>
               <a href="/portfolio">Experience &amp; Impact</a>
-              <a href="/">Services</a>
+              <a href="/services">Services</a>
             </div>
             <div className="footer-col">
               <h5>More</h5>
-              <a href="/">Insights &amp; Media</a>
-              <a href="/">Blog</a>
-              <a href="/">Events</a>
-              <a href="/">Contact</a>
+              <a href="/insights">Insights &amp; Media</a>
+              <a href="/blog">Blog</a>
+              <a href="/events">Events</a>
+              <a href="/contact">Contact</a>
             </div>
             <div className="footer-col">
               <h5>Get in Touch</h5>

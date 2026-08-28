@@ -24,7 +24,7 @@ export default async function Page() {
               <div className="eyebrow">Insights &amp; Media</div>
               <h1 style={{ "marginBottom": "20px" }}>Ideas for leaders navigating <em>growth, change &amp; opportunity</em></h1>
               <p className="lead">I write and speak on the questions shaping modern organizations -new sources of growth, navigating transformation, how partnerships create value, and turning uncertainty into opportunity.</p>
-              <div className="hero-actions"><a className="btn btn-brass" href="/">Explore Insights</a></div>
+              <div className="hero-actions"><a className="btn btn-brass" href="/blog">Explore Insights</a></div>
             </div>
           </div>
         </div>
@@ -98,7 +98,7 @@ export default async function Page() {
                 <p>Practical ideas on growth, transformation, partnerships, and leadership -no unnecessary noise.</p>
               </div>
               <div className="cta-band-actions">
-                <a className="btn btn-brass" href="/">Subscribe</a>
+                <a className="btn btn-brass" href="/contact">Subscribe</a>
               </div>
             </div>
           </div>

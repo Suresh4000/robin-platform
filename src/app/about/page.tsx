@@ -4,10 +4,10 @@ import { RevealHook } from "@/app/RevealHook";
 import Image from "next/image";
 
 export default function Page() {
-    return (
-        <>
-            <PublicNav />
-            <div>
+  return (
+    <>
+      <PublicNav />
+      <div>
         {/*  ===================== HERO =====================  */}
         <div className="hero" style={{ "paddingBottom": "76px" }}>
           <div className="container">
@@ -18,7 +18,7 @@ export default function Page() {
               <p className="lead">Across growth, transformation, business development, and partnerships, I've worked with organizations at the exact moment things are shifting. My approach pairs strategic thinking with practical execution -not just identifying problems, but deciding what to change, where to invest, and how to turn priorities into action.</p>
               <p className="lead">Today, I bring that perspective to leaders who need experienced, independent thinking -without adding another layer of complexity.</p>
               <div className="hero-actions">
-                <a className="btn btn-brass" href="/">Work With Me</a>
+                <a className="btn btn-brass" href="/contact">Work With Me</a>
                 <a className="btn btn-ghost" href="/portfolio">Explore My Experience</a>
               </div>
             </div>
@@ -29,7 +29,7 @@ export default function Page() {
           <div className="container">
             <div className="featured-insight reveal">
               <div className="fi-img">
-                <Image width={800} height={800} alt="Leaders gathered around a whiteboard mapping out a strategic plan"  src="https://images.unsplash.com/photo-1774842391684-b819ec9bd409?q=80&w=1200&auto=format&fit=crop"  style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                <Image width={800} height={800} alt="Leaders gathered around a whiteboard mapping out a strategic plan" src="https://images.unsplash.com/photo-1774842391684-b819ec9bd409?q=80&w=1200&auto=format&fit=crop" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
               </div>
               <div className="fi-body">
                 <span className="tag">Snapshot</span>
@@ -93,15 +93,15 @@ export default function Page() {
                 <p>No two organizations face the same growth problem -so there's no universal playbook. I start by understanding your reality: ambitions, constraints, people, opportunities. From there, I bring clarity to what matters most and build a practical path forward.</p>
               </div>
               <div className="cta-band-actions">
-                <a className="btn btn-brass" href="/">Start a Conversation</a>
+                <a className="btn btn-brass" href="/contact">Start a Conversation</a>
               </div>
             </div>
           </div>
         </section>
       </div>
-      
-            <PublicFooter />
-            <RevealHook />
-        </>
-    );
+
+      <PublicFooter />
+      <RevealHook />
+    </>
+  );
 }
