@@ -1,14 +1,10 @@
 import React from 'react';
-import { PrismaClient } from '@prisma/client';
 import { notFound } from 'next/navigation';
 import { PublicNav, PublicFooter } from '@/app/PublicLayout';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import '@/app/public-contour.css';
-
-const globalForPrisma = globalThis as unknown as { prisma: PrismaClient | undefined };
-const prisma = globalForPrisma.prisma ?? new PrismaClient();
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
+import { prisma } from '@/shared/lib/prisma';
 
 export default async function BlogDetailPage({ params }: { params: Promise<{ slug: string }> }) {
     const resolvedParams = await params;
@@ -20,11 +16,14 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
         notFound();
     }
 
+    const backHref = post.category === 'Case Studies' ? '/insights' : '/blog';
+    const backText = post.category === 'Case Studies' ? '← Back to Insights' : '← Back to Blog';
+
     return (
         <div style={{ backgroundColor: 'var(--sand)' }}>
             {/* <PublicNav /> */}
             <main className="container" style={{ paddingTop: '100px', paddingBottom: '100px', maxWidth: '800px', minHeight: '80vh' }}>
-                <a href="/blog" className="btn btn-ghost" style={{ marginBottom: '32px' }}>&larr; Back to insights</a>
+                <a href={backHref} className="btn btn-ghost" style={{ marginBottom: '32px' }}>{backText}</a>
 
                 <div style={{ marginBottom: '40px' }}>
                     <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '16px' }}>
