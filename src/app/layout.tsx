@@ -4,6 +4,10 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'Robin Jones',
   description: 'Single-admin business management platform for Robin Jones',
+  robots: {
+    index: false,
+    follow: false,
+  }
 };
 
 export default function RootLayout({

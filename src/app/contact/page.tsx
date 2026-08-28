@@ -39,10 +39,10 @@ export default function Page() {
     }
   };
 
-    return (
-        <>
-            <PublicNav />
-            <div>
+  return (
+    <>
+      <PublicNav />
+      <div>
         {/*  ===================== HERO =====================  */}
         <div className="hero" style={{ "paddingBottom": "60px" }}>
           <div className="container">
@@ -70,7 +70,7 @@ export default function Page() {
                   </div>
                   <div className="field">
                     <label id="topicLabel">What would you like to discuss?</label>
-                    <div className={`multiselect ${msOpen ? 'is-open' : ''}`} id="topicSelect">
+                    <div className={`multiselect ${msOpen ? 'open' : ''}`} id="topicSelect">
                       <button aria-expanded={msOpen} aria-haspopup="listbox" className="multiselect-toggle" id="topicToggle" type="button" onClick={() => setMsOpen(!msOpen)}>
                         <span id="topicToggleText">{formData.topics.length > 0 ? formData.topics.join(', ') : 'Select one or more topics'}</span>
                         <svg className="ms-caret" fill="none" stroke="currentColor" strokeLinecap="round" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"></path></svg>
@@ -216,9 +216,9 @@ export default function Page() {
         </div>
       </footer>
 
-    
-            <PublicFooter />
-            <RevealHook />
-        </>
-    );
+
+      <PublicFooter />
+      <RevealHook />
+    </>
+  );
 }
