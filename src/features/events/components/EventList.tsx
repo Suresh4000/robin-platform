@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Plus, MapPin, Clock, Users, Calendar, Edit, Trash2 } from 'lucide-react';
+import { Plus, MapPin, Clock, Users, Calendar, Edit, Trash2, Globe } from 'lucide-react';
 import styles from './EventList.module.css';
 import { SlideDrawer } from '@/shared/components/ui/Modal';
 import { EventForm } from './EventForm';
@@ -100,6 +100,15 @@ export function EventList() {
                                             >
                                                 <Edit size={14} />
                                             </button>
+                                            <a
+                                                href={`/events/${event.id}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '4px', marginLeft: '4px', display: 'inline-flex', alignItems: 'center' }}
+                                                title="View Public Event Page"
+                                            >
+                                                <Globe size={14} />
+                                            </a>
                                         </div>
                                     </div>
                                     <span className={`${styles.statusBadge} ${event.status === 'Published' ? styles.statusPublished : ''}`}>

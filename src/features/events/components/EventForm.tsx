@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useForm as rhmUseForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createEventSchema, updateEventSchema } from '../schema';
@@ -10,6 +10,8 @@ import { RichEditor } from '@/shared/components/RichEditor/RichEditor';
 export function EventForm({ onSuccess, initialData }: { onSuccess: () => void; initialData?: any }) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [bannerPreview, setBannerPreview] = useState<string>(initialData?.bannerImage || '');
+    const [isUploading, setIsUploading] = useState(false);
+    const bannerInputRef = useRef<HTMLInputElement>(null);
 
     const { register, handleSubmit, control, watch, formState: { errors }, setError, reset } = rhmUseForm<any>({
         resolver: zodResolver(initialData ? updateEventSchema : createEventSchema),
@@ -28,6 +30,25 @@ export function EventForm({ onSuccess, initialData }: { onSuccess: () => void; i
 
     const watchBanner = watch('bannerImage');
     useEffect(() => { setBannerPreview(watchBanner || ''); }, [watchBanner]);
+
+    const handleBannerUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        setIsUploading(true);
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            const dataUrl = ev.target?.result as string;
+            setBannerPreview(dataUrl);
+            const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')!.set;
+            const hiddenInput = document.getElementById('bannerImageHidden') as HTMLInputElement;
+            if (hiddenInput && nativeInputValueSetter) {
+                nativeInputValueSetter.call(hiddenInput, dataUrl);
+                hiddenInput.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+            setIsUploading(false);
+        };
+        reader.readAsDataURL(file);
+    };
 
     const onSubmit = async (data: any) => {
         setIsSubmitting(true);
@@ -69,11 +90,40 @@ export function EventForm({ onSuccess, initialData }: { onSuccess: () => void; i
                 </div>
             )}
 
-            {/* Banner image URL */}
+            {/* Banner image upload */}
             <div className={styles.formGroup} style={{ margin: 0 }}>
-                <label className={styles.label}>Banner Image URL</label>
-                <input className={styles.input} {...register('bannerImage')} placeholder="https://..." />
-                <span style={{ fontSize: 12, color: '#888', marginTop: 4, display: 'block' }}>Paste an image URL — preview appears above</span>
+                <label className={styles.label}>Banner Image</label>
+                <input id="bannerImageHidden" type="text" style={{ display: 'none' }} {...register('bannerImage')} />
+                <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                    <input
+                        ref={bannerInputRef}
+                        type="file"
+                        accept="image/*"
+                        style={{ display: 'none' }}
+                        onChange={handleBannerUpload}
+                    />
+                    <button
+                        type="button"
+                        onClick={() => bannerInputRef.current?.click()}
+                        style={{
+                            padding: '8px 16px', border: '1.5px dashed var(--color-primary)',
+                            borderRadius: 8, background: 'transparent', cursor: 'pointer',
+                            color: 'var(--color-primary)', fontWeight: 600, fontSize: 13
+                        }}
+                    >
+                        {isUploading ? 'Processing...' : bannerPreview ? '🔄 Change Image' : '📁 Upload Banner Image'}
+                    </button>
+                    {bannerPreview && (
+                        <button
+                            type="button"
+                            onClick={() => { setBannerPreview(''); (document.getElementById('bannerImageHidden') as HTMLInputElement).value = ''; }}
+                            style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: 13 }}
+                        >
+                            ✕ Remove
+                        </button>
+                    )}
+                </div>
+                <span style={{ fontSize: 12, color: '#888', marginTop: 4, display: 'block' }}>Upload JPG, PNG, WebP, or GIF</span>
             </div>
 
             {/* Title */}

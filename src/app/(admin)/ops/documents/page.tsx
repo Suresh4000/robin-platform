@@ -12,6 +12,7 @@ type DocumentItem = {
     date: string;
     size: string;
     isDeleted: boolean;
+    fileData?: string; // base64 data URL
 };
 
 export default function DocumentsPage() {
@@ -47,21 +48,26 @@ export default function DocumentsPage() {
         const file = e.target.files?.[0];
         if (file) {
             const clientName = window.prompt("Enter Client Name for this document:");
-            if (!clientName) return; // Cancelled
+            if (!clientName) return;
 
-            const newDoc: DocumentItem = {
-                id: Math.random().toString(36).substr(2, 9),
-                clientName: clientName,
-                name: file.name,
-                type: file.name.split('.').pop()?.toUpperCase() || 'FILE',
-                date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-                size: (file.size / 1024 / 1024).toFixed(2) + ' MB',
-                isDeleted: false
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const newDoc: DocumentItem = {
+                    id: Math.random().toString(36).substr(2, 9),
+                    clientName: clientName,
+                    name: file.name,
+                    type: file.name.split('.').pop()?.toUpperCase() || 'FILE',
+                    date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                    size: file.size < 1024 * 1024
+                        ? (file.size / 1024).toFixed(1) + ' KB'
+                        : (file.size / 1024 / 1024).toFixed(2) + ' MB',
+                    isDeleted: false,
+                    fileData: ev.target?.result as string,
+                };
+                setDocuments(prev => [newDoc, ...prev]);
             };
-
-            setDocuments(prev => [newDoc, ...prev]);
+            reader.readAsDataURL(file);
         }
-        // reset input
         if (fileInputRef.current) fileInputRef.current.value = '';
     };
 
@@ -81,11 +87,17 @@ export default function DocumentsPage() {
         }
     };
 
-    const handleDownload = (name: string) => {
-        if (window.confirm(`Download "${name}" to your computer?`)) {
-            // In a real app, this would trigger a Blob URL download. 
-            alert('Download started.');
+    const handleDownload = (doc: DocumentItem) => {
+        if (!doc.fileData) {
+            alert('No file data available for download. Please re-upload this document.');
+            return;
         }
+        const a = document.createElement('a');
+        a.href = doc.fileData;
+        a.download = doc.name;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
     };
 
     const displayedDocs = documents.filter(doc => viewMode === 'active' ? !doc.isDeleted : doc.isDeleted);
@@ -175,7 +187,7 @@ export default function DocumentsPage() {
                                         <div className={styles.actions}>
                                             {viewMode === 'active' ? (
                                                 <>
-                                                    <button className={styles.actionBtn} title="Download" onClick={() => handleDownload(doc.name)}>
+                                                    <button className={styles.actionBtn} title="Download" onClick={() => handleDownload(doc)}>
                                                         <FileDown size={16} />
                                                     </button>
                                                     <button className={styles.actionBtn} title="Move to Recycle Bin" onClick={() => handleDelete(doc.id, doc.name)}>

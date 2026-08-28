@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useForm as rhmUseForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createBlogSchema, updateBlogSchema } from '../schema';
@@ -21,6 +21,8 @@ const CATEGORIES = [
 export function BlogForm({ onSuccess, initialData }: { onSuccess: () => void; initialData?: any }) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [coverPreview, setCoverPreview] = useState<string>(initialData?.coverImage || '');
+    const [isUploading, setIsUploading] = useState(false);
+    const coverInputRef = useRef<HTMLInputElement>(null);
 
     const { register, handleSubmit, control, watch, formState: { errors }, setError, reset } = rhmUseForm<any>({
         resolver: zodResolver(initialData ? updateBlogSchema : createBlogSchema),
@@ -34,6 +36,26 @@ export function BlogForm({ onSuccess, initialData }: { onSuccess: () => void; in
 
     const watchCover = watch('coverImage');
     useEffect(() => { setCoverPreview(watchCover || ''); }, [watchCover]);
+
+    const handleCoverUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        setIsUploading(true);
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            const dataUrl = ev.target?.result as string;
+            setCoverPreview(dataUrl);
+            // inject into react-hook-form
+            const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')!.set;
+            const hiddenInput = document.getElementById('coverImageHidden') as HTMLInputElement;
+            if (hiddenInput && nativeInputValueSetter) {
+                nativeInputValueSetter.call(hiddenInput, dataUrl);
+                hiddenInput.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+            setIsUploading(false);
+        };
+        reader.readAsDataURL(file);
+    };
 
     const onSubmit = async (data: any) => {
         setIsSubmitting(true);
@@ -67,11 +89,41 @@ export function BlogForm({ onSuccess, initialData }: { onSuccess: () => void; in
                 </div>
             )}
 
-            {/* Cover image URL */}
+            {/* Cover image upload */}
             <div className={styles.formGroup}>
-                <label className={styles.label}>Cover Image URL</label>
-                <input className={styles.input} {...register('coverImage')} placeholder="https://images.unsplash.com/..." />
-                <span style={{ fontSize: 12, color: '#888', marginTop: 4, display: 'block' }}>Paste any image URL — a preview appears above</span>
+                <label className={styles.label}>Cover Image</label>
+                {/* Hidden field that react-hook-form reads */}
+                <input id="coverImageHidden" type="text" style={{ display: 'none' }} {...register('coverImage')} />
+                <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                    <input
+                        ref={coverInputRef}
+                        type="file"
+                        accept="image/*"
+                        style={{ display: 'none' }}
+                        onChange={handleCoverUpload}
+                    />
+                    <button
+                        type="button"
+                        onClick={() => coverInputRef.current?.click()}
+                        style={{
+                            padding: '8px 16px', border: '1.5px dashed var(--color-primary)',
+                            borderRadius: 8, background: 'transparent', cursor: 'pointer',
+                            color: 'var(--color-primary)', fontWeight: 600, fontSize: 13
+                        }}
+                    >
+                        {isUploading ? 'Processing...' : coverPreview ? '🔄 Change Image' : '📁 Upload Cover Image'}
+                    </button>
+                    {coverPreview && (
+                        <button
+                            type="button"
+                            onClick={() => { setCoverPreview(''); (document.getElementById('coverImageHidden') as HTMLInputElement).value = ''; }}
+                            style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: 13 }}
+                        >
+                            ✕ Remove
+                        </button>
+                    )}
+                </div>
+                <span style={{ fontSize: 12, color: '#888', marginTop: 4, display: 'block' }}>Upload JPG, PNG, WebP, or GIF</span>
             </div>
 
             {/* Title + Slug row */}

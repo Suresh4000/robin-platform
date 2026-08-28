@@ -99,9 +99,16 @@ export function BlogList() {
                                             <button className={styles.actionBtn} title="Edit Post" onClick={() => openEditModal(item)}>
                                                 <Edit size={16} />
                                             </button>
-                                            <button className={styles.actionBtn} title="View public URL">
+                                            <a
+                                                href={`/blog/${item.slug}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className={styles.actionBtn}
+                                                title="View Live Post"
+                                                style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+                                            >
                                                 <Globe size={16} />
-                                            </button>
+                                            </a>
                                         </div>
                                     </td>
                                 </tr>
