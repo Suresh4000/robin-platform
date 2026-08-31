@@ -49,12 +49,9 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
         take: 10
     });
 
-    const pendingTasks = await prisma.task.findMany({
-        where: { status: { not: 'Done' } },
-        orderBy: { dueDate: 'asc' },
-        take: 10,
-        include: { project: { include: { client: true } } }
-    });
+    const pendingTasks = await prisma.task.findMany({ where: { status: { not: 'Done' } }, orderBy: { dueDate: 'asc' }, take: 10, include: { project: { include: { client: true } } } });
+
+    const latestBlogs = await prisma.blogPost.findMany({ orderBy: { createdAt: 'desc' }, take: 5 });
 
     const TabLink = ({ value, label }: { value: string, label: string }) => {
         const isActive = filter === value;
@@ -188,65 +185,115 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
             <div style={{ marginTop: '48px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                     <h2 style={{ fontSize: '20px', fontFamily: 'var(--font-heading)', color: 'var(--text-title)' }}>
-                        Action Items & Schedule
+                        Action Items & Recent Activity
                     </h2>
                     <div style={{ display: 'flex', gap: '4px', background: 'var(--surface-default)', padding: '4px', borderRadius: '8px', border: '1px solid var(--surface-border)' }}>
                         <ViewFilterLink value="all" label="All" />
-                        <ViewFilterLink value="events" label="Calendar Events" />
-                        <ViewFilterLink value="tasks" label="Pending Tasks" />
+                        <ViewFilterLink value="events" label="Events" />
+                        <ViewFilterLink value="blog" label="Blog" />
+                        <ViewFilterLink value="schedules" label="Schedules" />
                     </div>
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    {(view === 'all' || view === 'events') && upcomingEvents.length > 0 && (
-                        upcomingEvents.map(event => (
-                            <div key={event.id} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px', background: 'var(--surface-default)', border: '1px solid var(--surface-border)', borderRadius: '8px' }}>
-                                <div style={{ padding: '10px', background: 'var(--surface-sunken)', borderRadius: '8px' }}>
-                                    <Calendar size={18} style={{ color: 'var(--color-primary)' }} />
-                                </div>
-                                <div style={{ flex: 1 }}>
-                                    <div style={{ fontWeight: 600, color: 'var(--text-title)' }}>{event.title}</div>
-                                    <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>{event.type} • {event.location}</div>
-                                </div>
-                                <div style={{ fontSize: '13.5px', fontWeight: 500, color: 'var(--text-title)' }}>
-                                    {event.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
-                                </div>
-                            </div>
-                        ))
-                    )}
-
-                    {(view === 'all' || view === 'tasks') && pendingTasks.length > 0 && (
-                        pendingTasks.map(task => (
-                            <div key={task.id} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px', background: 'var(--surface-default)', border: '1px solid var(--surface-border)', borderRadius: '8px' }}>
-                                <div style={{ padding: '10px', background: 'var(--surface-sunken)', borderRadius: '8px' }}>
-                                    <Activity size={18} style={{ color: 'var(--color-secondary)' }} />
-                                </div>
-                                <div style={{ flex: 1 }}>
-                                    <div style={{ fontWeight: 600, color: 'var(--text-title)' }}>{task.title}</div>
-                                    <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
-                                        {task.project.client.name} • {task.project.title}
+                    
+                    {/* Events View */}
+                    {(view === 'all' || view === 'events') && (
+                        <>
+                            {upcomingEvents.length > 0 ? upcomingEvents.map(event => (
+                                <div key={event.id} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px', background: 'var(--surface-default)', border: '1px solid var(--surface-border)', borderRadius: '8px' }}>
+                                    <div style={{ padding: '10px', background: 'var(--surface-sunken)', borderRadius: '8px' }}>
+                                        <Calendar size={18} style={{ color: 'var(--color-primary)' }} />
+                                    </div>
+                                    <div style={{ flex: 1 }}>
+                                        <div style={{ fontWeight: 600, color: 'var(--text-title)' }}>{event.title}</div>
+                                        <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>{event.type} • {event.location}</div>
+                                    </div>
+                                    <div style={{ fontSize: '13.5px', fontWeight: 500, color: 'var(--text-title)' }}>
+                                        {event.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
                                     </div>
                                 </div>
-                                <div style={{ fontSize: '13.5px', fontWeight: 500, color: 'var(--text-secondary)' }}>
-                                    Due: {task.dueDate ? new Date(task.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'No Date'}
+                            )) : view === 'events' && (
+                                <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text-muted)', border: '1px dashed var(--surface-border)', borderRadius: '8px' }}>
+                                    No upcoming events.
                                 </div>
-                            </div>
-                        ))
+                            )}
+
+                            {view === 'events' && (
+                                <Link href="/ops/events" style={{ display: 'block', textAlign: 'center', padding: '12px', background: 'var(--surface-sunken)', color: 'var(--color-primary)', borderRadius: '8px', textDecoration: 'none', fontWeight: 600, marginTop: '8px' }}>
+                                    View More Events
+                                </Link>
+                            )}
+                        </>
                     )}
 
-                    {view === 'all' && upcomingEvents.length === 0 && pendingTasks.length === 0 && (
-                        <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text-muted)', border: '1px dashed var(--surface-border)', borderRadius: '8px' }}>
-                            Your schedule is clear. No upcoming events or pending tasks.
-                        </div>
+                    {/* Blog View */}
+                    {(view === 'all' || view === 'blog') && (
+                        <>
+                            {latestBlogs.length > 0 ? latestBlogs.map(post => (
+                                <div key={post.id} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px', background: 'var(--surface-default)', border: '1px solid var(--surface-border)', borderRadius: '8px' }}>
+                                    <div style={{ padding: '10px', background: 'var(--surface-sunken)', borderRadius: '8px' }}>
+                                        <Activity size={18} style={{ color: 'var(--brand-deep)', opacity: 0.8 }} />
+                                    </div>
+                                    <div style={{ flex: 1 }}>
+                                        <div style={{ fontWeight: 600, color: 'var(--text-title)' }}>{post.title}</div>
+                                        <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
+                                            {post.category} • {post.status}
+                                        </div>
+                                    </div>
+                                    <div style={{ fontSize: '13.5px', fontWeight: 500, color: 'var(--text-secondary)' }}>
+                                        {new Date(post.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                                    </div>
+                                </div>
+                            )) : view === 'blog' && (
+                                <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text-muted)', border: '1px dashed var(--surface-border)', borderRadius: '8px' }}>
+                                    No blog posts available.
+                                </div>
+                            )}
+
+                            {view === 'blog' && (
+                                <Link href="/content/blog" style={{ display: 'block', textAlign: 'center', padding: '12px', background: 'var(--surface-sunken)', color: 'var(--brand-deep)', borderRadius: '8px', textDecoration: 'none', fontWeight: 600, marginTop: '8px' }}>
+                                    View More Blog Posts
+                                </Link>
+                            )}
+                        </>
                     )}
-                    {view === 'events' && upcomingEvents.length === 0 && (
-                        <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text-muted)', border: '1px dashed var(--surface-border)', borderRadius: '8px' }}>
-                            No upcoming calendar events.
-                        </div>
+                    
+                    {/* Schedules View */}
+                    {(view === 'all' || view === 'schedules') && (
+                        <>
+                            {pendingTasks.length > 0 ? pendingTasks.map(task => (
+                                <div key={task.id} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px', background: 'var(--surface-default)', border: '1px solid var(--surface-border)', borderRadius: '8px' }}>
+                                    <div style={{ padding: '10px', background: 'var(--surface-sunken)', borderRadius: '8px' }}>
+                                        <Activity size={18} style={{ color: 'var(--color-secondary)' }} />
+                                    </div>
+                                    <div style={{ flex: 1 }}>
+                                        <div style={{ fontWeight: 600, color: 'var(--text-title)' }}>{task.title}</div>
+                                        <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
+                                            {task.project.client.name} • {task.project.title}
+                                        </div>
+                                    </div>
+                                    <div style={{ fontSize: '13.5px', fontWeight: 500, color: 'var(--text-secondary)' }}>
+                                        Due: {task.dueDate ? new Date(task.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'No Date'}
+                                    </div>
+                                </div>
+                            )) : view === 'schedules' && (
+                                <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text-muted)', border: '1px dashed var(--surface-border)', borderRadius: '8px' }}>
+                                    No pending tasks or schedules.
+                                </div>
+                            )}
+
+                            {view === 'schedules' && (
+                                <Link href="/ops/calendar" style={{ display: 'block', textAlign: 'center', padding: '12px', background: 'var(--surface-sunken)', color: 'var(--color-primary)', borderRadius: '8px', textDecoration: 'none', fontWeight: 600, marginTop: '8px' }}>
+                                    View Master Calendar
+                                </Link>
+                            )}
+                        </>
                     )}
-                    {view === 'tasks' && pendingTasks.length === 0 && (
+
+                    {view === 'all' && upcomingEvents.length === 0 && pendingTasks.length === 0 && latestBlogs.length === 0 && (
                         <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text-muted)', border: '1px dashed var(--surface-border)', borderRadius: '8px' }}>
-                            No pending tasks. Great job!
+                            Your board is clear. No upcoming items.
                         </div>
                     )}
                 </div>
