@@ -4,7 +4,7 @@ import { createEventSchema } from '@/features/events/schema';
 
 export async function GET() {
     try {
-        const events = await prisma.event.findMany({
+        const events = await prisma.event.findMany({ where: { type: { not: 'Discovery Call' } },
             include: {
                 _count: { select: { attendees: true } }
             },

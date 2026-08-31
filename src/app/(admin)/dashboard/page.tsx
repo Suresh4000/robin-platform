@@ -44,7 +44,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
 
     // Fetch upcoming schedule (Calendar Events & Tasks)
     const upcomingEvents = await prisma.event.findMany({
-        where: { date: { gte: new Date() } },
+        where: { date: { gte: new Date() }, type: { not: 'Discovery Call' } },
         orderBy: { date: 'asc' },
         take: 10
     });
