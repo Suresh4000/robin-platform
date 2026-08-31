@@ -1,5 +1,5 @@
 import React from 'react';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/shared/lib/prisma';
 import '@/app/public-contour.css';
 import { notFound } from 'next/navigation';
 import { EventRegistrationForm } from './EventRegistrationForm';
