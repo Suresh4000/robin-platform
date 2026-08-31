@@ -46,6 +46,20 @@ export function EventList() {
             });
     };
 
+    const handleDelete = async (id: string, title: string) => {
+        if (!confirm(`Are you sure you want to permanently delete "${title}"?`)) return;
+        try {
+            const res = await fetch(`/api/ops/events/${id}`, { method: 'DELETE' });
+            if (res.ok) {
+                fetchEvents();
+            } else {
+                alert('Failed to delete event.');
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
     useEffect(() => {
         fetchEvents();
     }, []);
@@ -101,6 +115,13 @@ export function EventList() {
                                                 title="Edit Event"
                                             >
                                                 <Edit size={14} />
+                                            </button>
+                                            <button
+                                                onClick={() => handleDelete(event.id, event.title)}
+                                                style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px', marginLeft: '4px' }}
+                                                title="Delete Event"
+                                            >
+                                                <Trash2 size={14} />
                                             </button>
                                             <a
                                                 href={`/events/${event.id}`}

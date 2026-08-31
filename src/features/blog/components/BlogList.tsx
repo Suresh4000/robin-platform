@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Plus, Edit, Globe } from 'lucide-react';
+import { Plus, Edit, Globe, Trash2 } from 'lucide-react';
 import styles from '@/features/portfolio/components/PortfolioList.module.css'; // Reusing layout
 import { SlideDrawer } from '@/shared/components/ui/Modal';
 import { BlogForm } from './BlogForm';
@@ -39,6 +39,20 @@ export function BlogList() {
                 if (data.data) setItems(data.data);
                 setIsLoading(false);
             });
+    };
+
+    const handleDelete = async (id: string, title: string) => {
+        if (!confirm(`Are you sure you want to permanently delete "${title}"?`)) return;
+        try {
+            const res = await fetch(`/api/content/blog/${id}`, { method: 'DELETE' });
+            if (res.ok) {
+                fetchItems();
+            } else {
+                alert('Failed to delete post.');
+            }
+        } catch (e) {
+            console.error(e);
+        }
     };
 
     useEffect(() => {
@@ -98,6 +112,9 @@ export function BlogList() {
                                         <div className={styles.actions}>
                                             <button className={styles.actionBtn} title="Edit Post" onClick={() => openEditModal(item)}>
                                                 <Edit size={16} />
+                                            </button>
+                                            <button className={styles.actionBtn} title="Delete Post" onClick={() => handleDelete(item.id, item.title)} style={{ color: '#ef4444' }}>
+                                                <Trash2 size={16} />
                                             </button>
                                             <a
                                                 href={`/blog/${item.slug}`}
