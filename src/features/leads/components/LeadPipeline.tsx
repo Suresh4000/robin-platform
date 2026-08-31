@@ -53,7 +53,7 @@ export function LeadPipeline() {
                 body: JSON.stringify({ status: newStatus })
             });
 
-            if (newStatus === 'Discovery Scheduled' && oldStatus !== 'Discovery Scheduled' && leadToUpdate) {
+            if (newStatus === 'Meeting Scheduled' && oldStatus !== 'Meeting Scheduled' && leadToUpdate) {
                 const notes = leadToUpdate.notes || '';
                 const dateMatch = notes.match(/Booking Date:\s*([^\n\r]+)/);
                 const timeMatch = notes.match(/Booking Time:\s*([^\n\r]+)/);

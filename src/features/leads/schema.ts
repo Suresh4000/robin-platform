@@ -1,11 +1,13 @@
 import { z } from 'zod';
 
 export const LEAD_STAGES = [
-    'New Inquiry',
+    'New Lead',
     'Qualified',
-    'Discovery Scheduled',
-    'Discovery Completed',
-    'Negotiation'
+    'Meeting Scheduled',
+    'Proposal Sent',
+    'Negotiation',
+    'Closed Won',
+    'Closed Lost'
 ] as const;
 
 export const createLeadSchema = z.object({
@@ -14,7 +16,7 @@ export const createLeadSchema = z.object({
     email: z.string().email("Invalid email").optional().or(z.literal('')),
     phone: z.string().optional(),
     source: z.enum(['Website', 'LinkedIn', 'Referral', 'Event']),
-    status: z.enum(LEAD_STAGES).default('New Inquiry'),
+    status: z.enum(LEAD_STAGES).default('New Lead'),
     expectedValue: z.number().min(0).default(0),
     notes: z.string().optional(),
 });

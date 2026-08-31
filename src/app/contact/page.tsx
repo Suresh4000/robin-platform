@@ -32,7 +32,7 @@ Message: ${formData.notes}`;
           phone: formData.phone,
           company: formData.company,
           source: 'Website',
-          status: 'New Inquiry',
+          status: 'New Lead',
           expectedValue: 0,
           notes: formattedNotes
         })
