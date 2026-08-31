@@ -6,13 +6,20 @@ import Image from "next/image";
 
 export default function Page() {
 
-  const [formData, setFormData] = useState({ name: '', lname: '', email: '', phone: '', company: '', role: '', topics: [] as string[], timing: '', notes: '' });
+  const [formData, setFormData] = useState({ name: '', lname: '', email: '', phone: '', company: '', role: '', topics: [] as string[], timing: '', notes: '', bookingDate: '', bookingTime: '' });
   const [formStatus, setFormStatus] = useState('');
   const [msOpen, setMsOpen] = useState(false);
   const handleContactSubmit = async (e: any) => {
     e.preventDefault();
     setFormStatus('Submitting...');
     try {
+      const formattedNotes = `Role: ${formData.role}
+Timing: ${formData.timing}
+Topics: ${formData.topics.join(', ')}
+Booking Date: ${formData.bookingDate}
+Booking Time: ${formData.bookingTime}
+Message: ${formData.notes}`;
+
       const res = await fetch('/api/crm/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -24,13 +31,13 @@ export default function Page() {
           source: 'Website',
           status: 'New Inquiry',
           expectedValue: 0,
-          notes: "Role: " + formData.role + " Timing: " + formData.timing + " Topics: " + formData.topics.join(', ') + " Message: " + formData.notes
+          notes: formattedNotes
         })
       });
       const responseData = await res.json();
       if (res.ok) {
         setFormStatus('Success! We will be in touch soon.');
-        setFormData({ name: '', lname: '', email: '', phone: '', company: '', role: '', topics: [], timing: '', notes: '' });
+        setFormData({ name: '', lname: '', email: '', phone: '', company: '', role: '', topics: [], timing: '', notes: '', bookingDate: '', bookingTime: '' });
       } else {
         setFormStatus("Error: " + (responseData.error || 'Failed to submit.'));
       }
@@ -134,6 +141,22 @@ export default function Page() {
                       <option>Currently looking for support</option>
                     </select>
                   </div>
+
+                  {/* Discovery Call Booking Calendar */}
+                  <div className="field" style={{ gridColumn: '1 / -1', padding: '16px', background: 'var(--surface-sunken)', borderRadius: '8px', border: '1px solid var(--surface-border)' }}>
+                    <h3 style={{ fontSize: '16px', marginBottom: '12px' }}>Book a Discovery Call</h3>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                      <div>
+                        <label htmlFor="bookingDate" style={{ display: 'block', fontSize: '14px', marginBottom: '6px' }}>Select Date</label>
+                        <input id="bookingDate" type="date" value={formData.bookingDate} onChange={e => setFormData({ ...formData, bookingDate: e.target.value })} style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid var(--surface-border)' }} required />
+                      </div>
+                      <div>
+                        <label htmlFor="bookingTime" style={{ display: 'block', fontSize: '14px', marginBottom: '6px' }}>Select Time</label>
+                        <input id="bookingTime" type="time" value={formData.bookingTime} onChange={e => setFormData({ ...formData, bookingTime: e.target.value })} style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid var(--surface-border)' }} required />
+                      </div>
+                    </div>
+                  </div>
+
                   <button className="btn btn-brass" style={{ "width": "100%", "marginTop": "8px" }} type="submit">Send Enquiry</button>
                   {formStatus && <p>{formStatus}</p>}
                 </form>
