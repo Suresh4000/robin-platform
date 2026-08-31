@@ -86,7 +86,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
                                     <h3 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '16px', color: 'var(--ink-dark)' }}>Save Your Seat</h3>
                                     <p style={{ color: 'var(--ink-soft)', marginBottom: '32px' }}>Register to receive updates and exclusive pre-event materials.</p>
                                 </div>
-                                <EventRegistrationForm eventTitle={event.title} />
+                                <EventRegistrationForm eventTitle={event.title} eventId={event.id} />
                             </div>
                         </div>
                     )}

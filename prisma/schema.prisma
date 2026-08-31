@@ -117,6 +117,8 @@ model Attendee {
   id        String   @id @default(cuid())
   name      String
   email     String
+  phone     String?
+  company   String?
   attended  Boolean  @default(false)
   eventId   String
   event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)

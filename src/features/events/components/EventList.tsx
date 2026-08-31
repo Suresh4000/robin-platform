@@ -5,6 +5,7 @@ import { Plus, MapPin, Clock, Users, Calendar, Edit, Trash2, Globe } from 'lucid
 import styles from './EventList.module.css';
 import { SlideDrawer } from '@/shared/components/ui/Modal';
 import { EventForm } from './EventForm';
+import { AttendeesList } from './AttendeesList';
 
 type EventData = {
     id: string;
@@ -23,6 +24,7 @@ export function EventList() {
     const [isLoading, setIsLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<EventData | null>(null);
+    const [viewingAttendeesId, setViewingAttendeesId] = useState<string | null>(null);
 
     const openEditModal = (item: EventData) => {
         setEditingItem(item);
@@ -128,9 +130,14 @@ export function EventList() {
                                 </div>
 
                                 <div className={styles.metrics}>
-                                    <div className={styles.metric}>
+                                    <div
+                                        className={styles.metric}
+                                        style={{ cursor: 'pointer', color: 'var(--accent)' }}
+                                        onClick={() => setViewingAttendeesId(event.id)}
+                                        title="View Attendees"
+                                    >
                                         <Users size={14} />
-                                        <b>{event._count.attendees}</b> / {event.capacity} Registered
+                                        <b style={{ textDecoration: 'underline' }}>{event._count.attendees} Registered</b> / {event.capacity} Capacity
                                     </div>
                                 </div>
                             </div>
@@ -151,6 +158,14 @@ export function EventList() {
                         fetchEvents();
                     }}
                 />
+            </SlideDrawer>
+
+            <SlideDrawer
+                isOpen={!!viewingAttendeesId}
+                onClose={() => setViewingAttendeesId(null)}
+                title="Event Attendees"
+            >
+                {viewingAttendeesId && <AttendeesList eventId={viewingAttendeesId} />}
             </SlideDrawer>
         </div>
     );

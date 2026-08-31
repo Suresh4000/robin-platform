@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import styles from '@/app/PublicStyles.module.css';
 
-export function EventRegistrationForm({ eventTitle }: { eventTitle: string }) {
+export function EventRegistrationForm({ eventTitle, eventId }: { eventTitle: string, eventId: string }) {
     const [formData, setFormData] = useState({ name: '', lname: '', email: '', phone: '', company: '' });
     const [status, setStatus] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -14,17 +14,14 @@ export function EventRegistrationForm({ eventTitle }: { eventTitle: string }) {
         setStatus('');
 
         try {
-            const res = await fetch('/api/crm/leads', {
+            const res = await fetch(`/api/ops/events/${eventId}/attendees`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     name: `${formData.name} ${formData.lname}`.trim(),
                     email: formData.email,
                     phone: formData.phone,
-                    company: formData.company,
-                    source: 'Event',
-                    status: 'New Inquiry',
-                    notes: `User registered for event: ${eventTitle}`
+                    company: formData.company
                 })
             });
             const data = await res.json();
