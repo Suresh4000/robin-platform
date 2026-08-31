@@ -41,6 +41,9 @@ export function LeadPipeline() {
     };
 
     const updateLeadStatus = async (id: string, newStatus: string) => {
+        const leadToUpdate = leads.find(l => l.id === id);
+        const oldStatus = leadToUpdate?.status;
+
         // Optimistic UI update
         setLeads(prev => prev.map(l => l.id === id ? { ...l, status: newStatus } : l));
         try {
@@ -49,6 +52,34 @@ export function LeadPipeline() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status: newStatus })
             });
+
+            if (newStatus === 'Discovery Scheduled' && oldStatus !== 'Discovery Scheduled' && leadToUpdate) {
+                const notes = leadToUpdate.notes || '';
+                const dateMatch = notes.match(/Booking Date:\s*([^\n\r]+)/);
+                const timeMatch = notes.match(/Booking Time:\s*([^\n\r]+)/);
+
+                const bookingDate = dateMatch ? dateMatch[1].trim() : null;
+                const bookingTime = timeMatch ? timeMatch[1].trim() : null;
+
+                if (bookingDate && bookingTime) {
+                    const startDt = new Date(`${bookingDate}T${bookingTime}:00`);
+                    const endDt = new Date(startDt.getTime() + 30 * 60000); // 30 minutes later
+
+                    // Format dates to YYYYMMDDTHHMMSSZ (UTC)
+                    const formatGoogleDate = (d: Date) => d.toISOString().replace(/-|:|\.\d\d\d/g, "");
+                    const startStr = formatGoogleDate(startDt);
+                    const endStr = formatGoogleDate(endDt);
+
+                    const title = encodeURIComponent(`Discovery Call: ${leadToUpdate.name}`);
+                    const details = encodeURIComponent(`Lead Details:\nCompany: ${leadToUpdate.company || 'N/A'}\nPhone: ${leadToUpdate.phone || 'N/A'}\nEmail: ${leadToUpdate.email || 'N/A'}\n\nEnquiry Notes:\n${notes}`);
+                    const location = encodeURIComponent('Virtual Google Meet');
+                    const addEmail = leadToUpdate.email ? `&add=${encodeURIComponent(leadToUpdate.email)}` : '';
+
+                    const gcalUrl = `https://calendar.google.com/calendar/r/eventedit?action=TEMPLATE&text=${title}&dates=${startStr}/${endStr}&details=${details}&location=${location}${addEmail}`;
+
+                    window.open(gcalUrl, '_blank');
+                }
+            }
         } catch {
             fetchLeads(); // Revert on failure
         }
