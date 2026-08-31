@@ -32,7 +32,7 @@ Message: ${formData.notes}`;
                     email: formData.email,
                     phone: formData.phone,
                     company: formData.company,
-                    source: 'External Embed',
+                    source: 'Website',
                     status: 'New Inquiry',
                     expectedValue: 0,
                     notes: formattedNotes

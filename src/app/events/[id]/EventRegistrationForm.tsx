@@ -22,7 +22,7 @@ export function EventRegistrationForm({ eventTitle }: { eventTitle: string }) {
                     email: formData.email,
                     phone: formData.phone,
                     company: formData.company,
-                    source: `Event Registration: ${eventTitle}`,
+                    source: 'Event',
                     status: 'New Inquiry',
                     notes: `User registered for event: ${eventTitle}`
                 })
