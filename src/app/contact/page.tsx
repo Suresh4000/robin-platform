@@ -9,6 +9,9 @@ export default function Page() {
   const [formData, setFormData] = useState({ name: '', lname: '', email: '', phone: '', company: '', role: '', topics: [] as string[], timing: '', notes: '', bookingDate: '', bookingTime: '' });
   const [formStatus, setFormStatus] = useState('');
   const [msOpen, setMsOpen] = useState(false);
+
+  const todayDateString = new Date().toISOString().split('T')[0];
+
   const handleContactSubmit = async (e: any) => {
     e.preventDefault();
     setFormStatus('Submitting...');
@@ -148,7 +151,7 @@ Message: ${formData.notes}`;
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                       <div>
                         <label htmlFor="bookingDate" style={{ display: 'block', fontSize: '14px', marginBottom: '6px' }}>Select Date</label>
-                        <input id="bookingDate" type="date" value={formData.bookingDate} onChange={e => setFormData({ ...formData, bookingDate: e.target.value })} style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid var(--surface-border)' }} required />
+                        <input id="bookingDate" type="date" min={todayDateString} value={formData.bookingDate} onChange={e => setFormData({ ...formData, bookingDate: e.target.value })} style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid var(--surface-border)' }} required />
                       </div>
                       <div>
                         <label htmlFor="bookingTime" style={{ display: 'block', fontSize: '14px', marginBottom: '6px' }}>Select Time</label>
