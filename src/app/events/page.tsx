@@ -9,7 +9,10 @@ export const dynamic = 'force-dynamic';
 
 export default async function Page() {
   const initialEvents = await prisma.event.findMany({
-    where: { status: { in: ["Published", "Completed"] } },
+    where: {
+      status: { in: ["Published", "Completed"] },
+      type: { not: 'Discovery Call' }
+    },
     orderBy: { date: "asc" }
   });
 
