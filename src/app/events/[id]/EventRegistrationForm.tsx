@@ -82,7 +82,7 @@ export function EventRegistrationForm({ eventTitle, eventId }: { eventTitle: str
                 </div>
             </div>
 
-            <button disabled={isSubmitting} type="submit" style={{ width: '100%', cursor: isSubmitting ? 'not-allowed' : 'pointer', background: 'var(--accent)', color: '#fff', padding: '14px', border: 'none', borderRadius: '8px', fontWeight: 600, fontSize: '15px', opacity: isSubmitting ? 0.7 : 1 }}>
+            <button disabled={isSubmitting} type="submit" className="btn btn-brass" style={{ width: '100%', cursor: isSubmitting ? 'not-allowed' : 'pointer', padding: '14px', border: 'none', borderRadius: '8px', fontWeight: 600, fontSize: '15px', opacity: isSubmitting ? 0.7 : 1 }}>
                 {isSubmitting ? 'Registering...' : 'Complete Registration'}
             </button>
         </form>
