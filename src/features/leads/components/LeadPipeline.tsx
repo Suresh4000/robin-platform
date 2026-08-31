@@ -10,6 +10,7 @@ import { LeadForm } from './LeadForm';
 const IcoPlus = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width={16} height={16}><path d="M5 12h14M12 5v14" /></svg>;
 const IcoTrash = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width={14} height={14}><polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" /><path d="M10 11v6M14 11v6" /><path d="M9 6V4h6v2" /></svg>;
 const IcoEye = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width={14} height={14}><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>;
+const IcoMail = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width={14} height={14}><rect width="20" height="16" x="2" y="4" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /></svg>;
 
 type Lead = {
     id: string;
@@ -27,8 +28,14 @@ export function LeadPipeline() {
     const [leads, setLeads] = useState<Lead[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-
     const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+    const [activeMailLead, setActiveMailLead] = useState<Lead | null>(null);
+    const [toastMsg, setToastMsg] = useState<string | null>(null);
+
+    const showToast = (msg: string) => {
+        setToastMsg(msg);
+        setTimeout(() => setToastMsg(null), 3000);
+    };
 
     const fetchLeads = () => {
         setIsLoading(true);
@@ -46,12 +53,15 @@ export function LeadPipeline() {
 
         // Optimistic UI update
         setLeads(prev => prev.map(l => l.id === id ? { ...l, status: newStatus } : l));
+
         try {
             await fetch(`/api/crm/leads/${id}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status: newStatus })
             });
+
+            showToast(`Moved to ${newStatus}`);
 
             if (newStatus === 'Meeting Scheduled' && oldStatus !== 'Meeting Scheduled' && leadToUpdate) {
                 const notes = leadToUpdate.notes || '';
@@ -133,6 +143,15 @@ export function LeadPipeline() {
                                                 {lead.company && <div className={styles.cardCompany}>{lead.company}</div>}
                                             </div>
                                             <div style={{ display: 'flex', gap: '4px' }}>
+                                                {lead.email && (
+                                                    <button
+                                                        onClick={() => setActiveMailLead(lead)}
+                                                        style={{ background: 'transparent', border: 'none', color: 'var(--accent)', cursor: 'pointer', padding: '4px' }}
+                                                        title="Send Email Template"
+                                                    >
+                                                        <IcoMail />
+                                                    </button>
+                                                )}
                                                 <button
                                                     onClick={() => setSelectedLead(lead)}
                                                     style={{ background: 'transparent', border: 'none', color: '#10b981', cursor: 'pointer', padding: '4px' }}
@@ -187,35 +206,107 @@ export function LeadPipeline() {
             <SlideDrawer
                 isOpen={!!selectedLead}
                 onClose={() => setSelectedLead(null)}
-                title="Enquiry Details"
+                title="Lead Details"
             >
                 {selectedLead && (
-                    <div style={{ padding: '20px' }}>
-                        <div style={{ marginBottom: '24px' }}>
-                            <h2 style={{ margin: '0 0 8px 0', fontSize: '24px', fontWeight: 700 }}>{selectedLead.name}</h2>
-                            {selectedLead.company && <p style={{ margin: '0 0 8px', fontSize: '15px', color: '#666' }}>Organization: {selectedLead.company}</p>}
-                            <div style={{ display: 'flex', gap: '16px', fontSize: '14px', color: '#888' }}>
-                                {selectedLead.email && <span>Email: <a href={`mailto:${selectedLead.email}`} style={{ color: '#7c5c2e', textDecoration: 'none' }}>{selectedLead.email}</a></span>}
-                                {selectedLead.phone && <span>Phone: <a href={`tel:${selectedLead.phone}`} style={{ color: '#7c5c2e', textDecoration: 'none' }}>{selectedLead.phone}</a></span>}
+                    <div style={{ fontSize: '14px', lineHeight: '1.6' }}>
+                        <div style={{ background: 'var(--surface-sunken)', padding: '16px', borderRadius: '8px', marginBottom: '20px' }}>
+                            <div style={{ color: 'var(--text-secondary)', marginBottom: '4px' }}>Name</div>
+                            <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: '16px' }}>{selectedLead.name}</div>
+
+                            <div style={{ color: 'var(--text-secondary)', marginBottom: '4px' }}>Company</div>
+                            <div style={{ fontWeight: 600, color: 'var(--text-primary)', marginBottom: '16px' }}>{selectedLead.company || '-'}</div>
+
+                            <div style={{ color: 'var(--text-secondary)', marginBottom: '4px' }}>Contact</div>
+                            <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
+                                {selectedLead.email && <div>Email: {selectedLead.email}</div>}
+                                {selectedLead.phone && <div>Phone: {selectedLead.phone}</div>}
+                                {!selectedLead.email && !selectedLead.phone && <span>-</span>}
                             </div>
                         </div>
 
-                        <div style={{ padding: '16px', background: '#f9f7f4', borderRadius: '8px', border: '1px solid #e2ddd4' }}>
-                            <h4 style={{ margin: '0 0 12px 0', fontSize: '12px', fontWeight: 600, textTransform: 'uppercase', color: '#999', letterSpacing: '0.05em' }}>Form Submission Data</h4>
-
-                            <p style={{ margin: '0 0 8px', fontSize: '13px' }}><strong>Source:</strong> {selectedLead.source}</p>
-                            <p style={{ margin: '0 0 16px', fontSize: '13px' }}><strong>Received:</strong> {new Date(selectedLead.createdAt).toLocaleString()}</p>
-
-                            <hr style={{ border: 'none', borderTop: '1px solid #e2ddd4', margin: '16px 0' }} />
-
-                            <h4 style={{ margin: '0 0 8px 0', fontSize: '13px', fontWeight: 600, color: '#333' }}>Message & Enquiry Content:</h4>
-                            <pre style={{ margin: 0, fontFamily: 'inherit', fontSize: '13.5px', lineHeight: 1.6, color: '#222', whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>
-                                {selectedLead.notes || 'No additional notes provided.'}
-                            </pre>
+                        <div style={{ borderTop: '1px solid var(--surface-border)', paddingTop: '20px' }}>
+                            <div style={{ color: 'var(--text-secondary)', marginBottom: '8px', fontWeight: 600 }}>Notes / Inquiry Details</div>
+                            <div style={{ whiteSpace: 'pre-wrap', color: 'var(--text-primary)', background: 'var(--surface-default)', padding: '16px', borderRadius: '8px', border: '1px solid var(--surface-border)' }}>
+                                {selectedLead.notes || 'No notes available.'}
+                            </div>
                         </div>
                     </div>
                 )}
             </SlideDrawer>
+
+            {/* Email Templates Modal */}
+            <SlideDrawer
+                isOpen={!!activeMailLead}
+                onClose={() => setActiveMailLead(null)}
+                title="Email Templates"
+            >
+                {activeMailLead?.email && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                        <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '8px' }}>
+                            Sending to: <b>{activeMailLead.email}</b>
+                        </p>
+
+                        <a
+                            href={`mailto:${activeMailLead.email}?subject=Thanks for reaching out - Robin Jones&body=Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0AThanks for getting in touch. I've received your inquiry regarding ${activeMailLead.company || 'your organization'} and would love to learn more about what you're working on.%0D%0A%0D%0AWhen would be a good time to connect for a quick 15-minute intro?%0D%0A%0D%0ABest,%0D%0ARobin`}
+                            style={{ display: 'block', padding: '16px', background: 'var(--surface-sunken)', border: '1px solid var(--surface-border)', borderRadius: '8px', color: 'var(--text-primary)', textDecoration: 'none' }}
+                        >
+                            <h4 style={{ margin: '0 0 4px 0', fontSize: '15px' }}>1. New Lead (Intro)</h4>
+                            <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-secondary)' }}>Welcome message setting up a quick intro call.</p>
+                        </a>
+
+                        <a
+                            href={`mailto:${activeMailLead.email}?subject=Meeting Confirmed - Robin Jones&body=Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0ALooking forward to our conversation! Here is the link to join our upcoming meeting:%0D%0A[INSERT_LINK_HERE]%0D%0A%0D%0APlease let me know if you need to reschedule or have any advanced context to share.%0D%0A%0D%0ABest,%0D%0ARobin`}
+                            style={{ display: 'block', padding: '16px', background: 'var(--surface-sunken)', border: '1px solid var(--surface-border)', borderRadius: '8px', color: 'var(--text-primary)', textDecoration: 'none' }}
+                        >
+                            <h4 style={{ margin: '0 0 4px 0', fontSize: '15px' }}>2. Meeting Scheduled</h4>
+                            <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-secondary)' }}>Confirmation covering logistics and links.</p>
+                        </a>
+
+                        <a
+                            href={`mailto:${activeMailLead.email}?subject=Proposal - Robin Jones&body=Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0AGreat speaking with you. I've attached the proposal outlining our approach for ${activeMailLead.company || 'your team'} moving forward.%0D%0A%0D%0ATake a look here: [LINK_OR_ATTACHMENT]%0D%0A%0D%0ALet's catch up later this week to discuss any questions.%0D%0A%0D%0ABest,%0D%0ARobin`}
+                            style={{ display: 'block', padding: '16px', background: 'var(--surface-sunken)', border: '1px solid var(--surface-border)', borderRadius: '8px', color: 'var(--text-primary)', textDecoration: 'none' }}
+                        >
+                            <h4 style={{ margin: '0 0 4px 0', fontSize: '15px' }}>3. Proposal Sent</h4>
+                            <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-secondary)' }}>Summarizing the offer and attaching materials.</p>
+                        </a>
+
+                        <a
+                            href={`mailto:${activeMailLead.email}?subject=Next Steps / Wrap Up - Robin Jones&body=Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0AThanks for getting back to me. Attached are the final documents for signing.%0D%0A%0D%0A[ATTACHMENT_OR_LINK]%0D%0A%0D%0AIf anything else is needed on my end, just let me know!%0D%0A%0D%0ABest,%0D%0ARobin`}
+                            style={{ display: 'block', padding: '16px', background: 'var(--surface-sunken)', border: '1px solid var(--surface-border)', borderRadius: '8px', color: 'var(--text-primary)', textDecoration: 'none' }}
+                        >
+                            <h4 style={{ margin: '0 0 4px 0', fontSize: '15px' }}>4. Contract Sign / Formalities</h4>
+                            <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-secondary)' }}>For sending closing documents or accepting rejection nicely.</p>
+                        </a>
+
+                        <a
+                            href={`mailto:${activeMailLead.email}?subject=Checking in - Robin Jones&body=Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0AJust floating this to the top of your inbox. Let me know if you still had any questions regarding the materials I sent over, or if priorities have shifted on your end!%0D%0A%0D%0ABest,%0D%0ARobin`}
+                            style={{ display: 'block', padding: '16px', background: 'var(--surface-sunken)', border: '1px solid var(--surface-border)', borderRadius: '8px', color: 'var(--text-primary)', textDecoration: 'none' }}
+                        >
+                            <h4 style={{ margin: '0 0 4px 0', fontSize: '15px' }}>5. Response Delay (Bump)</h4>
+                            <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-secondary)' }}>Polite nudge when a response is delayed.</p>
+                        </a>
+                    </div>
+                )}
+            </SlideDrawer>
+
+            {/* Global Toast */}
+            {toastMsg && (
+                <div style={{
+                    position: 'fixed', top: '32px', right: '32px',
+                    background: '#10b981', color: '#fff',
+                    padding: '16px 24px', borderRadius: '8px',
+                    boxShadow: '0 10px 30px rgba(16, 185, 129, 0.3)',
+                    fontWeight: 500, fontSize: '14px', zIndex: 9999,
+                    animation: 'slideIn 0.3s ease-out'
+                }}>
+                    <style>{`@keyframes slideIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }`}</style>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '16px', height: '16px', display: 'inline-block', verticalAlign: 'text-bottom', marginRight: '8px' }}>
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                    {toastMsg}
+                </div>
+            )}
         </div>
     );
 }
