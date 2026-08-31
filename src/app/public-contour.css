@@ -1170,11 +1170,13 @@ p.lead {
 .tl-accordion .tl-body {
   display: grid;
   grid-template-rows: 0fr;
-  transition: grid-template-rows .32s ease;
+  transition: grid-template-rows .32s ease, opacity .32s ease;
+  opacity: 0;
 }
 
 .tl-entry.is-open .tl-body {
   grid-template-rows: 1fr;
+  opacity: 1;
 }
 
 .tl-body-inner {

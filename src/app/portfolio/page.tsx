@@ -6,19 +6,20 @@ import Image from "next/image";
 
 export default function Page() {
 
-    const handleAccordionClick = (e: any) => {
-        const target = e.target.closest('.tl-toggle');
+    const handleAccordionClick = (e: React.MouseEvent) => {
+        const target = (e.target as Element).closest('.tl-toggle');
         if (!target) return;
         const entry = target.closest('.tl-entry');
         if (entry) {
             const isO = entry.classList.contains('is-open');
             const accordion = entry.closest('.tl-accordion');
             if (accordion) {
-                accordion.querySelectorAll('.tl-entry').forEach((el: { classList: { remove: (arg0: string) => void; }; querySelector: (arg0: string) => any; }) => {
-                    el.classList.remove('is-open');
-                    const toggle = el.querySelector('.tl-toggle');
+                const entries = accordion.querySelectorAll('.tl-entry');
+                for (let i = 0; i < entries.length; i++) {
+                    entries[i].classList.remove('is-open');
+                    const toggle = entries[i].querySelector('.tl-toggle');
                     if (toggle) toggle.setAttribute('aria-expanded', 'false');
-                });
+                }
             }
             if (!isO) {
                 entry.classList.add('is-open');
