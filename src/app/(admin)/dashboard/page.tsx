@@ -7,9 +7,10 @@ import styles from '@/features/portfolio/components/PortfolioList.module.css';
 export const dynamic = 'force-dynamic';
 
 // Awaited type for Next 15 searchParams behavior if necessary, or just standard type
-export default async function DashboardPage({ searchParams }: { searchParams: Promise<{ filter?: string }> }) {
+export default async function DashboardPage({ searchParams }: { searchParams: Promise<{ filter?: string, view?: string }> }) {
     const resolvedParams = await searchParams;
     const filter = resolvedParams.filter || 'all';
+    const view = resolvedParams.view || 'all';
 
     let startDate: Date | undefined = undefined;
     let labelSuffix = "All Time";
@@ -41,11 +42,25 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
         prisma.lead.count({ where: dateQuery }),
     ]);
 
+    // Fetch upcoming schedule (Calendar Events & Tasks)
+    const upcomingEvents = await prisma.event.findMany({
+        where: { date: { gte: new Date() } },
+        orderBy: { date: 'asc' },
+        take: 10
+    });
+
+    const pendingTasks = await prisma.task.findMany({
+        where: { status: { not: 'Done' } },
+        orderBy: { dueDate: 'asc' },
+        take: 10,
+        include: { project: { include: { client: true } } }
+    });
+
     const TabLink = ({ value, label }: { value: string, label: string }) => {
         const isActive = filter === value;
         return (
             <Link
-                href={`/dashboard?filter=${value}`}
+                href={`/dashboard?filter=${value}&view=${view}`}
                 style={{
                     padding: '8px 16px',
                     borderRadius: '8px',
@@ -56,6 +71,27 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                     color: isActive ? 'white' : 'var(--text-secondary)',
                     border: isActive ? '1px solid var(--color-primary)' : '1px solid var(--surface-border)',
                     transition: 'all 0.2s ease'
+                }}
+            >
+                {label}
+            </Link>
+        );
+    };
+
+    const ViewFilterLink = ({ value, label }: { value: string, label: string }) => {
+        const isActive = view === value;
+        return (
+            <Link
+                href={`/dashboard?filter=${filter}&view=${value}`}
+                style={{
+                    padding: '6px 12px',
+                    borderRadius: '6px',
+                    fontSize: '13px',
+                    fontWeight: 500,
+                    textDecoration: 'none',
+                    backgroundColor: isActive ? 'var(--surface-sunken)' : 'transparent',
+                    color: isActive ? 'var(--text-title)' : 'var(--text-secondary)',
+                    border: isActive ? '1px solid var(--surface-border)' : '1px solid transparent',
                 }}
             >
                 {label}
@@ -146,6 +182,74 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                     </div>
                     <ArrowRight size={16} style={{ color: 'var(--text-muted)' }} />
                 </Link>
+            </div>
+
+            {/* Calendar & Tasks List View */}
+            <div style={{ marginTop: '48px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                    <h2 style={{ fontSize: '20px', fontFamily: 'var(--font-heading)', color: 'var(--text-title)' }}>
+                        Action Items & Schedule
+                    </h2>
+                    <div style={{ display: 'flex', gap: '4px', background: 'var(--surface-default)', padding: '4px', borderRadius: '8px', border: '1px solid var(--surface-border)' }}>
+                        <ViewFilterLink value="all" label="All" />
+                        <ViewFilterLink value="events" label="Calendar Events" />
+                        <ViewFilterLink value="tasks" label="Pending Tasks" />
+                    </div>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    {(view === 'all' || view === 'events') && upcomingEvents.length > 0 && (
+                        upcomingEvents.map(event => (
+                            <div key={event.id} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px', background: 'var(--surface-default)', border: '1px solid var(--surface-border)', borderRadius: '8px' }}>
+                                <div style={{ padding: '10px', background: 'var(--surface-sunken)', borderRadius: '8px' }}>
+                                    <Calendar size={18} style={{ color: 'var(--color-primary)' }} />
+                                </div>
+                                <div style={{ flex: 1 }}>
+                                    <div style={{ fontWeight: 600, color: 'var(--text-title)' }}>{event.title}</div>
+                                    <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>{event.type} • {event.location}</div>
+                                </div>
+                                <div style={{ fontSize: '13.5px', fontWeight: 500, color: 'var(--text-title)' }}>
+                                    {event.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
+                                </div>
+                            </div>
+                        ))
+                    )}
+
+                    {(view === 'all' || view === 'tasks') && pendingTasks.length > 0 && (
+                        pendingTasks.map(task => (
+                            <div key={task.id} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px', background: 'var(--surface-default)', border: '1px solid var(--surface-border)', borderRadius: '8px' }}>
+                                <div style={{ padding: '10px', background: 'var(--surface-sunken)', borderRadius: '8px' }}>
+                                    <Activity size={18} style={{ color: 'var(--color-secondary)' }} />
+                                </div>
+                                <div style={{ flex: 1 }}>
+                                    <div style={{ fontWeight: 600, color: 'var(--text-title)' }}>{task.title}</div>
+                                    <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
+                                        {task.project.client.name} • {task.project.title}
+                                    </div>
+                                </div>
+                                <div style={{ fontSize: '13.5px', fontWeight: 500, color: 'var(--text-secondary)' }}>
+                                    Due: {task.dueDate ? new Date(task.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'No Date'}
+                                </div>
+                            </div>
+                        ))
+                    )}
+
+                    {view === 'all' && upcomingEvents.length === 0 && pendingTasks.length === 0 && (
+                        <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text-muted)', border: '1px dashed var(--surface-border)', borderRadius: '8px' }}>
+                            Your schedule is clear. No upcoming events or pending tasks.
+                        </div>
+                    )}
+                    {view === 'events' && upcomingEvents.length === 0 && (
+                        <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text-muted)', border: '1px dashed var(--surface-border)', borderRadius: '8px' }}>
+                            No upcoming calendar events.
+                        </div>
+                    )}
+                    {view === 'tasks' && pendingTasks.length === 0 && (
+                        <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text-muted)', border: '1px dashed var(--surface-border)', borderRadius: '8px' }}>
+                            No pending tasks. Great job!
+                        </div>
+                    )}
+                </div>
             </div>
 
         </div>
