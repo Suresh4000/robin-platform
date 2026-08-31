@@ -23,6 +23,14 @@ export async function POST(request: Request) {
             data: validatedData,
         });
 
+        await prisma.notification.create({
+            data: {
+                title: 'New Lead Inquiry',
+                message: `${validatedData.name} has reached out via ${validatedData.source}`,
+                link: '/crm/leads'
+            }
+        });
+
         return NextResponse.json({ data: newLead }, { status: 201 });
     } catch (error: any) {
         return NextResponse.json(

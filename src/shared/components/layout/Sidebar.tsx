@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Printer, LayoutDashboard, Briefcase, Users, FileText, Calendar, HardHat, FileBox, Building, Clock, DollarSign, Settings, FolderOpen, PenTool } from 'lucide-react';
 import styles from './Sidebar.module.css';
+import { NotificationBell } from './NotificationBell';
 
 const ROUTES = [
     { path: '/dashboard', label: 'Dashboard', Icon: LayoutDashboard, num: '01' },
@@ -44,6 +45,8 @@ export function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
                 </div>
 
                 <nav className={styles.nav}>
+                    <NotificationBell />
+
                     {ROUTES.map((route) => {
                         const isActive = pathname.startsWith(route.path);
                         return (

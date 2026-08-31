@@ -42,6 +42,15 @@ export async function POST(
             }
         });
 
+        // Trigger Notification
+        await prisma.notification.create({
+            data: {
+                title: 'New Event Registration',
+                message: `${validatedData.name} registered for ${event.title}`,
+                link: '/ops/events'
+            }
+        });
+
         return NextResponse.json({ data: newAttendee }, { status: 201 });
     } catch (error: any) {
         return NextResponse.json(
