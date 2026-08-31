@@ -2,9 +2,12 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/shared/lib/prisma';
 import { createEventSchema } from '@/features/events/schema';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
     try {
-        const events = await prisma.event.findMany({ where: { type: { not: 'Discovery Call' } },
+        const events = await prisma.event.findMany({
+            where: { type: { not: 'Discovery Call' } },
             include: {
                 _count: { select: { attendees: true } }
             },
