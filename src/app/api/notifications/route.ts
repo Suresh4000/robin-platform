@@ -12,3 +12,12 @@ export async function GET() {
         return NextResponse.json({ error: 'Failed to fetch notifications' }, { status: 500 });
     }
 }
+
+export async function DELETE() {
+    try {
+        await prisma.notification.deleteMany({});
+        return NextResponse.json({ success: true });
+    } catch (error) {
+        return NextResponse.json({ error: 'Failed to clear notifications' }, { status: 500 });
+    }
+}

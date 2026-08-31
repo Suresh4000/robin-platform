@@ -45,13 +45,16 @@ export function NotificationBell() {
     };
 
     const markAllRead = async () => {
-        // Optimistic UI
         setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
-
-        // Mark all visually, could do a bulk API update but individual patches are fine for small sets
         for (const n of notifications.filter(n => !n.isRead)) {
             await fetch(`/api/notifications/${n.id}`, { method: 'PATCH' });
         }
+    };
+
+    const clearAll = async () => {
+        if (!confirm('Are you sure you want to clear all notifications?')) return;
+        setNotifications([]);
+        await fetch('/api/notifications', { method: 'DELETE' });
     };
 
     return (
@@ -88,11 +91,18 @@ export function NotificationBell() {
             >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginBottom: '16px' }}>
                     <span>{unreadCount > 0 ? <span style={{ background: 'var(--error, #e11d48)', color: 'white', fontSize: '12px', padding: '2px 8px', borderRadius: '10px' }}>{unreadCount} New</span> : ''}</span>
-                    {unreadCount > 0 && (
-                        <button onClick={markAllRead} style={{ background: 'transparent', border: 'none', color: 'var(--accent)', cursor: 'pointer', fontSize: '12px', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                            <CheckCircle size={14} /> Mark All Read
-                        </button>
-                    )}
+                    <div style={{ display: 'flex', gap: '12px' }}>
+                        {unreadCount > 0 && (
+                            <button onClick={markAllRead} style={{ background: 'transparent', border: 'none', color: 'var(--accent)', cursor: 'pointer', fontSize: '12px', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                <CheckCircle size={14} /> Mark All Read
+                            </button>
+                        )}
+                        {notifications.length > 0 && (
+                            <button onClick={clearAll} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '12px', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                Clear All
+                            </button>
+                        )}
+                    </div>
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
