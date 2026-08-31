@@ -24,6 +24,51 @@ type Lead = {
     createdAt: string;
 };
 
+function TemplateButton({ title, desc, lead, subject, body, onSent }: { title: string, desc: string, lead: Lead, subject: string, body: string, onSent: () => void }) {
+    const handleMailClick = async (e: React.MouseEvent) => {
+        e.preventDefault();
+
+        // Optimistic open mail client
+        window.location.href = `mailto:${lead.email}?subject=${subject}&body=${body}`;
+
+        // Log this action securely in the database
+        const logDate = new Date().toLocaleString();
+        const divider = `\n\n--- System Log: Sent template '${title}' on ${logDate} ---\n`;
+        const updatedNotes = (lead.notes || '') + divider;
+
+        try {
+            await fetch(`/api/crm/leads/${lead.id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ notes: updatedNotes })
+            });
+            onSent();
+        } catch (e) { }
+    };
+
+    const hasBeenSent = lead.notes?.includes(`Sent template '${title}'`);
+
+    return (
+        <a
+            href={`mailto:${lead.email}?subject=${subject}&body=${body}`}
+            onClick={handleMailClick}
+            style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', background: 'var(--surface-sunken)', border: '1px solid var(--surface-border)', borderRadius: '8px', color: 'var(--text-primary)', textDecoration: 'none', cursor: 'pointer' }}
+        >
+            <div>
+                <h4 style={{ margin: '0 0 4px 0', fontSize: '15px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    {title}
+                </h4>
+                <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-secondary)' }}>{desc}</p>
+            </div>
+            {hasBeenSent && (
+                <div style={{ background: '#ecfdf5', color: '#10b981', fontSize: '11px', fontWeight: 600, padding: '4px 8px', borderRadius: '4px', border: '1px solid #a7f3d0' }}>
+                    Sent ✓
+                </div>
+            )}
+        </a>
+    );
+}
+
 export function LeadPipeline() {
     const [leads, setLeads] = useState<Lead[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -247,45 +292,51 @@ export function LeadPipeline() {
                             Sending to: <b>{activeMailLead.email}</b>
                         </p>
 
-                        <a
-                            href={`mailto:${activeMailLead.email}?subject=Thanks for reaching out - Robin Jones&body=Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0AThanks for getting in touch. I've received your inquiry regarding ${activeMailLead.company || 'your organization'} and would love to learn more about what you're working on.%0D%0A%0D%0AWhen would be a good time to connect for a quick 15-minute intro?%0D%0A%0D%0ABest,%0D%0ARobin`}
-                            style={{ display: 'block', padding: '16px', background: 'var(--surface-sunken)', border: '1px solid var(--surface-border)', borderRadius: '8px', color: 'var(--text-primary)', textDecoration: 'none' }}
-                        >
-                            <h4 style={{ margin: '0 0 4px 0', fontSize: '15px' }}>1. New Lead (Intro)</h4>
-                            <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-secondary)' }}>Welcome message setting up a quick intro call.</p>
-                        </a>
+                        <TemplateButton
+                            title="1. New Lead (Intro)"
+                            desc="Comprehensive welcome and discovery setup."
+                            lead={activeMailLead}
+                            onSent={fetchLeads}
+                            subject={`Exploring growth opportunities for ${activeMailLead.company || 'your team'} - Robin Jones`}
+                            body={`Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0AThank you for reaching out to the Robin Business Hub. I've reviewed your initial inquiry regarding ${activeMailLead.company || 'your organization'} and there is a clear opportunity for us to drive impact together.%0D%0A%0D%0AMy focus is on building robust growth engines and scalable operations for high-performing teams, and I'd love to learn more about the specific friction points you are experiencing right now.%0D%0A%0D%0AWhen would be a good time for a brief 15-minute alignment call next week to see if we are a fit to work together?%0D%0A%0D%0ALooking forward to speaking,%0D%0ARobin Jones`}
+                        />
 
-                        <a
-                            href={`mailto:${activeMailLead.email}?subject=Meeting Confirmed - Robin Jones&body=Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0ALooking forward to our conversation! Here is the link to join our upcoming meeting:%0D%0A[INSERT_LINK_HERE]%0D%0A%0D%0APlease let me know if you need to reschedule or have any advanced context to share.%0D%0A%0D%0ABest,%0D%0ARobin`}
-                            style={{ display: 'block', padding: '16px', background: 'var(--surface-sunken)', border: '1px solid var(--surface-border)', borderRadius: '8px', color: 'var(--text-primary)', textDecoration: 'none' }}
-                        >
-                            <h4 style={{ margin: '0 0 4px 0', fontSize: '15px' }}>2. Meeting Scheduled</h4>
-                            <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-secondary)' }}>Confirmation covering logistics and links.</p>
-                        </a>
+                        <TemplateButton
+                            title="2. Meeting Scheduled"
+                            desc="Extensive logistics and pre-meeting context."
+                            lead={activeMailLead}
+                            onSent={fetchLeads}
+                            subject={`Confirmed: Initial Alignment Call - Robin Jones`}
+                            body={`Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0AI'm looking forward to our upcoming conversation. Our meeting is confirmed, and you can join at the scheduled time using the following link:%0D%0A[INSERT_MEETING_LINK]%0D%0A%0D%0ATo ensure we make the most of our time, our agenda will focus on:%0D%0A1. Your primary growth or operational challenge%0D%0A2. Current bottlenecks and systems in place%0D%0A3. How my advisory framework might be applied to your specific scenario%0D%0A%0D%0AIf you have any context or materials you'd like me to review beforehand, feel free to drop them here.%0D%0A%0D%0ABest regards,%0D%0ARobin Jones`}
+                        />
 
-                        <a
-                            href={`mailto:${activeMailLead.email}?subject=Proposal - Robin Jones&body=Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0AGreat speaking with you. I've attached the proposal outlining our approach for ${activeMailLead.company || 'your team'} moving forward.%0D%0A%0D%0ATake a look here: [LINK_OR_ATTACHMENT]%0D%0A%0D%0ALet's catch up later this week to discuss any questions.%0D%0A%0D%0ABest,%0D%0ARobin`}
-                            style={{ display: 'block', padding: '16px', background: 'var(--surface-sunken)', border: '1px solid var(--surface-border)', borderRadius: '8px', color: 'var(--text-primary)', textDecoration: 'none' }}
-                        >
-                            <h4 style={{ margin: '0 0 4px 0', fontSize: '15px' }}>3. Proposal Sent</h4>
-                            <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-secondary)' }}>Summarizing the offer and attaching materials.</p>
-                        </a>
+                        <TemplateButton
+                            title="3. Proposal Sent"
+                            desc="Detailed proposal handoff."
+                            lead={activeMailLead}
+                            onSent={fetchLeads}
+                            subject={`Partnership Proposal: ${activeMailLead.company || 'Strategic Growth'} - Robin Jones`}
+                            body={`Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0AIt was a pleasure speaking with you and learning more about the vision for ${activeMailLead.company || 'your team'}.%0D%0A%0D%0AI have synthesized our discussion into a formal engagement proposal, attached here. This document outlines the proposed scope of work, timeline, and the specific strategic milestones we will target in Phase 1.%0D%0A%0D%0AAttachment: [INSERT_PROPOSAL_LINK]%0D%0A%0D%0APlease review the details, and let me know if you would like to schedule a brief follow-up call to walk through the deliverables and address any questions.%0D%0A%0D%0AThank you,%0D%0ARobin Jones`}
+                        />
 
-                        <a
-                            href={`mailto:${activeMailLead.email}?subject=Next Steps / Wrap Up - Robin Jones&body=Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0AThanks for getting back to me. Attached are the final documents for signing.%0D%0A%0D%0A[ATTACHMENT_OR_LINK]%0D%0A%0D%0AIf anything else is needed on my end, just let me know!%0D%0A%0D%0ABest,%0D%0ARobin`}
-                            style={{ display: 'block', padding: '16px', background: 'var(--surface-sunken)', border: '1px solid var(--surface-border)', borderRadius: '8px', color: 'var(--text-primary)', textDecoration: 'none' }}
-                        >
-                            <h4 style={{ margin: '0 0 4px 0', fontSize: '15px' }}>4. Contract Sign / Formalities</h4>
-                            <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-secondary)' }}>For sending closing documents or accepting rejection nicely.</p>
-                        </a>
+                        <TemplateButton
+                            title="4. Contract / Formalities"
+                            desc="Closing documents or gracious wrap-up."
+                            lead={activeMailLead}
+                            onSent={fetchLeads}
+                            subject={`Next Steps & Engagement Formalities - Robin Jones`}
+                            body={`Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0AI am thrilled that we are moving forward.%0D%0A%0D%0AAttached are the finalized engagement agreements and terms of service. Please review and sign where indicated so we can officially kick off our work together.%0D%0A%0D%0A[ATTACH_DOCUMENTS_HERE]%0D%0A%0D%0AOnce these are executed, I will send over the onboarding packet and our first set of action items.%0D%0A%0D%0ALet me know if anything requires clarification.%0D%0A%0D%0ABest,%0D%0ARobin Jones`}
+                        />
 
-                        <a
-                            href={`mailto:${activeMailLead.email}?subject=Checking in - Robin Jones&body=Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0AJust floating this to the top of your inbox. Let me know if you still had any questions regarding the materials I sent over, or if priorities have shifted on your end!%0D%0A%0D%0ABest,%0D%0ARobin`}
-                            style={{ display: 'block', padding: '16px', background: 'var(--surface-sunken)', border: '1px solid var(--surface-border)', borderRadius: '8px', color: 'var(--text-primary)', textDecoration: 'none' }}
-                        >
-                            <h4 style={{ margin: '0 0 4px 0', fontSize: '15px' }}>5. Response Delay (Bump)</h4>
-                            <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-secondary)' }}>Polite nudge when a response is delayed.</p>
-                        </a>
+                        <TemplateButton
+                            title="5. Response Delay (Bump)"
+                            desc="Professional follow-up when communications stall."
+                            lead={activeMailLead}
+                            onSent={fetchLeads}
+                            subject={`Checking in on our previous conversation`}
+                            body={`Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0AI am just bringing this thread back to the top of your inbox.%0D%0A%0D%0AI know things can get remarkably busy, but I wanted to check if you had any outstanding questions regarding the materials I previously sent over.%0D%0A%0D%0AIf priorities have shifted on your end or if the timing is no longer ideal, just let me know. Otherwise, I look forward to hearing your thoughts.%0D%0A%0D%0ABest regards,%0D%0ARobin`}
+                        />
+
                     </div>
                 )}
             </SlideDrawer>
