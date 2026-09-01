@@ -3,7 +3,8 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Printer, LayoutDashboard, Briefcase, Users, FileText, Calendar, HardHat, FileBox, Building, Clock, DollarSign, Settings, FolderOpen, PenTool } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { LogOut, LayoutDashboard, Briefcase, Users, FileText, Calendar, HardHat, FileBox, Building, Clock, DollarSign, Settings, FolderOpen, PenTool } from 'lucide-react';
 import styles from './Sidebar.module.css';
 import { NotificationBell } from './NotificationBell';
 
@@ -22,8 +23,15 @@ const ROUTES = [
 export function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
     const pathname = usePathname();
 
-    const handlePrint = () => {
-        window.print();
+    const router = useRouter();
+
+    const handleLogout = async () => {
+        try {
+            await fetch('/api/auth/logout', { method: 'POST' });
+            router.push('/login');
+        } catch (e) {
+            console.error('Logout failed', e);
+        }
     };
 
     return (
@@ -65,11 +73,10 @@ export function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
                 </nav>
 
                 <div className={styles.footer}>
-                    <button className={styles.printBtn} onClick={handlePrint}>
-                        <Printer size={16} />
-                        Export as PDF
+                    <button className={styles.printBtn} onClick={handleLogout}>
+                        <LogOut size={16} />
+                        Log out
                     </button>
-                    <div className={styles.printHint}>Opens print dialog – choose Save as PDF</div>
                 </div>
             </aside>
         </>

@@ -7,7 +7,8 @@ export const createBlogSchema = z.object({
     content: z.string().min(20, "Content must be provided"),
     coverImage: z.string().url("Must be a valid URL").optional().or(z.literal('')),
     category: z.string().default("Thoughts"),
-    status: z.enum(['Draft', 'Published']).default('Draft'),
+    status: z.enum(['Draft', 'Published', 'Trash']).default('Draft'),
 });
 
 export const updateBlogSchema = createBlogSchema.partial();
+

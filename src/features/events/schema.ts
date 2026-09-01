@@ -8,8 +8,9 @@ export const createEventSchema = z.object({
     location: z.string().min(1, "Location is required"),
     description: z.string().optional(),
     capacity: z.coerce.number().min(1).default(100),
-    status: z.enum(['Draft', 'Published', 'Completed', 'Cancelled']).default('Draft'),
+    status: z.enum(['Draft', 'Published', 'Completed', 'Cancelled', 'Trash']).default('Draft'),
     bannerImage: z.string().optional()
 });
 
 export const updateEventSchema = createEventSchema.partial();
+
