@@ -9,7 +9,8 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
 
 
     const event: any = await prisma.event.findUnique({
-        where: { id: resolvedParams.id }
+        where: { id: resolvedParams.id },
+        include: { _count: { select: { attendees: true } } }
     });
 
     if (!event || (event.status !== 'Published' && event.status !== 'Completed')) return notFound();
@@ -19,6 +20,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
     const time = dateObj.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
 
     const isPast = dateObj < new Date();
+    const isFull = event._count.attendees >= event.capacity;
 
     return (
         <div className="layout-body" style={{ background: '#F6F3EC', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -86,7 +88,14 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
                                     <h3 style={{ fontSize: '24px', fontWeight: 700, marginBottom: '16px', color: 'var(--ink-dark)' }}>Save Your Seat</h3>
                                     <p style={{ color: 'var(--ink-soft)', marginBottom: '32px' }}>Register to receive updates and exclusive pre-event materials.</p>
                                 </div>
-                                <EventRegistrationForm eventTitle={event.title} eventId={event.id} />
+                                {isFull ? (
+                                    <div style={{ padding: '32px', background: '#fef2f2', border: '1px solid #fecaca', borderRadius: '16px', textAlign: 'center' }}>
+                                        <h4 style={{ color: '#991b1b', margin: '0 0 8px', fontSize: '20px' }}>Registration Closed</h4>
+                                        <p style={{ color: '#991b1b', margin: 0 }}>This event has reached full capacity.</p>
+                                    </div>
+                                ) : (
+                                    <EventRegistrationForm eventTitle={event.title} eventId={event.id} />
+                                )}
                             </div>
                         </div>
                     )}

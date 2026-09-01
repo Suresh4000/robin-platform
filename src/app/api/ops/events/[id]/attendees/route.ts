@@ -18,9 +18,16 @@ export async function POST(
         const eventId = resolvedParams.id;
 
         // Ensure event exists
-        const event = await prisma.event.findUnique({ where: { id: eventId } });
+        const event = await prisma.event.findUnique({
+            where: { id: eventId },
+            include: { _count: { select: { attendees: true } } }
+        });
         if (!event) {
             return NextResponse.json({ error: 'Event not found' }, { status: 404 });
+        }
+
+        if (event._count.attendees >= event.capacity) {
+            return NextResponse.json({ error: 'Event is at full capacity' }, { status: 400 });
         }
 
         const body = await request.json();
