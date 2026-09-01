@@ -7,4 +7,6 @@ export const createProjectSchema = z.object({
     clientId: z.string().min(1, "Client ID is required"),
 });
 
-export const updateProjectSchema = createProjectSchema.partial();
+export const updateProjectSchema = createProjectSchema.extend({
+    isDeleted: z.boolean().optional()
+}).partial();

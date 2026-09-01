@@ -226,19 +226,37 @@ export function ProjectList() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<Project | null>(null);
     const [activeProject, setActiveProject] = useState<Project | null>(null);
+    const [showDeleted, setShowDeleted] = useState(false);
 
-    const fetchProjects = useCallback(() => {
+    const fetchProjects = useCallback((deleted = false) => {
         setIsLoading(true);
-        fetch('/api/ops/projects').then(r => r.json()).then(data => {
+        fetch(`/api/ops/projects?isDeleted=${deleted}`).then(r => r.json()).then(data => {
             if (data.data) setProjects(data.data);
             setIsLoading(false);
         });
     }, []);
 
-    useEffect(() => { fetchProjects(); }, [fetchProjects]);
+    useEffect(() => { fetchProjects(showDeleted); }, [fetchProjects, showDeleted]);
 
     const openEdit = (p: Project, e: React.MouseEvent) => { e.stopPropagation(); setEditingItem(p); setIsModalOpen(true); };
     const openCreate = () => { setEditingItem(null); setIsModalOpen(true); };
+
+    const deleteProject = async (p: Project, e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (!confirm(`Move project "${p.title}" to trash?`)) return;
+        setProjects(prev => prev.filter(proj => proj.id !== p.id));
+        await fetch(`/api/ops/projects/${p.id}`, { method: 'DELETE' });
+    };
+
+    const restoreProject = async (p: Project, e: React.MouseEvent) => {
+        e.stopPropagation();
+        setProjects(prev => prev.filter(proj => proj.id !== p.id));
+        await fetch(`/api/ops/projects/${p.id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ isDeleted: false })
+        });
+    };
 
     if (activeProject) {
         return <ProjectWorkspace project={activeProject} onBack={() => { setActiveProject(null); fetchProjects(); }} onProjectUpdated={fetchProjects} />;
@@ -251,7 +269,16 @@ export function ProjectList() {
                     <h1 className={styles.title}>Project Workspaces</h1>
                     <p style={{ color: 'var(--text-secondary)', marginTop: 4 }}>Click any project to manage tasks and time logs</p>
                 </div>
-                <button className={styles.btnPrimary} onClick={openCreate}><IcoPlus /> New Project</button>
+                <div style={{ display: 'flex', gap: '12px' }}>
+                    <button
+                        className={styles.btnPrimary}
+                        style={{ background: 'var(--surface-sunken)', color: 'var(--text-primary)', border: '1px solid var(--surface-border)' }}
+                        onClick={() => setShowDeleted(!showDeleted)}
+                    >
+                        {showDeleted ? 'Active Projects' : 'Trash'}
+                    </button>
+                    <button className={styles.btnPrimary} onClick={openCreate}><IcoPlus /> New Project</button>
+                </div>
             </header>
 
             {isLoading ? (
@@ -271,7 +298,12 @@ export function ProjectList() {
                                     <span className={styles.statusBadge} style={{ background: STATUS_COLORS[project.status] + '22', color: STATUS_COLORS[project.status], border: `1px solid ${STATUS_COLORS[project.status]}44` }}>
                                         {project.status}
                                     </span>
-                                    <button onClick={(e) => openEdit(project, e)} className={styles.editBtn} title="Edit"><IcoEdit /></button>
+                                    {!showDeleted && <button onClick={(e) => openEdit(project, e)} className={styles.editBtn} title="Edit"><IcoEdit /></button>}
+                                    {showDeleted ? (
+                                        <button onClick={(e) => restoreProject(project, e)} className={styles.editBtn} style={{ color: '#3b82f6' }} title="Restore"><IcoBack /></button>
+                                    ) : (
+                                        <button onClick={(e) => deleteProject(project, e)} className={styles.editBtn} style={{ color: '#ef4444' }} title="Trash"><IcoTrash /></button>
+                                    )}
                                 </div>
                             </div>
                             <div className={styles.cardMetrics}>

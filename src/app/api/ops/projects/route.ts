@@ -2,9 +2,13 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/shared/lib/prisma';
 import { createProjectSchema } from '@/features/projects/schema';
 
-export async function GET() {
+export async function GET(request: Request) {
     try {
+        const { searchParams } = new URL(request.url);
+        const isDeleted = searchParams.get('isDeleted') === 'true';
+
         const projects = await prisma.project.findMany({
+            where: { isDeleted },
             include: {
                 client: {
                     select: { name: true, company: true }

@@ -187,82 +187,90 @@ export function LeadPipeline() {
                 </div>
             </header>
 
-            <div className={styles.board}>
-                {LEAD_STAGES.map(stage => {
-                    const columnLeads = leads.filter(l => l.status === stage);
-                    return (
-                        <div key={stage} className={styles.column}>
-                            <div className={styles.columnHeader}>
-                                <span className={styles.columnTitle}>{stage}</span>
-                                <span className={styles.cardCount}>{columnLeads.length}</span>
-                            </div>
-
-                            {isLoading ? (
-                                <div style={{ color: 'var(--text-muted)', fontSize: '13px' }}>Loading...</div>
-                            ) : (
-                                columnLeads.map(lead => (
-                                    <div key={lead.id} className={styles.card}>
-                                        <div className={styles.cardHeader}>
-                                            <div>
-                                                <div className={styles.cardName}>{lead.name}</div>
-                                                {lead.company && <div className={styles.cardCompany}>{lead.company}</div>}
-                                            </div>
-                                            <div style={{ display: 'flex', gap: '4px' }}>
-                                                {lead.email && (
-                                                    <button
-                                                        onClick={() => setActiveMailLead(lead)}
-                                                        style={{ background: 'transparent', border: 'none', color: 'var(--accent)', cursor: 'pointer', padding: '4px' }}
-                                                        title="Send Email Template"
-                                                    >
-                                                        <IcoMail />
-                                                    </button>
-                                                )}
+            <div style={{ overflowX: 'auto', background: 'var(--surface-default)', border: '1px solid var(--surface-border)', borderRadius: '8px' }}>
+                <table style={{ width: '100%', minWidth: '800px', borderCollapse: 'collapse', textAlign: 'left' }}>
+                    <thead style={{ background: 'var(--surface-sunken)', borderBottom: '1px solid var(--surface-border)' }}>
+                        <tr>
+                            <th style={{ padding: '12px 16px', fontWeight: 600, fontSize: '14px', color: 'var(--text-secondary)' }}>Lead Name</th>
+                            <th style={{ padding: '12px 16px', fontWeight: 600, fontSize: '14px', color: 'var(--text-secondary)' }}>Company</th>
+                            <th style={{ padding: '12px 16px', fontWeight: 600, fontSize: '14px', color: 'var(--text-secondary)' }}>Source</th>
+                            <th style={{ padding: '12px 16px', fontWeight: 600, fontSize: '14px', color: 'var(--text-secondary)' }}>Status</th>
+                            <th style={{ padding: '12px 16px', fontWeight: 600, fontSize: '14px', color: 'var(--text-secondary)', textAlign: 'right' }}>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {isLoading ? (
+                            <tr>
+                                <td colSpan={5} style={{ padding: '32px', textAlign: 'center', color: 'var(--text-muted)' }}>Loading...</td>
+                            </tr>
+                        ) : leads.length === 0 ? (
+                            <tr>
+                                <td colSpan={5} style={{ padding: '32px', textAlign: 'center', color: 'var(--text-muted)' }}>No leads found.</td>
+                            </tr>
+                        ) : (
+                            leads.map(lead => (
+                                <tr key={lead.id} style={{ borderBottom: '1px solid var(--surface-border)' }}>
+                                    <td style={{ padding: '16px', fontWeight: 500 }}>{lead.name}</td>
+                                    <td style={{ padding: '16px', color: 'var(--text-secondary)' }}>{lead.company || '-'}</td>
+                                    <td style={{ padding: '16px' }}>
+                                        <span style={{ fontSize: '11px', background: 'var(--surface-hover)', color: 'var(--text-secondary)', padding: '4px 8px', borderRadius: '4px', border: '1px solid var(--surface-border)' }}>
+                                            {lead.source}
+                                        </span>
+                                    </td>
+                                    <td style={{ padding: '16px' }}>
+                                        <select
+                                            value={lead.status}
+                                            onChange={(e) => updateLeadStatus(lead.id, e.target.value)}
+                                            style={{ fontSize: '13px', padding: '6px', borderRadius: '4px', border: '1px solid var(--surface-border)', background: 'var(--surface-default)', color: 'var(--text-primary)' }}
+                                            disabled={showDeleted}
+                                        >
+                                            {LEAD_STAGES.map(s => (
+                                                <option key={s} value={s}>{s}</option>
+                                            ))}
+                                        </select>
+                                    </td>
+                                    <td style={{ padding: '16px', textAlign: 'right' }}>
+                                        <div style={{ display: 'inline-flex', gap: '8px', justifyContent: 'flex-end' }}>
+                                            {lead.email && (
                                                 <button
-                                                    onClick={() => setSelectedLead(lead)}
-                                                    style={{ background: 'transparent', border: 'none', color: '#10b981', cursor: 'pointer', padding: '4px' }}
-                                                    title="View Full Details"
+                                                    onClick={() => setActiveMailLead(lead)}
+                                                    style={{ background: 'transparent', border: 'none', color: 'var(--accent)', cursor: 'pointer', padding: '4px' }}
+                                                    title="Send Email Template"
                                                 >
-                                                    <IcoEye />
+                                                    <IcoMail />
                                                 </button>
-                                                {showDeleted ? (
-                                                    <button
-                                                        onClick={() => restoreLead(lead.id)}
-                                                        style={{ background: 'transparent', border: 'none', color: '#3b82f6', cursor: 'pointer', padding: '4px', fontSize: '12px', fontWeight: 'bold' }}
-                                                        title="Restore Lead"
-                                                    >
-                                                        Restore
-                                                    </button>
-                                                ) : (
-                                                    <button
-                                                        onClick={() => deleteLead(lead.id, lead.name)}
-                                                        style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px' }}
-                                                        title="Delete Lead"
-                                                    >
-                                                        <IcoTrash />
-                                                    </button>
-                                                )}
-                                            </div>
-                                        </div>
-
-                                        <div className={styles.cardSource}>{lead.source}</div>
-
-                                        <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '12px', borderTop: '1px solid var(--surface-border)', paddingTop: '12px' }}>
-                                            <select
-                                                value={lead.status}
-                                                onChange={(e) => updateLeadStatus(lead.id, e.target.value)}
-                                                style={{ fontSize: '11px', padding: '4px', borderRadius: '4px', border: '1px solid var(--surface-border)', background: 'var(--surface-default)', color: 'var(--text-secondary)' }}
+                                            )}
+                                            <button
+                                                onClick={() => setSelectedLead(lead)}
+                                                style={{ background: 'transparent', border: 'none', color: '#10b981', cursor: 'pointer', padding: '4px' }}
+                                                title="View Full Details"
                                             >
-                                                {LEAD_STAGES.map(s => (
-                                                    <option key={s} value={s}>{s}</option>
-                                                ))}
-                                            </select>
+                                                <IcoEye />
+                                            </button>
+                                            {showDeleted ? (
+                                                <button
+                                                    onClick={() => restoreLead(lead.id)}
+                                                    style={{ background: 'transparent', border: 'none', color: '#3b82f6', cursor: 'pointer', padding: '4px', fontSize: '13px', fontWeight: 'bold' }}
+                                                    title="Restore Lead"
+                                                >
+                                                    Restore
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    onClick={() => deleteLead(lead.id, lead.name)}
+                                                    style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px' }}
+                                                    title="Delete Lead"
+                                                >
+                                                    <IcoTrash />
+                                                </button>
+                                            )}
                                         </div>
-                                    </div>
-                                ))
-                            )}
-                        </div>
-                    );
-                })}
+                                    </td>
+                                </tr>
+                            ))
+                        )}
+                    </tbody>
+                </table>
             </div>
 
             {/* Add Lead Modal */}

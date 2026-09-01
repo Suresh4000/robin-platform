@@ -18,7 +18,7 @@ export async function GET() {
         });
 
         const events = await prisma.event.findMany({
-            where: { type: { not: 'Discovery Call' } },
+            where: { type: { not: 'Discovery Call' }, isDeleted: false },
             include: {
                 _count: { select: { attendees: true } }
             },

@@ -11,6 +11,7 @@ export const createEventSchema = z.object({
     status: z.enum(['Draft', 'Published', 'Completed', 'Cancelled', 'Trash']).default('Draft'),
     bannerImage: z.string().optional()
 });
-
-export const updateEventSchema = createEventSchema.partial();
+export const updateEventSchema = createEventSchema.extend({
+    isDeleted: z.boolean().optional()
+}).partial();
 
