@@ -28,10 +28,25 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
 export async function DELETE(request: Request, context: { params: Promise<{ id: string }> }) {
     const params = await context.params;
     try {
-        await prisma.invoice.update({
-            where: { id: params.id },
-            data: { isDeleted: true }
-        });
+        const { searchParams } = new URL(request.url);
+        const hardDelete = searchParams.get('hardDelete') === 'true';
+
+        if (hardDelete) {
+            await prisma.$transaction(async (tx) => {
+                await tx.timeEntry.updateMany({
+                    where: { invoiceId: params.id },
+                    data: { invoiceId: null }
+                });
+                await tx.invoice.delete({
+                    where: { id: params.id },
+                });
+            });
+        } else {
+            await prisma.invoice.update({
+                where: { id: params.id },
+                data: { isDeleted: true }
+            });
+        }
 
         return NextResponse.json({ success: true });
     } catch (error) {

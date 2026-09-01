@@ -34,7 +34,7 @@ export function InvoiceList() {
     const deleteInvoice = async (id: string, hardDelete = false) => {
         if (!confirm(`Are you sure you want to ${hardDelete ? 'permanently ' : ''}delete this invoice?`)) return;
         try {
-            await fetch(`/api/ops/invoices/${id}`, { method: 'DELETE' });
+            await fetch(hardDelete ?\x60 / api / ops / invoices /\$\{ id\ } ? hardDelete = true\x60 : \x60 / api / ops / invoices /\$\{ id\ }\x60, { method: 'DELETE' });
             fetchInvoices(showDeleted);
         } catch (e) {
             console.error(e);
@@ -145,15 +145,13 @@ export function InvoiceList() {
                                             </button>
                                         )}
                                         <div style={{ display: 'flex', gap: '8px' }}>
-                                            {!showDeleted && (
-                                                <button
-                                                    onClick={() => setViewingInvoice(inv)}
-                                                    style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '4px' }}
-                                                    title="View / Download PDF"
-                                                >
-                                                    <DollarSign size={16} />
-                                                </button>
-                                            )}
+                                            <button
+                                                onClick={() => setViewingInvoice(inv)}
+                                                style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '4px' }}
+                                                title="View / Download PDF"
+                                            >
+                                                <DollarSign size={16} />
+                                            </button>
                                             {showDeleted ? (
                                                 <button
                                                     onClick={() => restoreInvoice(inv.id)}
