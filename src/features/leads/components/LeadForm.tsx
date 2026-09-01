@@ -85,12 +85,6 @@ export function LeadForm({ onSuccess }: { onSuccess: () => void }) {
                 {errors.status && <span className={styles.errorText}>{errors.status.message as string}</span>}
             </div>
 
-            <div className={styles.formGroup}>
-                <label className={styles.label}>Expected Value (USD)</label>
-                <input type="number" step="0.01" className={styles.input} {...register('expectedValue', { valueAsNumber: true })} />
-                {errors.expectedValue && <span className={styles.errorText}>{errors.expectedValue.message as string}</span>}
-            </div>
-
             {errors.root && (
                 <div className={styles.errorText} style={{ marginBottom: '16px', fontWeight: 600 }}>
                     {errors.root.message}
