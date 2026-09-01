@@ -24,6 +24,7 @@ model Lead {
   status         String
   expectedValue  Float     @default(0.0)
   notes          String?
+  isDeleted      Boolean   @default(false)
   client         Client?   @relation(fields: [clientId], references: [id])
   clientId       String?   @unique
   createdAt      DateTime  @default(now())
@@ -41,6 +42,7 @@ model Client {
   lead           Lead?
   projects       Project[]
   invoices       Invoice[]
+  isDeleted      Boolean   @default(false)
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
 }
@@ -49,10 +51,12 @@ model Project {
   id        String       @id @default(cuid())
   title     String
   status    String
+  category  String?
   clientId  String
   client    Client       @relation(fields: [clientId], references: [id], onDelete: Cascade)
   tasks     Task[]
   timeLogs  TimeEntry[]
+  isDeleted Boolean      @default(false)
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
 }
@@ -109,6 +113,7 @@ model Event {
   capacity       Int
   status         String      // Draft, Published, Completed, Cancelled
   attendees      Attendee[]
+  isDeleted      Boolean     @default(false)
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
 }
@@ -139,6 +144,7 @@ model PortfolioItem {
   tags        String   // Comma separated
   status      String   @default("Draft") // Draft, Published
   publishedAt DateTime?
+  isDeleted   Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -153,6 +159,7 @@ model BlogPost {
   category    String   @default("Thoughts")
   status      String   @default("Draft") // Draft, Published
   publishedAt DateTime?
+  isDeleted   Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }

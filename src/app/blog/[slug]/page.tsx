@@ -7,7 +7,7 @@ import { prisma } from '@/shared/lib/prisma';
 export default async function BlogDetailPage({ params }: { params: Promise<{ slug: string }> }) {
     const resolvedParams = await params;
     const post = await prisma.blogPost.findUnique({
-        where: { slug: resolvedParams.slug, status: 'Published' }
+        where: { slug: resolvedParams.slug }
     });
 
     if (!post) {

@@ -19,6 +19,7 @@ export const createLeadSchema = z.object({
     status: z.enum(LEAD_STAGES).default('New Lead'),
     expectedValue: z.number().min(0).default(0),
     notes: z.string().optional(),
+    isDeleted: z.boolean().optional(),
 });
 
 export const updateLeadSchema = createLeadSchema.partial();

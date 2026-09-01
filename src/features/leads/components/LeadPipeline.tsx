@@ -76,21 +76,26 @@ export function LeadPipeline() {
     const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
     const [activeMailLead, setActiveMailLead] = useState<Lead | null>(null);
     const [toastMsg, setToastMsg] = useState<string | null>(null);
+    const [showDeleted, setShowDeleted] = useState(false);
 
     const showToast = (msg: string) => {
         setToastMsg(msg);
         setTimeout(() => setToastMsg(null), 3000);
     };
 
-    const fetchLeads = () => {
+    const fetchLeads = (deleted = false) => {
         setIsLoading(true);
-        fetch('/api/crm/leads')
+        fetch(`/api/crm/leads?isDeleted=${deleted}`)
             .then(res => res.json())
             .then(data => {
                 if (data.data) setLeads(data.data);
                 setIsLoading(false);
             });
     };
+
+    useEffect(() => {
+        fetchLeads(showDeleted);
+    }, [showDeleted]);
 
     const updateLeadStatus = async (id: string, newStatus: string) => {
         const leadToUpdate = leads.find(l => l.id === id);
@@ -141,14 +146,22 @@ export function LeadPipeline() {
     };
 
     const deleteLead = async (id: string, name: string) => {
-        if (!window.confirm(`Permanently delete lead "${name}"?`)) return;
+        if (!window.confirm(`Move lead "${name}" to trash?`)) return;
         setLeads(prev => prev.filter(l => l.id !== id));
         await fetch(`/api/crm/leads/${id}`, { method: 'DELETE' });
+        showToast('Lead moved to trash');
     };
 
-    useEffect(() => {
-        fetchLeads();
-    }, []);
+    const restoreLead = async (id: string) => {
+        setLeads(prev => prev.filter(l => l.id !== id));
+        await fetch(`/api/crm/leads/${id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ isDeleted: false })
+        });
+        showToast('Lead restored');
+    };
+
 
     return (
         <div className={styles.container}>
@@ -160,6 +173,13 @@ export function LeadPipeline() {
                     </p>
                 </div>
                 <div className={styles.actions}>
+                    <button
+                        className={styles.btnPrimary}
+                        style={{ background: 'var(--surface-sunken)', color: 'var(--text-primary)', border: '1px solid var(--surface-border)' }}
+                        onClick={() => setShowDeleted(!showDeleted)}
+                    >
+                        {showDeleted ? 'Active Leads' : 'Trash'}
+                    </button>
                     <button className={styles.btnPrimary} onClick={() => setIsAddModalOpen(true)}>
                         <IcoPlus />
                         New Lead
@@ -204,13 +224,23 @@ export function LeadPipeline() {
                                                 >
                                                     <IcoEye />
                                                 </button>
-                                                <button
-                                                    onClick={() => deleteLead(lead.id, lead.name)}
-                                                    style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px' }}
-                                                    title="Delete Lead"
-                                                >
-                                                    <IcoTrash />
-                                                </button>
+                                                {showDeleted ? (
+                                                    <button
+                                                        onClick={() => restoreLead(lead.id)}
+                                                        style={{ background: 'transparent', border: 'none', color: '#3b82f6', cursor: 'pointer', padding: '4px', fontSize: '12px', fontWeight: 'bold' }}
+                                                        title="Restore Lead"
+                                                    >
+                                                        Restore
+                                                    </button>
+                                                ) : (
+                                                    <button
+                                                        onClick={() => deleteLead(lead.id, lead.name)}
+                                                        style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px' }}
+                                                        title="Delete Lead"
+                                                    >
+                                                        <IcoTrash />
+                                                    </button>
+                                                )}
                                             </div>
                                         </div>
 

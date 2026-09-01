@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { FileDown, UploadCloud, Folder, Search, Trash2, RefreshCcw, Archive } from 'lucide-react';
+import { FileDown, UploadCloud, Folder, Search, Trash2, RefreshCcw, Archive, Filter } from 'lucide-react';
 import styles from '@/features/portfolio/components/PortfolioList.module.css';
+import { SlideDrawer } from '@/shared/components/ui/Modal';
 
 type DocumentItem = {
     id: string;
@@ -12,6 +13,7 @@ type DocumentItem = {
     date: string;
     size: string;
     isDeleted: boolean;
+    projectName?: string;
     fileData?: string; // base64 data URL
 };
 
@@ -27,11 +29,33 @@ export default function DocumentsPage() {
             setDocuments(JSON.parse(saved));
         } else {
             setDocuments([
-                { id: '1', clientName: 'Admin', name: 'Brand Positioning Plan V2.pdf', type: 'PDF', date: 'Oct 12, 2026', size: '2.4 MB', isDeleted: false },
-                { id: '2', clientName: 'Acme Corp', name: 'Q3 Financial Matrix.xlsx', type: 'Spreadsheet', date: 'Oct 05, 2026', size: '150 KB', isDeleted: false },
+                { id: '1', clientName: 'Admin', projectName: 'Internal', name: 'Brand Positioning Plan V2.pdf', type: 'PDF', date: 'Oct 12, 2026', size: '2.4 MB', isDeleted: false },
+                { id: '2', clientName: 'Acme Corp', projectName: 'Website Redesign', name: 'Q3 Financial Matrix.xlsx', type: 'Spreadsheet', date: 'Oct 05, 2026', size: '150 KB', isDeleted: false },
             ]);
         }
+        fetchProjects();
     }, []);
+
+    const [projects, setProjects] = useState<{ id: string, title: string }[]>([]);
+    const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+    const [uploadClientName, setUploadClientName] = useState('');
+    const [uploadProjectName, setUploadProjectName] = useState('');
+    const [filterName, setFilterName] = useState('');
+    const [filterProject, setFilterProject] = useState('');
+    const [activeFilterName, setActiveFilterName] = useState('');
+    const [activeFilterProject, setActiveFilterProject] = useState('');
+
+    const fetchProjects = async () => {
+        try {
+            const res = await fetch('/api/ops/projects');
+            const data = await res.json();
+            if (data.data) {
+                setProjects(data.data.map((p: any) => ({ id: p.id, title: p.title })));
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    };
 
     // Save to local storage on change
     useEffect(() => {
@@ -41,20 +65,23 @@ export default function DocumentsPage() {
     }, [documents]);
 
     const handleUploadClick = () => {
-        fileInputRef.current?.click();
+        setIsUploadModalOpen(true);
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            const clientName = window.prompt("Enter Client Name for this document:");
-            if (!clientName) return;
+            if (!uploadClientName) {
+                alert("Please enter a client name.");
+                return;
+            }
 
             const reader = new FileReader();
             reader.onload = (ev) => {
                 const newDoc: DocumentItem = {
                     id: Math.random().toString(36).substr(2, 9),
-                    clientName: clientName,
+                    clientName: uploadClientName,
+                    projectName: uploadProjectName,
                     name: file.name,
                     type: file.name.split('.').pop()?.toUpperCase() || 'FILE',
                     date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
@@ -65,6 +92,9 @@ export default function DocumentsPage() {
                     fileData: ev.target?.result as string,
                 };
                 setDocuments(prev => [newDoc, ...prev]);
+                setIsUploadModalOpen(false);
+                setUploadClientName('');
+                setUploadProjectName('');
             };
             reader.readAsDataURL(file);
         }
@@ -100,7 +130,20 @@ export default function DocumentsPage() {
         document.body.removeChild(a);
     };
 
-    const displayedDocs = documents.filter(doc => viewMode === 'active' ? !doc.isDeleted : doc.isDeleted);
+    const applyFilters = () => {
+        setActiveFilterName(filterName.toLowerCase());
+        setActiveFilterProject(filterProject);
+    };
+
+    const displayedDocs = documents.filter(doc => {
+        if (viewMode === 'active' && doc.isDeleted) return false;
+        if (viewMode === 'recycle' && !doc.isDeleted) return false;
+
+        if (activeFilterName && !doc.name.toLowerCase().includes(activeFilterName) && !doc.clientName.toLowerCase().includes(activeFilterName)) return false;
+        if (activeFilterProject && doc.projectName !== activeFilterProject) return false;
+
+        return true;
+    });
 
     return (
         <div className={styles.container}>
@@ -143,11 +186,27 @@ export default function DocumentsPage() {
             </header>
 
             {viewMode === 'active' && (
-                <div style={{ marginBottom: '16px', display: 'flex', gap: '16px' }}>
+                <div style={{ marginBottom: '16px', display: 'flex', gap: '16px', alignItems: 'center' }}>
                     <div style={{ display: 'flex', flex: 1, alignItems: 'center', background: 'var(--surface-default)', border: '1px solid var(--surface-border)', padding: '8px 12px', borderRadius: '8px' }}>
                         <Search size={16} style={{ color: 'var(--text-muted)', marginRight: '8px' }} />
-                        <input type="text" placeholder="Search active documents..." style={{ border: 'none', background: 'transparent', width: '100%', outline: 'none' }} />
+                        <input type="text" placeholder="Search by name or client..." value={filterName} onChange={e => setFilterName(e.target.value)} style={{ border: 'none', background: 'transparent', width: '100%', outline: 'none' }} />
                     </div>
+                    <select
+                        value={filterProject}
+                        onChange={e => setFilterProject(e.target.value)}
+                        style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--surface-border)', background: 'var(--surface-default)' }}
+                    >
+                        <option value="">All Projects</option>
+                        {projects.map(p => (
+                            <option key={p.id} value={p.title}>{p.title}</option>
+                        ))}
+                    </select>
+                    <button
+                        onClick={applyFilters}
+                        style={{ padding: '8px 16px', borderRadius: '8px', background: 'var(--color-primary)', color: 'white', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+                    >
+                        <Filter size={16} /> Filter
+                    </button>
                 </div>
             )}
 
@@ -180,7 +239,12 @@ export default function DocumentsPage() {
                                             </div>
                                         </div>
                                     </td>
-                                    <td><span className={styles.tagBadge}>{doc.clientName}</span></td>
+                                    <td>
+                                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                            <span className={styles.tagBadge}>{doc.clientName}</span>
+                                            {doc.projectName && <span style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px' }}>{doc.projectName}</span>}
+                                        </div>
+                                    </td>
                                     <td><span style={{ color: 'var(--text-muted)' }}>{doc.date}</span></td>
                                     <td><span style={{ color: 'var(--text-muted)' }}>{doc.size}</span></td>
                                     <td>
@@ -212,6 +276,43 @@ export default function DocumentsPage() {
                     </tbody>
                 </table>
             </div>
+
+            <SlideDrawer isOpen={isUploadModalOpen} onClose={() => setIsUploadModalOpen(false)} title="Upload Document">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', padding: '16px' }}>
+                    <div>
+                        <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>Client Name *</label>
+                        <input
+                            type="text"
+                            value={uploadClientName}
+                            onChange={e => setUploadClientName(e.target.value)}
+                            placeholder="e.g. Acme Corp"
+                            style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--surface-border)' }}
+                        />
+                    </div>
+                    <div>
+                        <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>Project (Optional)</label>
+                        <select
+                            value={uploadProjectName}
+                            onChange={e => setUploadProjectName(e.target.value)}
+                            style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--surface-border)' }}
+                        >
+                            <option value="">None</option>
+                            {projects.map(p => (
+                                <option key={p.id} value={p.title}>{p.title}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div>
+                        <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>Select File</label>
+                        <input
+                            type="file"
+                            ref={fileInputRef}
+                            onChange={handleFileChange}
+                            style={{ padding: '8px 0' }}
+                        />
+                    </div>
+                </div>
+            </SlideDrawer>
         </div>
     );
 }

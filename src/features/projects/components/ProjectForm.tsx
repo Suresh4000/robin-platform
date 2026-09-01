@@ -88,6 +88,18 @@ export function ProjectForm({ onSuccess, initialData }: { onSuccess: () => void;
                 {errors.status && <span className={styles.errorText}>{errors.status.message as string}</span>}
             </div>
 
+            <div className={styles.formGroup}>
+                <label className={styles.label}>Category</label>
+                <select className={styles.select} {...register('category')}>
+                    <option value="">Select a Category...</option>
+                    <option value="Strategy">Strategy</option>
+                    <option value="Development">Development</option>
+                    <option value="Marketing">Marketing</option>
+                    <option value="Operations">Operations</option>
+                </select>
+                {errors.category && <span className={styles.errorText}>{errors.category.message as string}</span>}
+            </div>
+
             {errors.root && (
                 <div className={styles.errorText} style={{ marginBottom: '16px', fontWeight: 600 }}>
                     {errors.root.message as string}

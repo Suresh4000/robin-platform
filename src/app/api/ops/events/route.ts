@@ -6,6 +6,17 @@ export const dynamic = 'force-dynamic';
 
 export async function GET() {
     try {
+        const now = new Date();
+
+        // Auto-complete past events
+        await prisma.event.updateMany({
+            where: {
+                date: { lt: now },
+                status: { notIn: ['Completed', 'Cancelled'] }
+            },
+            data: { status: 'Completed' }
+        });
+
         const events = await prisma.event.findMany({
             where: { type: { not: 'Discovery Call' } },
             include: {
