@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Plus, MapPin, Clock, Users, Calendar, Edit, Trash2, Globe } from 'lucide-react';
+import { Plus, MapPin, Clock, Users, Calendar, Edit, Trash2, Globe, RefreshCw } from 'lucide-react';
 import styles from './EventList.module.css';
 import { SlideDrawer } from '@/shared/components/ui/Modal';
 import { EventForm } from './EventForm';
@@ -21,6 +21,7 @@ type EventData = {
 
 export function EventList() {
     const [events, setEvents] = useState<EventData[]>([]);
+    const [view, setView] = useState<'Active' | 'Trash'>('Active');
     const [isLoading, setIsLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<EventData | null>(null);
@@ -46,8 +47,35 @@ export function EventList() {
             });
     };
 
-    const handleDelete = async (id: string, title: string) => {
-        if (!confirm(`Are you sure you want to permanently delete "${title}"?`)) return;
+    const handleMoveToTrash = async (id: string, title: string) => {
+        if (!confirm(`Move "${title}" to Trash?`)) return;
+        try {
+            const res = await fetch(`/api/ops/events/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: 'Trash' })
+            });
+            if (res.ok) fetchEvents();
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
+    const handleRestore = async (id: string, title: string) => {
+        try {
+            const res = await fetch(`/api/ops/events/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: 'Draft' })
+            });
+            if (res.ok) fetchEvents();
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
+    const handleHardDelete = async (id: string, title: string) => {
+        if (!confirm(`Permanently delete "${title}"? This cannot be undone.`)) return;
         try {
             const res = await fetch(`/api/ops/events/${id}`, { method: 'DELETE' });
             if (res.ok) {
@@ -69,9 +97,16 @@ export function EventList() {
             <header className={styles.header}>
                 <div>
                     <h1 className={styles.title}>Event Management</h1>
-                    <p style={{ color: 'var(--text-secondary)', marginTop: '4px' }}>
-                        Workshops, Webinars, and Conferences
-                    </p>
+                    <div style={{ display: 'flex', gap: '16px', marginTop: '4px' }}>
+                        <button
+                            onClick={() => setView('Active')}
+                            style={{ background: 'none', border: 'none', color: view === 'Active' ? 'var(--brass-deep)' : 'var(--text-secondary)', fontWeight: view === 'Active' ? 600 : 400, cursor: 'pointer', padding: 0 }}
+                        >Active ({events.filter(e => e.status !== 'Trash').length})</button>
+                        <button
+                            onClick={() => setView('Trash')}
+                            style={{ background: 'none', border: 'none', color: view === 'Trash' ? 'var(--brass-deep)' : 'var(--text-secondary)', fontWeight: view === 'Trash' ? 600 : 400, cursor: 'pointer', padding: 0 }}
+                        >Trash ({events.filter(e => e.status === 'Trash').length})</button>
+                    </div>
                 </div>
                 <button className={styles.btnPrimary} onClick={openCreateModal}>
                     <Plus size={16} />
@@ -81,13 +116,13 @@ export function EventList() {
 
             {isLoading ? (
                 <div style={{ color: 'var(--text-muted)' }}>Loading records...</div>
-            ) : events.length === 0 ? (
+            ) : (view === 'Active' ? events.filter(e => e.status !== 'Trash') : events.filter(e => e.status === 'Trash')).length === 0 ? (
                 <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)', border: '1px dashed var(--surface-border)', borderRadius: '8px' }}>
-                    No upcoming events.
+                    No events here.
                 </div>
             ) : (
                 <div className={styles.grid}>
-                    {events.map(event => {
+                    {(view === 'Active' ? events.filter(e => e.status !== 'Trash') : events.filter(e => e.status === 'Trash')).map(event => {
                         const dateObj = new Date(event.date);
                         const month = dateObj.toLocaleString('default', { month: 'short' });
                         const day = dateObj.getDate();
@@ -109,29 +144,50 @@ export function EventList() {
                                             </div>
                                         </div>
                                         <div>
-                                            <button
-                                                onClick={() => openEditModal(event)}
-                                                style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '4px', marginLeft: '8px' }}
-                                                title="Edit Event"
-                                            >
-                                                <Edit size={14} />
-                                            </button>
-                                            <button
-                                                onClick={() => handleDelete(event.id, event.title)}
-                                                style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px', marginLeft: '4px' }}
-                                                title="Delete Event"
-                                            >
-                                                <Trash2 size={14} />
-                                            </button>
-                                            <a
-                                                href={`/events/${event.id}`}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '4px', marginLeft: '4px', display: 'inline-flex', alignItems: 'center' }}
-                                                title="View Public Event Page"
-                                            >
-                                                <Globe size={14} />
-                                            </a>
+                                            {view === 'Active' ? (
+                                                <>
+                                                    <button
+                                                        onClick={() => openEditModal(event)}
+                                                        style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '4px', marginLeft: '8px' }}
+                                                        title="Edit Event"
+                                                    >
+                                                        <Edit size={14} />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleMoveToTrash(event.id, event.title)}
+                                                        style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px', marginLeft: '4px' }}
+                                                        title="Move to Trash"
+                                                    >
+                                                        <Trash2 size={14} />
+                                                    </button>
+                                                    <a
+                                                        href={`/events/${event.id}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '4px', marginLeft: '4px', display: 'inline-flex', alignItems: 'center' }}
+                                                        title="View Public Event Page"
+                                                    >
+                                                        <Globe size={14} />
+                                                    </a>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <button
+                                                        onClick={() => handleRestore(event.id, event.title)}
+                                                        style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '4px', marginLeft: '8px' }}
+                                                        title="Restore"
+                                                    >
+                                                        <RefreshCw size={14} />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleHardDelete(event.id, event.title)}
+                                                        style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px', marginLeft: '4px' }}
+                                                        title="Delete Forever"
+                                                    >
+                                                        <Trash2 size={14} />
+                                                    </button>
+                                                </>
+                                            )}
                                         </div>
                                     </div>
                                     <span className={`${styles.statusBadge} ${event.status === 'Published' ? styles.statusPublished : ''}`}>
