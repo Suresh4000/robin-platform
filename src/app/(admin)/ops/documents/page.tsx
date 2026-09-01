@@ -34,9 +34,11 @@ export default function DocumentsPage() {
             ]);
         }
         fetchProjects();
+        fetchClients();
     }, []);
 
     const [projects, setProjects] = useState<{ id: string, title: string }[]>([]);
+    const [clients, setClients] = useState<{ id: string, name: string }[]>([]);
     const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
     const [uploadClientName, setUploadClientName] = useState('');
     const [uploadProjectName, setUploadProjectName] = useState('');
@@ -51,6 +53,18 @@ export default function DocumentsPage() {
             const data = await res.json();
             if (data.data) {
                 setProjects(data.data.map((p: any) => ({ id: p.id, title: p.title })));
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
+    const fetchClients = async () => {
+        try {
+            const res = await fetch('/api/crm/clients');
+            const data = await res.json();
+            if (data.data) {
+                setClients(data.data.map((c: any) => ({ id: c.id, name: c.name })));
             }
         } catch (e) {
             console.error(e);
@@ -283,11 +297,17 @@ export default function DocumentsPage() {
                         <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>Client Name *</label>
                         <input
                             type="text"
+                            list="client-list"
                             value={uploadClientName}
                             onChange={e => setUploadClientName(e.target.value)}
-                            placeholder="e.g. Acme Corp"
+                            placeholder="Select or type a Client"
                             style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid var(--surface-border)' }}
                         />
+                        <datalist id="client-list">
+                            {clients.map(c => (
+                                <option key={c.id} value={c.name} />
+                            ))}
+                        </datalist>
                     </div>
                     <div>
                         <label style={{ display: 'block', marginBottom: '8px', fontWeight: 600 }}>Project (Optional)</label>
