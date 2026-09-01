@@ -48,6 +48,7 @@ function ProjectWorkspace({ project, onBack, onProjectUpdated }: { project: Proj
     const [logDesc, setLogDesc] = useState('');
     const [logHours, setLogHours] = useState('');
     const [logDate, setLogDate] = useState(new Date().toISOString().slice(0, 10));
+    const [logTaskId, setLogTaskId] = useState('');
     const [logBillable, setLogBillable] = useState(true);
     const [addingLog, setAddingLog] = useState(false);
 
@@ -101,9 +102,9 @@ function ProjectWorkspace({ project, onBack, onProjectUpdated }: { project: Proj
         setAddingLog(true);
         await fetch('/api/ops/time-entries', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ description: logDesc, hours: parseFloat(logHours), date: new Date(logDate).toISOString(), isBillable: logBillable, projectId: project.id }),
+            body: JSON.stringify({ description: logDesc, hours: parseFloat(logHours), date: new Date(logDate).toISOString(), isBillable: logBillable, projectId: project.id, taskId: logTaskId || null }),
         });
-        setLogDesc(''); setLogHours('');
+        setLogDesc(''); setLogHours(''); setLogTaskId('');
         setAddingLog(false);
         fetchDetail();
     };
@@ -180,6 +181,14 @@ function ProjectWorkspace({ project, onBack, onProjectUpdated }: { project: Proj
                         <div>
                             {/* Add time log form */}
                             <form onSubmit={submitLog} className={styles.quickForm} style={{ flexWrap: 'wrap' }}>
+                                <select className={styles.qInput} style={{ flex: 1, minWidth: 140 }} value={logTaskId} onChange={e => {
+                                    setLogTaskId(e.target.value);
+                                    const t = tasks.find(x => x.id === e.target.value);
+                                    if (t && !logDesc) setLogDesc(t.title);
+                                }}>
+                                    <option value="">General (No Task)</option>
+                                    {tasks.map(t => <option key={t.id} value={t.id}>{t.title}</option>)}
+                                </select>
                                 <input className={styles.qInput} style={{ flex: 2, minWidth: 180 }} value={logDesc} onChange={e => setLogDesc(e.target.value)} placeholder="Description of work…" required />
                                 <input type="number" className={styles.qInput} style={{ width: 90 }} min="0.25" step="0.25" value={logHours} onChange={e => setLogHours(e.target.value)} placeholder="Hours" required />
                                 <input type="date" className={styles.qInput} style={{ width: 150 }} value={logDate} onChange={e => setLogDate(e.target.value)} required />
