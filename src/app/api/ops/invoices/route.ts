@@ -13,10 +13,11 @@ export async function GET(request: Request) {
     try {
         const { searchParams } = new URL(request.url);
         const clientId = searchParams.get('clientId');
+        const isDeleted = searchParams.get('isDeleted') === 'true';
 
-        let whereClause = {};
+        let whereClause: any = { isDeleted };
         if (clientId) {
-            whereClause = { clientId };
+            whereClause.clientId = clientId;
         }
 
         const invoices = await prisma.invoice.findMany({

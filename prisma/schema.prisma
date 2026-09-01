@@ -95,6 +95,7 @@ model Invoice {
   client      Client      @relation(fields: [clientId], references: [id], onDelete: Cascade)
   timeEntries TimeEntry[]
   createdAt   DateTime    @default(now())
+  isDeleted   Boolean     @default(false)
   updatedAt   DateTime    @updatedAt
 }
 

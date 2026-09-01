@@ -6,14 +6,17 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
     try {
         const body = await request.json();
 
-        // Only allow status updates for now
-        if (!body.status) {
-            return NextResponse.json({ error: 'Status is required' }, { status: 400 });
+        // Allow status and isDeleted updates
+        if (body.status === undefined && body.isDeleted === undefined) {
+            return NextResponse.json({ error: 'Status or isDeleted is required' }, { status: 400 });
         }
 
         const updatedInvoice = await prisma.invoice.update({
             where: { id: params.id },
-            data: { status: body.status },
+            data: {
+                ...(body.status !== undefined && { status: body.status }),
+                ...(body.isDeleted !== undefined && { isDeleted: body.isDeleted })
+            },
         });
 
         return NextResponse.json({ data: updatedInvoice });
@@ -25,17 +28,9 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
 export async function DELETE(request: Request, context: { params: Promise<{ id: string }> }) {
     const params = await context.params;
     try {
-        await prisma.$transaction(async (tx) => {
-            // First unlink all time entries
-            await tx.timeEntry.updateMany({
-                where: { invoiceId: params.id },
-                data: { invoiceId: null }
-            });
-
-            // Then delete the invoice
-            await tx.invoice.delete({
-                where: { id: params.id },
-            });
+        await prisma.invoice.update({
+            where: { id: params.id },
+            data: { isDeleted: true }
         });
 
         return NextResponse.json({ success: true });

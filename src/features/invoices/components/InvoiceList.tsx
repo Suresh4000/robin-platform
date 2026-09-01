@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Plus, DollarSign, Edit, Trash2, Calendar, HardHat } from 'lucide-react';
+import { Plus, DollarSign, Edit, Trash2, Calendar, HardHat, RefreshCw } from 'lucide-react';
 import styles from '@/features/clients/components/ClientList.module.css'; // Reuse table list styles
 import { SlideDrawer } from '@/shared/components/ui/Modal';
 import { InvoiceGenerator } from './InvoiceGenerator';
@@ -12,11 +12,12 @@ export function InvoiceList() {
     const [isLoading, setIsLoading] = useState(true);
     const [isGeneratorOpen, setIsGeneratorOpen] = useState(false);
     const [viewingInvoice, setViewingInvoice] = useState<any | null>(null);
+    const [showDeleted, setShowDeleted] = useState(false);
 
-    const fetchInvoices = async () => {
+    const fetchInvoices = async (deleted = false) => {
         setIsLoading(true);
         try {
-            const res = await fetch('/api/ops/invoices');
+            const res = await fetch(`/api/ops/invoices?isDeleted=${deleted}`);
             const data = await res.json();
             if (data.data) setInvoices(data.data);
         } catch (e) {
@@ -27,14 +28,27 @@ export function InvoiceList() {
     };
 
     useEffect(() => {
-        fetchInvoices();
-    }, []);
+        fetchInvoices(showDeleted);
+    }, [showDeleted]);
 
-    const deleteInvoice = async (id: string) => {
-        if (!confirm('Are you sure you want to void and delete this invoice? The time entries will be unlinked.')) return;
+    const deleteInvoice = async (id: string, hardDelete = false) => {
+        if (!confirm(`Are you sure you want to ${hardDelete ? 'permanently ' : ''}delete this invoice?`)) return;
         try {
             await fetch(`/api/ops/invoices/${id}`, { method: 'DELETE' });
-            fetchInvoices();
+            fetchInvoices(showDeleted);
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
+    const restoreInvoice = async (id: string) => {
+        try {
+            await fetch(`/api/ops/invoices/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ isDeleted: false })
+            });
+            fetchInvoices(showDeleted);
         } catch (e) {
             console.error(e);
         }
@@ -47,7 +61,7 @@ export function InvoiceList() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status: newStatus })
             });
-            fetchInvoices();
+            fetchInvoices(showDeleted);
         } catch (e) {
             console.error(e);
         }
@@ -62,10 +76,21 @@ export function InvoiceList() {
                         Manage and generate client billing
                     </p>
                 </div>
-                <button className={styles.btnPrimary} onClick={() => setIsGeneratorOpen(true)}>
-                    <Plus size={16} />
-                    Generate Invoice
-                </button>
+                <div style={{ display: 'flex', gap: '12px' }}>
+                    <button
+                        className={styles.btnPrimary}
+                        style={{ background: 'var(--surface-sunken)', color: 'var(--text-primary)', border: '1px solid var(--surface-border)' }}
+                        onClick={() => setShowDeleted(!showDeleted)}
+                    >
+                        {showDeleted ? 'Active Invoices' : 'Trash'}
+                    </button>
+                    {!showDeleted && (
+                        <button className={styles.btnPrimary} onClick={() => setIsGeneratorOpen(true)}>
+                            <Plus size={16} />
+                            Generate Invoice
+                        </button>
+                    )}
+                </div>
             </header>
 
             <div className={styles.tableWrapper}>
@@ -112,21 +137,40 @@ export function InvoiceList() {
                                         </select>
                                     </td>
                                     <td>
-                                        <div style={{ display: 'flex', gap: '8px' }}>
+                                        {viewingInvoice?.id === inv.id && (
                                             <button
-                                                onClick={() => setViewingInvoice(inv)}
-                                                style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '4px' }}
-                                                title="View / Download PDF"
+                                                style={{ background: 'transparent', border: 'none', color: 'var(--color-primary)', cursor: 'default', padding: '4px' }}
                                             >
                                                 <DollarSign size={16} />
                                             </button>
-                                            <button
-                                                onClick={() => deleteInvoice(inv.id)}
-                                                style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px' }}
-                                                title="Void Invoice"
-                                            >
-                                                <Trash2 size={16} />
-                                            </button>
+                                        )}
+                                        <div style={{ display: 'flex', gap: '8px' }}>
+                                            {!showDeleted && (
+                                                <button
+                                                    onClick={() => setViewingInvoice(inv)}
+                                                    style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '4px' }}
+                                                    title="View / Download PDF"
+                                                >
+                                                    <DollarSign size={16} />
+                                                </button>
+                                            )}
+                                            {showDeleted ? (
+                                                <button
+                                                    onClick={() => restoreInvoice(inv.id)}
+                                                    style={{ background: 'transparent', border: 'none', color: '#10b981', cursor: 'pointer', padding: '4px' }}
+                                                    title="Restore"
+                                                >
+                                                    <RefreshCw size={16} />
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    onClick={() => deleteInvoice(inv.id)}
+                                                    style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px' }}
+                                                    title="Void & Trash Invoice"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            )}
                                         </div>
                                     </td>
                                 </tr>
@@ -144,7 +188,7 @@ export function InvoiceList() {
                 <InvoiceGenerator
                     onSuccess={() => {
                         setIsGeneratorOpen(false);
-                        fetchInvoices();
+                        fetchInvoices(showDeleted);
                     }}
                 />
             </SlideDrawer>
