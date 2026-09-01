@@ -63,3 +63,40 @@ a {
   color: inherit;
   text-decoration: none;
 }
+
+/* Responsive Admin overrides */
+@media (max-width: 900px) {
+
+  html,
+  body {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+
+  [class*="header"],
+  [class*="cardHeader"] {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 16px !important;
+  }
+
+  [class*="tableWrapper"] {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  [class*="metrics"] {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+
+  table th,
+  table td {
+    white-space: nowrap !important;
+  }
+
+  [class*="cardHeader"]>div {
+    flex-wrap: wrap !important;
+  }
+}

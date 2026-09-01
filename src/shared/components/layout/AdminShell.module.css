@@ -1,4 +1,5 @@
 .adminMain {
+    min-width: 0;
     display: flex;
     flex-direction: column;
     flex: 1;
@@ -6,6 +7,7 @@
 
 @media (min-width: 901px) {
     .adminMain {
+    min-width: 0;
         margin-left: var(--sidebar-width);
     }
 }
@@ -26,6 +28,7 @@
 
 @media print {
     .adminMain {
+    min-width: 0;
         margin-left: 0 !important;
     }
 
