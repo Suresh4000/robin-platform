@@ -100,3 +100,5 @@ a {
     flex-wrap: wrap !important;
   }
 }
+@media (max-width: 900px) { .activity-row { flex-direction: column !important; align-items: flex-start !important; gap: 8px !important; } .activity-row > div:first-child { align-self: flex-start; } }
+@media (max-width: 900px) { .activity-row { flex-direction: column !important; align-items: flex-start !important; gap: 8px !important; } .activity-row > div:first-child { align-self: flex-start; } }

@@ -201,7 +201,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                     {(view === 'all' || view === 'events') && (
                         <>
                             {upcomingEvents.length > 0 ? upcomingEvents.map(event => (
-                                <div key={event.id} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px', background: 'var(--surface-default)', border: '1px solid var(--surface-border)', borderRadius: '8px' }}>
+                                <div key={event.id} className='activity-row' style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px', background: 'var(--surface-default)', border: '1px solid var(--surface-border)', borderRadius: '8px' }}>
                                     <div style={{ padding: '10px', background: 'var(--surface-sunken)', borderRadius: '8px' }}>
                                         <Calendar size={18} style={{ color: 'var(--color-primary)' }} />
                                     </div>
@@ -231,7 +231,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                     {(view === 'all' || view === 'blog') && (
                         <>
                             {latestBlogs.length > 0 ? latestBlogs.map(post => (
-                                <div key={post.id} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px', background: 'var(--surface-default)', border: '1px solid var(--surface-border)', borderRadius: '8px' }}>
+                                <div key={post.id} className='activity-row' style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px', background: 'var(--surface-default)', border: '1px solid var(--surface-border)', borderRadius: '8px' }}>
                                     <div style={{ padding: '10px', background: 'var(--surface-sunken)', borderRadius: '8px' }}>
                                         <Activity size={18} style={{ color: 'var(--brand-deep)', opacity: 0.8 }} />
                                     </div>
@@ -263,7 +263,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                     {(view === 'all' || view === 'schedules') && (
                         <>
                             {pendingTasks.length > 0 ? pendingTasks.map(task => (
-                                <div key={task.id} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px', background: 'var(--surface-default)', border: '1px solid var(--surface-border)', borderRadius: '8px' }}>
+                                <div key={task.id} className='activity-row' style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px', background: 'var(--surface-default)', border: '1px solid var(--surface-border)', borderRadius: '8px' }}>
                                     <div style={{ padding: '10px', background: 'var(--surface-sunken)', borderRadius: '8px' }}>
                                         <Activity size={18} style={{ color: 'var(--color-secondary)' }} />
                                     </div>
