@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Plus, Users, Edit } from 'lucide-react';
+import { Plus, Users, Edit, Trash2, RefreshCw } from 'lucide-react';
 import styles from './ClientList.module.css';
 import { SlideDrawer } from '@/shared/components/ui/Modal';
 import { ClientForm } from './ClientForm';
@@ -19,6 +19,7 @@ export function ClientList() {
     const [isLoading, setIsLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<Client | null>(null);
+    const [showDeleted, setShowDeleted] = useState(false);
 
     const openEditModal = (item: Client) => {
         setEditingItem(item);
@@ -30,9 +31,9 @@ export function ClientList() {
         setIsModalOpen(true);
     };
 
-    const fetchClients = () => {
+    const fetchClients = (deleted = false) => {
         setIsLoading(true);
-        fetch('/api/crm/clients')
+        fetch(`/api/crm/clients?isDeleted=${deleted}`)
             .then(res => res.json())
             .then(data => {
                 if (data.data) setClients(data.data);
@@ -41,8 +42,31 @@ export function ClientList() {
     };
 
     useEffect(() => {
-        fetchClients();
-    }, []);
+        fetchClients(showDeleted);
+    }, [showDeleted]);
+
+    const deleteClient = async (id: string, name: string) => {
+        if (!confirm(`Are you sure you want to move "${name}" to trash?`)) return;
+        try {
+            await fetch(`/api/crm/clients/${id}`, { method: 'DELETE' });
+            fetchClients(showDeleted);
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
+    const restoreClient = async (id: string) => {
+        try {
+            await fetch(`/api/crm/clients/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ isDeleted: false })
+            });
+            fetchClients(showDeleted);
+        } catch (e) {
+            console.error(e);
+        }
+    };
 
     const getStatusClass = (status: string) => {
         if (status === 'Active') return styles.statusActive;
@@ -59,10 +83,19 @@ export function ClientList() {
                         Manage active engagements and history
                     </p>
                 </div>
-                <button className={styles.btnPrimary} onClick={openCreateModal}>
-                    <Plus size={16} />
-                    New Client
-                </button>
+                <div style={{ display: 'flex', gap: '12px' }}>
+                    <button
+                        className={styles.btnPrimary}
+                        style={{ background: 'var(--surface-sunken)', color: 'var(--text-primary)', border: '1px solid var(--surface-border)' }}
+                        onClick={() => setShowDeleted(!showDeleted)}
+                    >
+                        {showDeleted ? 'Active Clients' : 'Trash'}
+                    </button>
+                    <button className={styles.btnPrimary} onClick={openCreateModal}>
+                        <Plus size={16} />
+                        New Client
+                    </button>
+                </div>
             </header>
 
             <div className={styles.tableWrapper}>
@@ -100,13 +133,34 @@ export function ClientList() {
                                         </span>
                                     </td>
                                     <td>
-                                        <button
-                                            onClick={() => openEditModal(client)}
-                                            style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '4px' }}
-                                            title="Edit Client"
-                                        >
-                                            <Edit size={14} />
-                                        </button>
+                                        <div style={{ display: 'flex', gap: '8px' }}>
+                                            {!showDeleted && (
+                                                <button
+                                                    onClick={() => openEditModal(client)}
+                                                    style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '4px' }}
+                                                    title="Edit Client"
+                                                >
+                                                    <Edit size={14} />
+                                                </button>
+                                            )}
+                                            {showDeleted ? (
+                                                <button
+                                                    onClick={() => restoreClient(client.id)}
+                                                    style={{ background: 'transparent', border: 'none', color: '#10b981', cursor: 'pointer', padding: '4px' }}
+                                                    title="Restore"
+                                                >
+                                                    <RefreshCw size={14} />
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    onClick={() => deleteClient(client.id, client.name)}
+                                                    style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px' }}
+                                                    title="Trash"
+                                                >
+                                                    <Trash2 size={14} />
+                                                </button>
+                                            )}
+                                        </div>
                                     </td>
                                 </tr>
                             ))

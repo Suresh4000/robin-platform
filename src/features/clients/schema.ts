@@ -9,4 +9,6 @@ export const createClientSchema = z.object({
     engagementDate: z.string().datetime().optional().nullable(),
 });
 
-export const updateClientSchema = createClientSchema.partial();
+export const updateClientSchema = createClientSchema.extend({
+    isDeleted: z.boolean().optional()
+}).partial();
