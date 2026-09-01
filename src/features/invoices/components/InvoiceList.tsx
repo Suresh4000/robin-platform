@@ -5,11 +5,13 @@ import { Plus, DollarSign, Edit, Trash2, Calendar, HardHat } from 'lucide-react'
 import styles from '@/features/clients/components/ClientList.module.css'; // Reuse table list styles
 import { SlideDrawer } from '@/shared/components/ui/Modal';
 import { InvoiceGenerator } from './InvoiceGenerator';
+import { InvoicePrintView } from './InvoicePrintView';
 
 export function InvoiceList() {
     const [invoices, setInvoices] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isGeneratorOpen, setIsGeneratorOpen] = useState(false);
+    const [viewingInvoice, setViewingInvoice] = useState<any | null>(null);
 
     const fetchInvoices = async () => {
         setIsLoading(true);
@@ -110,13 +112,22 @@ export function InvoiceList() {
                                         </select>
                                     </td>
                                     <td>
-                                        <button
-                                            onClick={() => deleteInvoice(inv.id)}
-                                            style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px' }}
-                                            title="Void Invoice"
-                                        >
-                                            <Trash2 size={16} />
-                                        </button>
+                                        <div style={{ display: 'flex', gap: '8px' }}>
+                                            <button
+                                                onClick={() => setViewingInvoice(inv)}
+                                                style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '4px' }}
+                                                title="View / Download PDF"
+                                            >
+                                                <DollarSign size={16} />
+                                            </button>
+                                            <button
+                                                onClick={() => deleteInvoice(inv.id)}
+                                                style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px' }}
+                                                title="Void Invoice"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))
@@ -136,6 +147,19 @@ export function InvoiceList() {
                         fetchInvoices();
                     }}
                 />
+            </SlideDrawer>
+
+            <SlideDrawer
+                isOpen={!!viewingInvoice}
+                onClose={() => setViewingInvoice(null)}
+                title="Invoice Details"
+            >
+                {viewingInvoice && (
+                    <InvoicePrintView
+                        invoice={viewingInvoice}
+                        onClose={() => setViewingInvoice(null)}
+                    />
+                )}
             </SlideDrawer>
         </div>
     );

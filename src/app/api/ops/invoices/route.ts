@@ -22,7 +22,8 @@ export async function GET(request: Request) {
         const invoices = await prisma.invoice.findMany({
             where: whereClause,
             include: {
-                client: { select: { name: true, company: true } },
+                client: { select: { name: true, company: true, email: true } },
+                timeEntries: { include: { project: true } },
                 _count: { select: { timeEntries: true } }
             },
             orderBy: { createdAt: 'desc' }
