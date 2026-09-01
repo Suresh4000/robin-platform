@@ -153,13 +153,22 @@ export function InvoiceList() {
                                                 <DollarSign size={16} />
                                             </button>
                                             {showDeleted ? (
-                                                <button
-                                                    onClick={() => restoreInvoice(inv.id)}
-                                                    style={{ background: 'transparent', border: 'none', color: '#10b981', cursor: 'pointer', padding: '4px' }}
-                                                    title="Restore"
-                                                >
-                                                    <RefreshCw size={16} />
-                                                </button>
+                                                <>
+                                                    <button
+                                                        onClick={() => restoreInvoice(inv.id)}
+                                                        style={{ background: 'transparent', border: 'none', color: '#10b981', cursor: 'pointer', padding: '4px' }}
+                                                        title="Restore"
+                                                    >
+                                                        <RefreshCw size={16} />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => deleteInvoice(inv.id, true)}
+                                                        style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px' }}
+                                                        title="Permanently Delete Invoice"
+                                                    >
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                </>
                                             ) : (
                                                 <button
                                                     onClick={() => deleteInvoice(inv.id)}
