@@ -1167,14 +1167,9 @@ p.lead {
   color: var(--brass-deep);
 }
 
-.tl-accordion .tl-body {
-  display: none;
-}
+.tl-accordion .tl-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.4s ease-out; overflow: hidden;}
 
-.tl-entry.is-open .tl-body {
-  display: block;
-  animation: fadeIn 0.4s ease;
-}
+.tl-entry.is-open .tl-body { grid-template-rows: 1fr; } .tl-accordion .tl-body-inner { min-height: 0; padding-top: 4px; padding-bottom: 24px; }
 
 @keyframes fadeIn {
   from {

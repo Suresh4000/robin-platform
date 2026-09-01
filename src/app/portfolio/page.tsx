@@ -6,26 +6,9 @@ import Image from "next/image";
 
 export default function Page() {
 
-    const handleAccordionClick = (e: React.MouseEvent) => {
-        const target = (e.target as Element).closest('.tl-toggle');
-        if (!target) return;
-        const entry = target.closest('.tl-entry');
-        if (entry) {
-            const isO = entry.classList.contains('is-open');
-            const accordion = entry.closest('.tl-accordion');
-            if (accordion) {
-                const entries = accordion.querySelectorAll('.tl-entry');
-                for (let i = 0; i < entries.length; i++) {
-                    entries[i].classList.remove('is-open');
-                    const toggle = entries[i].querySelector('.tl-toggle');
-                    if (toggle) toggle.setAttribute('aria-expanded', 'false');
-                }
-            }
-            if (!isO) {
-                entry.classList.add('is-open');
-                target.setAttribute('aria-expanded', 'true');
-            }
-        }
+    const [openIndex, setOpenIndex] = useState<number>(0);
+    const toggleAccordion = (index: number) => {
+        setOpenIndex(prev => (prev === index ? -1 : index));
     };
 
     return (
@@ -81,9 +64,9 @@ export default function Page() {
                             <p className="lead">A detailed look at the organizations, roles, and outcomes behind that experience -from Fortune 500 corporate development to founder-led startups to mission-driven nonprofits.</p>
                         </div>
                         <div className="tl-group-label reveal">Executive &amp; Operating Leadership</div>
-                        <div className="timeline reveal tl-accordion" onClick={handleAccordionClick}>
-                            <div className="tl-entry is-open">
-                                <div aria-expanded="true" className="tl-head-row tl-toggle" role="button" tabIndex={0}>
+                        <div className="timeline reveal tl-accordion">
+                            <div className={`tl-entry ${openIndex === 0 ? "is-open" : ""}`}>
+                                <div aria-expanded={openIndex === 0} className="tl-head-row tl-toggle" role="button" tabIndex={0} onClick={() => toggleAccordion(0)}>
                                     <div className="tl-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z" /><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" /></svg></div>
                                     <div>
                                         <div className="tl-head"><h3 className="tl-role">Executive Director</h3><span className="tl-company">Conservation Biology Institute</span></div>
@@ -98,8 +81,8 @@ export default function Page() {
                                             <li>Navigated the organization through major changes to Federal government funding</li>
                                         </ul>
                                     </div></div></div>
-                            <div className="tl-entry">
-                                <div aria-expanded="false" className="tl-head-row tl-toggle" role="button" tabIndex={0}>
+                            <div className={`tl-entry ${openIndex === 1 ? "is-open" : ""}`}>
+                                <div aria-expanded={openIndex === 1} className="tl-head-row tl-toggle" role="button" tabIndex={0} onClick={() => toggleAccordion(1)}>
                                     <div className="tl-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" /></svg></div>
                                     <div>
                                         <div className="tl-head"><h3 className="tl-role">Director and Co-Founder</h3><span className="tl-company">Global Wildfire Collective</span></div>
@@ -113,8 +96,8 @@ export default function Page() {
                                             <li>Developed and launched the Global Wildfire Collective Academy, creating a recurring earned-revenue model through professional education</li>
                                         </ul>
                                     </div></div></div>
-                            <div className="tl-entry">
-                                <div aria-expanded="false" className="tl-head-row tl-toggle" role="button" tabIndex={0}>
+                            <div className={`tl-entry ${openIndex === 2 ? "is-open" : ""}`}>
+                                <div aria-expanded={openIndex === 2} className="tl-head-row tl-toggle" role="button" tabIndex={0} onClick={() => toggleAccordion(2)}>
                                     <div className="tl-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 20h10" /><path d="M10 20c5.5-2.5.8-6.4 3-10" /><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z" /><path d="M14.1 6a7 7 0 0 1 1.1 7.15c-1.1-1.2-2-2.6-2.1-4.15" /></svg></div>
                                     <div>
                                         <div className="tl-head"><h3 className="tl-role">Fractional COO</h3><span className="tl-company">FOREST FLOOR</span></div>
@@ -129,8 +112,8 @@ export default function Page() {
                                             <li>Designed a beta customer strategy emphasizing influencer-led market validation and pre-sales</li>
                                         </ul>
                                     </div></div></div>
-                            <div className="tl-entry">
-                                <div aria-expanded="false" className="tl-head-row tl-toggle" role="button" tabIndex={0}>
+                            <div className={`tl-entry ${openIndex === 3 ? "is-open" : ""}`}>
+                                <div aria-expanded={openIndex === 3} className="tl-head-row tl-toggle" role="button" tabIndex={0} onClick={() => toggleAccordion(3)}>
                                     <div className="tl-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" /><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" /></svg></div>
                                     <div>
                                         <div className="tl-head"><h3 className="tl-role">Chief Executive Officer</h3><span className="tl-company">Monsoon Inc.</span></div>
@@ -148,8 +131,8 @@ export default function Page() {
                                             <p className="tl-desc" style={{ "margin": "0" }}><strong style={{ "color": "var(--ink)" }}>Consultant, Product and Go-To-Market Strategy</strong> · Jan 2019 – Mar 2019 · 3 mos · Portland, OR</p>
                                         </div>
                                     </div></div></div>
-                            <div className="tl-entry">
-                                <div aria-expanded="false" className="tl-head-row tl-toggle" role="button" tabIndex={0}>
+                            <div className={`tl-entry ${openIndex === 4 ? "is-open" : ""}`}>
+                                <div aria-expanded={openIndex === 4} className="tl-head-row tl-toggle" role="button" tabIndex={0} onClick={() => toggleAccordion(4)}>
                                     <div className="tl-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3" /><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" /><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" /></svg></div>
                                     <div>
                                         <div className="tl-head"><h3 className="tl-role">Senior VP, Marketing and Strategic Alliances</h3><span className="tl-company">Socrata</span></div>
@@ -176,8 +159,8 @@ export default function Page() {
                                             </ul>
                                         </div>
                                     </div></div></div>
-                            <div className="tl-entry">
-                                <div aria-expanded="false" className="tl-head-row tl-toggle" role="button" tabIndex={0}>
+                            <div className={`tl-entry ${openIndex === 5 ? "is-open" : ""}`}>
+                                <div aria-expanded={openIndex === 5} className="tl-head-row tl-toggle" role="button" tabIndex={0} onClick={() => toggleAccordion(5)}>
                                     <div className="tl-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" /><line x1="9" y1="3" x2="9" y2="18" /><line x1="15" y1="6" x2="15" y2="21" /></svg></div>
                                     <div>
                                         <div className="tl-head"><h3 className="tl-role">Director, Tech Sector (OEM and Developer Line of Business)</h3><span className="tl-company">Esri</span></div>
@@ -192,8 +175,8 @@ export default function Page() {
                                             <li>Led alliances with MicroStrategy and Information Builders, resulting in Esri maps as the default map in Analytics Desktop and WebFOCUS respectively</li>
                                         </ul>
                                     </div></div></div>
-                            <div className="tl-entry">
-                                <div aria-expanded="false" className="tl-head-row tl-toggle" role="button" tabIndex={0}>
+                            <div className={`tl-entry ${openIndex === 6 ? "is-open" : ""}`}>
+                                <div aria-expanded={openIndex === 6} className="tl-head-row tl-toggle" role="button" tabIndex={0} onClick={() => toggleAccordion(6)}>
                                     <div className="tl-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2" /><path d="M12 18h.01" /></svg></div>
                                     <div>
                                         <div className="tl-head"><h3 className="tl-role">Chief Operating Officer</h3><span className="tl-company">Geoloqi.com</span></div>
@@ -208,8 +191,8 @@ export default function Page() {
                                             <li>Led the strategy and execution of a competitive bid acquisition, resulting in a profitable exit for employees, founders, and investors</li>
                                         </ul>
                                     </div></div></div>
-                            <div className="tl-entry">
-                                <div aria-expanded="false" className="tl-head-row tl-toggle" role="button" tabIndex={0}>
+                            <div className={`tl-entry ${openIndex === 7 ? "is-open" : ""}`}>
+                                <div aria-expanded={openIndex === 7} className="tl-head-row tl-toggle" role="button" tabIndex={0} onClick={() => toggleAccordion(7)}>
                                     <div className="tl-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" /><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" /><line x1="12" y1="12" x2="12" y2="12" /></svg></div>
                                     <div>
                                         <div className="tl-head"><h3 className="tl-role">Principal</h3><span className="tl-company">The Point Consulting</span></div>
@@ -223,8 +206,8 @@ export default function Page() {
                                             <li>Clients included Ashoka, Avnera, Geoloqi, Intellectual Ventures, Astro Studios, Loctronix, and UPEK</li>
                                         </ul>
                                     </div></div></div>
-                            <div className="tl-entry">
-                                <div aria-expanded="false" className="tl-head-row tl-toggle" role="button" tabIndex={0}>
+                            <div className={`tl-entry ${openIndex === 8 ? "is-open" : ""}`}>
+                                <div aria-expanded={openIndex === 8} className="tl-head-row tl-toggle" role="button" tabIndex={0} onClick={() => toggleAccordion(8)}>
                                     <div className="tl-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9" /><path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5" /><circle cx="12" cy="12" r="2" /><path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5" /><path d="M19.1 4.9C23 8.8 23 15.1 19.1 19" /></svg></div>
                                     <div>
                                         <div className="tl-head"><h3 className="tl-role">General Manager, Audio Business Unit</h3><span className="tl-company">Avnera Corporation</span></div>
@@ -232,8 +215,8 @@ export default function Page() {
                                     </div>
                                     <span className="tl-chevron"><svg fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"></path></svg></span></div><div className="tl-body"><div className="tl-body-inner">
                                     </div></div></div>
-                            <div className="tl-entry">
-                                <div aria-expanded="false" className="tl-head-row tl-toggle" role="button" tabIndex={0}>
+                            <div className={`tl-entry ${openIndex === 9 ? "is-open" : ""}`}>
+                                <div aria-expanded={openIndex === 9} className="tl-head-row tl-toggle" role="button" tabIndex={0} onClick={() => toggleAccordion(9)}>
                                     <div className="tl-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 3h12l4 6-10 13L2 9z" /><path d="M11 3 8 9l4 13 4-13-3-6" /><path d="M2 9h20" /></svg></div>
                                     <div>
                                         <div className="tl-head"><h3 className="tl-role">CEO &amp; Founder</h3><span className="tl-company">88, Inc.</span></div>
@@ -242,8 +225,8 @@ export default function Page() {
                                     <span className="tl-chevron"><svg fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"></path></svg></span></div><div className="tl-body"><div className="tl-body-inner">
                                         <p className="tl-desc">88, Inc. created collections of jewelry and accessories that seamlessly integrated technology and fashion design -products built by women, with a woman's reality in mind.</p>
                                     </div></div></div>
-                            <div className="tl-entry">
-                                <div aria-expanded="false" className="tl-head-row tl-toggle" role="button" tabIndex={0}>
+                            <div className={`tl-entry ${openIndex === 10 ? "is-open" : ""}`}>
+                                <div aria-expanded={openIndex === 10} className="tl-head-row tl-toggle" role="button" tabIndex={0} onClick={() => toggleAccordion(10)}>
                                     <div className="tl-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg></div>
                                     <div>
                                         <div className="tl-head"><h3 className="tl-role">VP Marketing and Business Development, Co-Founder</h3><span className="tl-company">FonJax</span></div>
@@ -252,8 +235,8 @@ export default function Page() {
                                     <span className="tl-chevron"><svg fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"></path></svg></span></div><div className="tl-body"><div className="tl-body-inner">
                                         <p className="tl-desc">FonJax provided remote access and control of physical handsets on live carrier networks over the internet -streamlining deployment, monitoring, and QA/automation testing of mobile applications and content for developers.</p>
                                     </div></div></div>
-                            <div className="tl-entry">
-                                <div aria-expanded="false" className="tl-head-row tl-toggle" role="button" tabIndex={0}>
+                            <div className={`tl-entry ${openIndex === 11 ? "is-open" : ""}`}>
+                                <div aria-expanded={openIndex === 11} className="tl-head-row tl-toggle" role="button" tabIndex={0} onClick={() => toggleAccordion(11)}>
                                     <div className="tl-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2" /><path d="M12 18h.01" /></svg></div>
                                     <div>
                                         <div className="tl-head"><h3 className="tl-role">Acting Mobile Product Marketing Manager</h3><span className="tl-company">UPEK</span></div>
@@ -266,8 +249,8 @@ export default function Page() {
                                             <li>Drove business development with mobile operators, device OEMs, and application developers</li>
                                         </ul>
                                     </div></div></div>
-                            <div className="tl-entry">
-                                <div aria-expanded="false" className="tl-head-row tl-toggle" role="button" tabIndex={0}>
+                            <div className={`tl-entry ${openIndex === 12 ? "is-open" : ""}`}>
+                                <div aria-expanded={openIndex === 12} className="tl-head-row tl-toggle" role="button" tabIndex={0} onClick={() => toggleAccordion(12)}>
                                     <div className="tl-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" /><rect x="9" y="9" width="6" height="6" /><path d="M15 2v2M9 2v2M15 20v2M9 20v2M2 15h2M2 9h2M20 15h2M20 9h2" /></svg></div>
                                     <div>
                                         <div className="tl-head"><h3 className="tl-role">Director, Wireless Partnerships and Acquisitions</h3><span className="tl-company">Freescale Semiconductor</span></div>
@@ -282,8 +265,8 @@ export default function Page() {
                                             <li>Ranked in the top 10% of 2004 Freescale employee performance assessments</li>
                                         </ul>
                                     </div></div></div>
-                            <div className="tl-entry">
-                                <div aria-expanded="false" className="tl-head-row tl-toggle" role="button" tabIndex={0}>
+                            <div className={`tl-entry ${openIndex === 13 ? "is-open" : ""}`}>
+                                <div aria-expanded={openIndex === 13} className="tl-head-row tl-toggle" role="button" tabIndex={0} onClick={() => toggleAccordion(13)}>
                                     <div className="tl-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="6" width="20" height="12" rx="2" /><circle cx="12" cy="12" r="2" /><path d="M6 12h.01M18 12h.01" /></svg></div>
                                     <div>
                                         <div className="tl-head"><h3 className="tl-role">Investment Manager</h3><span className="tl-company">Motorola Ventures</span></div>
@@ -306,8 +289,8 @@ export default function Page() {
                                             </ul>
                                         </div>
                                     </div></div></div>
-                            <div className="tl-entry">
-                                <div aria-expanded="false" className="tl-head-row tl-toggle" role="button" tabIndex={0}>
+                            <div className={`tl-entry ${openIndex === 14 ? "is-open" : ""}`}>
+                                <div aria-expanded={openIndex === 14} className="tl-head-row tl-toggle" role="button" tabIndex={0} onClick={() => toggleAccordion(14)}>
                                     <div className="tl-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="16" y="16" width="6" height="6" rx="1" /><rect x="2" y="16" width="6" height="6" rx="1" /><rect x="9" y="2" width="6" height="6" rx="1" /><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3" /><path d="M12 12V8" /></svg></div>
                                     <div>
                                         <div className="tl-head"><h3 className="tl-role">Chief Operating Officer</h3><span className="tl-company">Public Market</span></div>
@@ -317,8 +300,8 @@ export default function Page() {
                                         <p className="tl-desc">Public Market built an architectural layer for peer-to-peer commerce -an e-commerce database, universal catalogue, and trust protocol designed to replace the essential functions of monopoly marketplaces with a decentralized, lower-cost alternative.</p>
                                         <p className="tl-desc" style={{ "margin": "0" }}>As COO, wore many hats depending on the needs of the business -spanning product management, financial projections, strategic partnerships, marketing, fundraising, recruitment, and HR.</p>
                                     </div></div></div>
-                            <div className="tl-entry">
-                                <div aria-expanded="false" className="tl-head-row tl-toggle" role="button" tabIndex={0}>
+                            <div className={`tl-entry ${openIndex === 15 ? "is-open" : ""}`}>
+                                <div aria-expanded={openIndex === 15} className="tl-head-row tl-toggle" role="button" tabIndex={0} onClick={() => toggleAccordion(15)}>
                                     <div className="tl-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19.439 7.85c-.049.322.059.648.289.878l1.568 1.568c.47.47.706 1.087.706 1.704s-.235 1.233-.706 1.704l-1.611 1.611a.98.98 0 0 1-.837.276c-.47-.07-.802-.48-.968-.925a2.501 2.501 0 1 0-3.214 3.214c.446.166.855.497.925.968a.979.979 0 0 1-.276.837l-1.61 1.61a2.404 2.404 0 0 1-3.408 0l-1.569-1.568c-.23-.23-.556-.338-.878-.29-.493.074-.84.504-1.02.968a2.5 2.5 0 1 1-3.237-3.237c.464-.18.894-.527.967-1.02.048-.322-.059-.648-.289-.878L2.61 12.09a2.404 2.404 0 0 1 0-3.408l1.568-1.568c.23-.23.338-.556.29-.879-.074-.493-.504-.84-.968-1.02a2.5 2.5 0 1 1 3.237-3.237c.18.464.527.894 1.02.967.322.048.648-.059.878-.289l1.568-1.568a2.404 2.404 0 0 1 3.408 0l1.611 1.567c.23.23.556.338.878.29.493-.074.84-.504 1.02-.968a2.5 2.5 0 1 1 3.237 3.237c-.464.18-.894.527-.967 1.02z" /></svg></div>
                                     <div>
                                         <div className="tl-head"><h3 className="tl-role">Founder &amp; CEO</h3><span className="tl-company">Moica, Inc.</span></div>
@@ -327,8 +310,8 @@ export default function Page() {
                                     <span className="tl-chevron"><svg fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"></path></svg></span></div><div className="tl-body"><div className="tl-body-inner">
                                         <p className="tl-desc" style={{ "margin": "0" }}>Built the next generation of group-scheduling productivity tools.</p>
                                     </div></div></div>
-                            <div className="tl-entry">
-                                <div aria-expanded="false" className="tl-head-row tl-toggle" role="button" tabIndex={0}>
+                            <div className={`tl-entry ${openIndex === 16 ? "is-open" : ""}`}>
+                                <div aria-expanded={openIndex === 16} className="tl-head-row tl-toggle" role="button" tabIndex={0} onClick={() => toggleAccordion(16)}>
                                     <div className="tl-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" /><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" /><line x1="12" y1="12" x2="12" y2="12" /></svg></div>
                                     <div>
                                         <div className="tl-head"><h3 className="tl-role">Principal Consultant and Founder</h3><span className="tl-company">Bizmaven.me</span></div>
