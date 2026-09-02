@@ -138,5 +138,5 @@
 
 .metric b {
     color: var(--text-primary);
-    font-family: 'JetBrains Mono', monospace;
+    font-family: var(--font-inter), 'Inter', sans-serif;
 }

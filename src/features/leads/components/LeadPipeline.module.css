@@ -101,7 +101,7 @@
 }
 
 .cardValue {
-    font-family: 'JetBrains Mono', monospace;
+    font-family: var(--font-inter), 'Inter', sans-serif;
     font-size: 13px;
     color: var(--text-primary);
     font-weight: 500;

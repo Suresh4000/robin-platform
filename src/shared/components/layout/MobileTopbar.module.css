@@ -34,7 +34,7 @@
     }
 
     .brandText {
-        font-family: 'Space Grotesk', sans-serif;
+        font-family: var(--font-manrope), 'Manrope', sans-serif;
         font-weight: 700;
         font-size: 18px;
     }

@@ -24,7 +24,7 @@
 }
 
 .brand {
-    font-family: var(--font-heading);
+    font-family: var(--font-manrope);
     font-weight: 700;
     font-size: 20px;
     letter-spacing: -0.02em;
@@ -93,7 +93,7 @@
 }
 
 .heroHeadline {
-    font-family: var(--font-heading);
+    font-family: var(--font-manrope);
     font-size: 72px;
     line-height: 1.1;
     letter-spacing: -0.04em;
@@ -194,7 +194,7 @@
 
 .sectionHeaderCentered h2 {
     font-size: 40px;
-    font-family: var(--font-heading);
+    font-family: var(--font-manrope);
     color: var(--text-title);
     margin-bottom: 12px;
     letter-spacing: -0.02em;
@@ -277,7 +277,7 @@
 
 .bentoTitle {
     font-size: 22px;
-    font-family: var(--font-heading);
+    font-family: var(--font-manrope);
     margin: 16px 0 8px 0;
     color: var(--text-title);
 }
@@ -307,7 +307,7 @@
 
 .statNumber {
     font-size: 48px;
-    font-family: var(--font-heading);
+    font-family: var(--font-manrope);
     background: var(--brand-gradient);
     -webkit-background-clip: text;
     background-clip: text;
@@ -334,7 +334,7 @@
 
 .ctaHeadline {
     font-size: 40px;
-    font-family: var(--font-heading);
+    font-family: var(--font-manrope);
     color: var(--text-title);
     margin-bottom: 16px;
     letter-spacing: -0.02em;
@@ -396,7 +396,7 @@
 }
 
 .serviceCard h3 {
-    font-family: var(--font-heading);
+    font-family: var(--font-manrope);
     font-size: 22px;
     color: var(--text-title);
     margin-bottom: 16px;
@@ -461,7 +461,7 @@
 
 .tag {
     font-size: 12px;
-    font-family: var(--font-mono);
+    font-family: var(--font-inter);
     background-color: var(--surface-hover);
     color: var(--text-secondary);
     padding: 4px 10px;
