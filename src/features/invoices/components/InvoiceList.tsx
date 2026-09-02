@@ -34,7 +34,7 @@ export function InvoiceList() {
     const deleteInvoice = async (id: string, hardDelete = false) => {
         if (!confirm(`Are you sure you want to ${hardDelete ? 'permanently ' : ''}delete this invoice?`)) return;
         try {
-            await fetch(hardDelete ?\x60 / api / ops / invoices /\$\{ id\ } ? hardDelete = true\x60 : \x60 / api / ops / invoices /\$\{ id\ }\x60, { method: 'DELETE' });
+            await fetch(hardDelete ? `/api/ops/invoices/${id}?hardDelete=true` : `/api/ops/invoices/${id}`, { method: 'DELETE' });
             fetchInvoices(showDeleted);
         } catch (e) {
             console.error(e);

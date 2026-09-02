@@ -1,14 +1,15 @@
 import React, { useRef } from 'react';
 import { Download } from 'lucide-react';
-// @ts-ignore
-import html2pdf from 'html2pdf.js';
 
 export function InvoicePrintView({ invoice, onClose }: { invoice: any, onClose: () => void }) {
     const printRef = useRef<HTMLDivElement>(null);
 
-    const handleDownloadPDF = () => {
+    const handleDownloadPDF = async () => {
         const element = printRef.current;
         if (!element) return;
+
+        // @ts-ignore
+        const html2pdf = (await import('html2pdf.js')).default;
 
         const opt = {
             margin: 0.5,
