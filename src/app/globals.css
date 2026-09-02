@@ -1,5 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;700&display=swap');
-
+/* Globals using Next.js imported fonts (--font-inter, --font-manrope) */
 :root {
   /* Colors - Design Tokens */
   --color-primary: #0A9FE7;
@@ -35,7 +34,7 @@
 }
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: var(--font-inter), 'Inter', sans-serif;
   color: var(--text-primary);
   background-color: var(--bg-main);
   line-height: 1.5;
@@ -48,7 +47,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--font-manrope), 'Manrope', sans-serif;
   font-weight: 700;
   color: var(--text-primary);
 }
@@ -56,7 +55,7 @@ h6 {
 .data-text,
 code,
 pre {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: ui-monospace, monospace;
 }
 
 a {
@@ -100,5 +99,27 @@ a {
     flex-wrap: wrap !important;
   }
 }
-@media (max-width: 900px) { .activity-row { flex-direction: column !important; align-items: flex-start !important; gap: 8px !important; } .activity-row > div:first-child { align-self: flex-start; } }
-@media (max-width: 900px) { .activity-row { flex-direction: column !important; align-items: flex-start !important; gap: 8px !important; } .activity-row > div:first-child { align-self: flex-start; } }
+
+@media (max-width: 900px) {
+  .activity-row {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+  }
+
+  .activity-row>div:first-child {
+    align-self: flex-start;
+  }
+}
+
+@media (max-width: 900px) {
+  .activity-row {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+  }
+
+  .activity-row>div:first-child {
+    align-self: flex-start;
+  }
+}
