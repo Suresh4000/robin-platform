@@ -1,0 +1,51 @@
+
+> rbos@0.1.0 build
+> prisma generate && prisma db push --accept-data-loss && next build
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+
+✔ Generated Prisma Client (v6.4.1) to .\node_modules\@prisma\client in 152ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Need your database queries to be 1000x faster? Accelerate offers you that and more: https://pris.ly/tip-2-accelerate
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+Datasource "db": PostgreSQL database "postgres", schema "public" at "db.prisma.io:5432"
+
+The database is already in sync with the Prisma schema.
+
+Running generate... (Use --skip-generate to skip the generators)
+[2K[1A[2K[GRunning generate... - Prisma Client
+[2K[1A[2K[G✔ Generated Prisma Client (v6.4.1) to .\node_modules\@prisma\client in 158ms
+
+   ▲ Next.js 15.5.23
+   - Environments: .env.local, .env
+
+   Creating an optimized production build ...
+Failed to compile.
+
+./src/features/invoices/components/InvoiceList.tsx
+Error:   [31mx[0m Expected unicode escape
+    ,-[[36;1;4mC:\Users\SVAAN TECH\Downloads\Robin_Business hub\src\features\invoices\components\InvoiceList.tsx[0m:37:1]
+ [2m34[0m |     const deleteInvoice = async (id: string, hardDelete = false) => {
+ [2m35[0m |         if (!confirm(`Are you sure you want to ${hardDelete ? 'permanently ' : ''}delete this invoice?`)) return;
+ [2m36[0m |         try {
+ [2m37[0m |             await fetch(hardDelete ?\x60 / api / ops / invoices /\$\{ id\ } ? hardDelete = true\x60 : \x60 / api / ops / invoices /\$\{ id\ }\x60, { method: 'DELETE' });
+    : [35;1m                                    ^[0m
+ [2m38[0m |             fetchInvoices(showDeleted);
+ [2m39[0m |         } catch (e) {
+ [2m39[0m |             console.error(e);
+    `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./src/features/invoices/components/InvoiceList.tsx
+./src/app/(admin)/ops/invoices/page.tsx
+
+
+> Build failed because of webpack errors

@@ -16,8 +16,8 @@ export function PublicNav() {
       <nav className="nav">
         <div className="nav-row">
           <Link className="brand" href="/">
-            <span className="mark"><span style={{ fontWeight: 700, fontSize: '15px' }}>RJ</span></span>
-            <span>Robin Jones
+            <span className="mark"><span style={{ fontWeight: 700, fontSize: '30px' }}>RJ</span></span>
+            <span>
               {/*  <small>Growth · Partnerships · Transformation</small>  */}
             </span>
           </Link>

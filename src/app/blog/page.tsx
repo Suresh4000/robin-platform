@@ -30,7 +30,7 @@ export default async function Page() {
         </div>
       </div>
       {/*  ===================== TOPICS =====================  */}
-      <section className="section tight">
+      {/* <section className="section tight">
         <div className="container">
           <div className="eyebrow reveal">Browse by Topic</div>
           <div className="field-row reveal" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '16px' }}>
@@ -44,7 +44,7 @@ export default async function Page() {
             <span className="field-chip">Thoughts</span>
           </div>
         </div>
-      </section>
+      </section> */}
       {/*  ===================== ARTICLE GRID =====================  */}
       <section className="section section-alt" id="blog-list">
         <div className="container">

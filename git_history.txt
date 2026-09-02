@@ -1,0 +1,15 @@
+5f6a5ca build: ensure vercel deployment scripts
+778968e feat: attach task dropdown dropdown to time entries
+632496f fix: actually add the hard delete button to the trash UI
+451e7fd fix: resolve invoice trash view actions and hard delete
+3077934 feat: complete invoice soft delete layer
+30fa9dd feat: complete invoice pdf download
+94b0858 feat: complete end-to-end invoice generation portal
+20a5d76 chore: remove expected value field from Lead Form
+ef71453 feat: implement client soft delete and restore
+2c7957f feat: document upload client name datalist dropdown
+fcff670 fix: lead pipeline table layout and project soft delete
+4838b2f feat: Add lead soft delete, document upload modal, project categories & auto-complete past events
+b2bab52 Admin UI fixes: Responsive layout updates to Dashboard Activity, Leads pipeline, and Task list scrolling
+b72ca39 Admin fixes: Enhanced mobile responsiveness with flex columns and x-scroll tables
+d32c84f Fix event capacity limits handling in the registration process
