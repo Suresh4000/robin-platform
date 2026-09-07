@@ -62,6 +62,12 @@ export function PublicFooter() {
             <Link href="/services">Services</Link>
           </div>
           <div className="footer-col">
+            <h5>Engagement Models</h5>
+            <Link href="/advise">Advise</Link>
+            <Link href="/operate">Operate</Link>
+            <Link href="/navigate">Navigate</Link>
+          </div>
+          <div className="footer-col">
             <h5>More</h5>
             <Link href="/insights">Insights &amp; Media</Link>
             <Link href="/blog">Blog</Link>
