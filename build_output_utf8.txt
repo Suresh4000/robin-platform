@@ -1,0 +1,41 @@
+﻿   Γû▓ Next.js 15.5.23
+   - Environments: .env.local, .env
+
+   Creating an optimized production build ...
+node.exe : Failed to 
+compile.
+At line:1 char:1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Users\SVAAN 
+TECH\AppData\Roa ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~
+    + CategoryInfo          
+    : NotSpecified: (Faile  
+  d to compile.:String) [   
+ ], RemoteException
+    + FullyQualifiedErrorId 
+    : NativeCommandError
+ 
+
+./src/app/api/content/media/
+[id]/raw/route.ts
+Module not found: Can't 
+resolve '@/lib/db'
+
+https://nextjs.org/docs/mess
+ages/module-not-found
+
+./src/app/api/content/media/
+[id]/route.ts
+Module not found: Can't 
+resolve '@/lib/db'
+
+https://nextjs.org/docs/mess
+ages/module-not-found
+
+
+> Build failed because of 
+webpack errors
