@@ -415,7 +415,7 @@ export default function Page() {
                     </div>
                 </section>
                 {/*  ===================== AREAS OF IMPACT =====================  */}
-                <section className="section section-dark" data-bg-text="FOCUS">
+                <section className="section section-alt" data-bg-text="FOCUS">
                     <div className="container">
                         <div className="section-head reveal">
                             <div className="eyebrow">Areas of Impact</div>
