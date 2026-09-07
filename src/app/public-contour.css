@@ -772,6 +772,34 @@ p.lead {
   margin: 0;
 }
 
+/* section-dark card overrides */
+.section-dark .card {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.section-dark .card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 24px 40px -24px rgba(0, 0, 0, 0.4);
+}
+
+.section-dark .card h4 {
+  color: var(--paper);
+}
+
+.section-dark .card p {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.section-dark .card .icon-badge {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.section-dark .card .icon-badge svg {
+  stroke: var(--brass-light);
+}
+
 /* stat strip */
 .stat-strip {
   display: flex;
