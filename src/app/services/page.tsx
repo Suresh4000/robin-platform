@@ -68,58 +68,49 @@ export default function Page() {
               <div className="eyebrow">What I Work On</div>
               <h2 className="section-title">Services</h2>
             </div>
-            <div className="reveal">
+            <div className="grid grid-3 reveal" style={{ gap: "24px", marginTop: "32px" }}>
               {/* ADVISE */}
-              <div className="service">
-                <div className="num-badge">01</div>
-                <div className="body">
-                  <h3>Advise · Executive Advisory</h3>
-                  <p>Experienced judgment when the next decision matters. For CEOs, founders, and leadership teams facing an important strategic or operating question and looking for an experienced outside perspective.</p>
-                  <ul className="check-list check-list-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "10px" }}>
-                    <li>Outside Perspective</li>
-                    <li>Strategic Judgment</li>
-                    <li>Executive Challenge</li>
-                    <li>Decision Support</li>
-                  </ul>
-                  <div style={{ marginTop: "20px" }}>
-                    <a className="btn btn-sm btn-primary" href="/advise">View Details</a>
-                  </div>
+              <div className="card" style={{ display: "flex", flexDirection: "column" }}>
+                <h3 style={{ marginBottom: "16px", marginTop: 0 }}>Advise</h3>
+                <p>Experienced judgment when the next decision matters. For CEOs, founders, and leadership teams facing an important strategic or operating question and looking for an experienced outside perspective.</p>
+                <ul className="check-list check-list-grid" style={{ display: "grid", gridTemplateColumns: "1fr", gap: "8px", margin: "16px 0 24px" }}>
+                  <li>Outside Perspective</li>
+                  <li>Strategic Judgment</li>
+                  <li>Executive Challenge</li>
+                  <li>Decision Support</li>
+                </ul>
+                <div style={{ marginTop: "auto", paddingTop: "8px" }}>
+                  <a className="btn btn-sm btn-primary" href="/advise" style={{ width: "100%", justifyContent: "center" }}>View Details</a>
                 </div>
               </div>
 
               {/* OPERATE */}
-              <div className="service">
-                <div className="num-badge">02</div>
-                <div className="body">
-                  <h3>Operate · Primary Engagement</h3>
-                  <p>Embedded executive leadership to turn strategy into execution. For organizations that know what needs to happen but need experienced senior leadership to make it happen without a full-time hire.</p>
-                  <ul className="check-list check-list-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "10px" }}>
-                    <li>Embedded Leadership</li>
-                    <li>Operating Cadence</li>
-                    <li>Cross-Functional Alignment</li>
-                    <li>Accountability &amp; Execution</li>
-                  </ul>
-                  <div style={{ marginTop: "20px" }}>
-                    <a className="btn btn-sm btn-primary" href="/operate">View Details</a>
-                  </div>
+              <div className="card" style={{ display: "flex", flexDirection: "column" }}>
+                <h3 style={{ marginBottom: "16px", marginTop: 0 }}>Operate</h3>
+                <p>Embedded executive leadership to turn strategy into execution. For organizations that know what needs to happen but need experienced senior leadership to make it happen without a full-time hire.</p>
+                <ul className="check-list check-list-grid" style={{ display: "grid", gridTemplateColumns: "1fr", gap: "8px", margin: "16px 0 24px" }}>
+                  <li>Embedded Leadership</li>
+                  <li>Operating Cadence</li>
+                  <li>Cross-Functional Alignment</li>
+                  <li>Accountability &amp; Execution</li>
+                </ul>
+                <div style={{ marginTop: "auto", paddingTop: "8px" }}>
+                  <a className="btn btn-sm btn-primary" href="/operate" style={{ width: "100%", justifyContent: "center" }}>View Details</a>
                 </div>
               </div>
 
               {/* NAVIGATE */}
-              <div className="service">
-                <div className="num-badge">03</div>
-                <div className="body">
-                  <h3>Navigate · Special Situations</h3>
-                  <p>Intensive executive leadership when the stakes are high. For consequential situations (turnarounds, transactions, fundraising) where normal capacity is not enough and experienced leadership is needed through a defined transition.</p>
-                  <ul className="check-list check-list-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "10px" }}>
-                    <li>More Intensive</li>
-                    <li>Time-Bound Leadership</li>
-                    <li>Situation-Specific</li>
-                    <li>Focused on a Defined Outcome</li>
-                  </ul>
-                  <div style={{ marginTop: "20px" }}>
-                    <a className="btn btn-sm btn-primary" href="/navigate">View Details</a>
-                  </div>
+              <div className="card" style={{ display: "flex", flexDirection: "column" }}>
+                <h3 style={{ marginBottom: "16px", marginTop: 0 }}>Navigate</h3>
+                <p>Intensive executive leadership when the stakes are high. For consequential situations (turnarounds, transactions) where normal capacity is not enough and experienced leadership is needed.</p>
+                <ul className="check-list check-list-grid" style={{ display: "grid", gridTemplateColumns: "1fr", gap: "8px", margin: "16px 0 24px" }}>
+                  <li>More Intensive</li>
+                  <li>Time-Bound Leadership</li>
+                  <li>Situation-Specific</li>
+                  <li>Focused on Outcomes</li>
+                </ul>
+                <div style={{ marginTop: "auto", paddingTop: "8px" }}>
+                  <a className="btn btn-sm btn-primary" href="/navigate" style={{ width: "100%", justifyContent: "center" }}>View Details</a>
                 </div>
               </div>
             </div>
