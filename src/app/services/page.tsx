@@ -69,90 +69,57 @@ export default function Page() {
               <h2 className="section-title">Services</h2>
             </div>
             <div className="reveal">
+              {/* ADVISE */}
               <div className="service">
                 <div className="num-badge">01</div>
                 <div className="body">
-                  <h3>Fractional Executive Leadership</h3>
-                  <p>Embedded senior leadership for a defined phase -without a full-time hire. I work alongside leadership teams on growth, transformation, partnerships, or a new strategic function.</p>
-                  <ul className="check-list">
-                    <li>Leading a growth initiative or new business line</li>
-                    <li>Building and structuring strategic partnerships</li>
-                    <li>Guiding a transformation</li>
-                    <li>Establishing a new strategic function</li>
-                    <li>Supporting an executive team through a period of transition</li>
+                  <h3>Advise · Executive Advisory</h3>
+                  <p>Experienced judgment when the next decision matters. For CEOs, founders, and leadership teams facing an important strategic or operating question and looking for an experienced outside perspective.</p>
+                  <ul className="check-list check-list-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "10px" }}>
+                    <li>Outside Perspective</li>
+                    <li>Strategic Judgment</li>
+                    <li>Executive Challenge</li>
+                    <li>Decision Support</li>
                   </ul>
-                  <div className="outcome"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 7h10v10" /><path d="M7 17 17 7" /></svg> <b>Outcome:</b> Experienced executive leadership focused on a clearly defined challenge.</div>
+                  <div style={{ marginTop: "20px" }}>
+                    <a className="btn btn-sm btn-primary" href="/advise">View Details</a>
+                  </div>
                 </div>
               </div>
+
+              {/* OPERATE */}
               <div className="service">
                 <div className="num-badge">02</div>
                 <div className="body">
-                  <h3>Growth Strategy &amp; Opportunity Development</h3>
-                  <p>Growth gets more sustainable once you know exactly where your strongest opportunities are. I assess your position, explore what's possible, prioritize it, and build a practical path forward.</p>
-                  <ul className="check-list">
-                    <li>Growth opportunity assessment and prioritization</li>
-                    <li>Market and competitive analysis</li>
-                    <li>New market and customer opportunities</li>
-                    <li>Business case development</li>
-                    <li>Growth roadmap creation</li>
+                  <h3>Operate · Primary Engagement</h3>
+                  <p>Embedded executive leadership to turn strategy into execution. For organizations that know what needs to happen but need experienced senior leadership to make it happen without a full-time hire.</p>
+                  <ul className="check-list check-list-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "10px" }}>
+                    <li>Embedded Leadership</li>
+                    <li>Operating Cadence</li>
+                    <li>Cross-Functional Alignment</li>
+                    <li>Accountability &amp; Execution</li>
                   </ul>
-                  <div className="outcome"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 7h10v10" /><path d="M7 17 17 7" /></svg> <b>Outcome:</b> A clearer growth direction, prioritized opportunities, and a roadmap you can move on.</div>
+                  <div style={{ marginTop: "20px" }}>
+                    <a className="btn btn-sm btn-primary" href="/operate">View Details</a>
+                  </div>
                 </div>
               </div>
+
+              {/* NAVIGATE */}
               <div className="service">
                 <div className="num-badge">03</div>
                 <div className="body">
-                  <h3>Strategic Partnerships</h3>
-                  <p>The right partnership accelerates growth and opens capability you can't build alone. I focus past relationship-building -to the strategic value the partnership actually creates.</p>
-                  <ul className="check-list">
-                    <li>Partnership strategy and partner identification</li>
-                    <li>Mutual value analysis and proposition development</li>
-                    <li>Collaboration model design and stakeholder alignment</li>
-                    <li>Partnership roadmap and growth through existing relationships</li>
+                  <h3>Navigate · Special Situations</h3>
+                  <p>Intensive executive leadership when the stakes are high. For consequential situations (turnarounds, transactions, fundraising) where normal capacity is not enough and experienced leadership is needed through a defined transition.</p>
+                  <ul className="check-list check-list-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "10px" }}>
+                    <li>More Intensive</li>
+                    <li>Time-Bound Leadership</li>
+                    <li>Situation-Specific</li>
+                    <li>Focused on a Defined Outcome</li>
                   </ul>
-                  <div className="outcome"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 7h10v10" /><path d="M7 17 17 7" /></svg> <b>Outcome:</b> A sharper partnership strategy and clarity on which relationships actually create value.</div>
-                </div>
-              </div>
-              <div className="service">
-                <div className="num-badge">04</div>
-                <div className="body">
-                  <h3>Transformation &amp; Change Leadership</h3>
-                  <p>Transformation creates opportunity -and also uncertainty and friction. I bring clarity to priorities and build a practical path from where you are to where you need to be.</p>
-                  <ul className="check-list">
-                    <li>Current-state assessment and future-state definition</li>
-                    <li>Operating model design and organizational alignment</li>
-                    <li>Transformation roadmap and initiative prioritization</li>
-                    <li>Leadership support through execution</li>
-                  </ul>
-                  <div className="outcome"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 7h10v10" /><path d="M7 17 17 7" /></svg> <b>Outcome:</b> A clear transformation direction, aligned priorities, and an actionable plan.</div>
-                </div>
-              </div>
-              <div className="service">
-                <div className="num-badge">05</div>
-                <div className="body">
-                  <h3>New Business Line Development</h3>
-                  <p>A new business line needs more than a good idea -strategic alignment, commercial logic, real capability, and a clear path to execution.</p>
-                  <ul className="check-list">
-                    <li>Opportunity identification and concept development</li>
-                    <li>Market assessment and value proposition design</li>
-                    <li>Business model and commercial opportunity assessment</li>
-                    <li>Go-to-market planning and launch roadmap</li>
-                  </ul>
-                  <div className="outcome"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 7h10v10" /><path d="M7 17 17 7" /></svg> <b>Outcome:</b> A clearly defined opportunity leadership can evaluate, fund, and execute.</div>
-                </div>
-              </div>
-              <div className="service">
-                <div className="num-badge">06</div>
-                <div className="body">
-                  <h3>Enterprise Value Creation</h3>
-                  <p>Not every growth opportunity means entering a new market. Often the biggest opportunity is already inside -in your capabilities, relationships, customers, IP, or business model.</p>
-                  <ul className="check-list">
-                    <li>Enterprise value assessment and capability analysis</li>
-                    <li>Revenue, portfolio, and business model opportunities</li>
-                    <li>Strategic asset evaluation and partnership opportunities</li>
-                    <li>Value creation roadmap</li>
-                  </ul>
-                  <div className="outcome"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 7h10v10" /><path d="M7 17 17 7" /></svg> <b>Outcome:</b> Clarity on where additional value exists and which opportunities deserve investment.</div>
+                  <div style={{ marginTop: "20px" }}>
+                    <a className="btn btn-sm btn-primary" href="/navigate">View Details</a>
+                  </div>
                 </div>
               </div>
             </div>

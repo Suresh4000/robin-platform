@@ -873,7 +873,7 @@ p.lead {
 .numbered {
   display: flex;
   gap: 22px;
-  padding: 26px 0;
+  padding: 20px 0px 0px 0px;
   border-top: 1px solid var(--line);
 }
 
@@ -908,11 +908,11 @@ p.lead {
 
 /* service blocks (with icon + list + outcome) */
 .service {
-  display: grid;
-  grid-template-columns: 64px 1fr;
+  /* display: grid;
+  grid-template-columns: 64px 1fr; */
   gap: 24px;
   padding: 34px 0;
-  border-top: 1px solid var(--line);
+  /* border-top: 1px solid var(--line); */
 }
 
 .service:first-of-type {
