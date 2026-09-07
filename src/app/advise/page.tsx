@@ -66,13 +66,13 @@ export default function Page() {
                         </div>
                         <div className="reveal">
                             <p className="lead" style={{ color: "var(--ink-soft)" }}>Robin works with the leadership team at the level of the decision or challenge itself — not as an embedded operator, and not as a report-writing consultant. The engagement is scoped around a question, not a headcount.</p>
-                            <div className="check-list" style={{ marginTop: "24px" }}>
+                            <ul className="check-list check-list-grid" style={{ marginTop: "24px", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "10px" }}>
                                 <li>Outside Perspective</li>
                                 <li>Executive Challenge</li>
                                 <li>Strategic Judgment</li>
                                 <li>Decision Support</li>
                                 <li>Focused Operating Insight</li>
-                            </div>
+                            </ul>
                         </div>
                     </div>
                 </section>
@@ -133,12 +133,12 @@ export default function Page() {
                             <div className="reveal">
                                 <div className="eyebrow">How It Works</div>
                                 <h2 className="section-title">A short, deliberate arc — not an open-ended retainer.</h2>
-                                <div className="process steps-5" style={{ marginTop: "24px", gridTemplateColumns: "1fr" }}>
-                                    <div className="step" style={{ display: "flex", gap: "16px", alignItems: "center", marginBottom: "16px" }}><div className="dot" style={{ position: "relative" }}>01</div><h4 style={{ margin: 0 }}>Understand</h4></div>
-                                    <div className="step" style={{ display: "flex", gap: "16px", alignItems: "center", marginBottom: "16px" }}><div className="dot" style={{ position: "relative" }}>02</div><h4 style={{ margin: 0 }}>Assess</h4></div>
-                                    <div className="step" style={{ display: "flex", gap: "16px", alignItems: "center", marginBottom: "16px" }}><div className="dot" style={{ position: "relative" }}>03</div><h4 style={{ margin: 0 }}>Challenge</h4></div>
-                                    <div className="step" style={{ display: "flex", gap: "16px", alignItems: "center", marginBottom: "16px" }}><div className="dot" style={{ position: "relative" }}>04</div><h4 style={{ margin: 0 }}>Clarify</h4></div>
-                                    <div className="step" style={{ display: "flex", gap: "16px", alignItems: "center", marginBottom: "16px" }}><div className="dot" style={{ position: "relative" }}>05</div><h4 style={{ margin: 0 }}>Decide</h4></div>
+                                <div className="process" style={{ marginTop: "24px", gridTemplateColumns: "1fr", gap: "16px" }}>
+                                    <div className="numbered"><div className="idx">01</div><div className="body"><h4 style={{ margin: 0 }}>Understand</h4></div></div>
+                                    <div className="numbered"><div className="idx">02</div><div className="body"><h4 style={{ margin: 0 }}>Assess</h4></div></div>
+                                    <div className="numbered"><div className="idx">03</div><div className="body"><h4 style={{ margin: 0 }}>Challenge</h4></div></div>
+                                    <div className="numbered"><div className="idx">04</div><div className="body"><h4 style={{ margin: 0 }}>Clarify</h4></div></div>
+                                    <div className="numbered"><div className="idx">05</div><div className="body"><h4 style={{ margin: 0 }}>Decide</h4></div></div>
                                 </div>
                             </div>
 
@@ -166,7 +166,7 @@ export default function Page() {
                                 <p><strong>Likely Right When:</strong> &quot;We have an important question and need experienced judgment.&quot;</p>
                                 <p><strong>May Not Be Right When:</strong> &quot;We need someone embedded in the business to lead execution.&quot; (That sounds like OPERATE)</p>
                             </div>
-                            <div className="cta-band-actions">
+                            <div className="cta-band-actions" style={{ flexDirection: "column" }}>
                                 <a className="btn btn-brass" href="/contact">Discuss the Decision</a>
                                 <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "14px", marginTop: "12px", textAlign: "center" }}>Start with your challenge</p>
                             </div>

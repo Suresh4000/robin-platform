@@ -19,6 +19,9 @@ export async function middleware(request: NextRequest) {
         pathname.startsWith('/insights') ||
         pathname.startsWith('/events') ||
         pathname.startsWith('/contact') ||
+        pathname.startsWith('/advise') ||
+        pathname.startsWith('/operate') ||
+        pathname.startsWith('/navigate') ||
         pathname === '/';
 
     if (isPublicRoute) {

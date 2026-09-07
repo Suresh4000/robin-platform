@@ -70,13 +70,13 @@ export default function Page() {
                         </div>
                         <div className="reveal">
                             <p className="lead" style={{ color: "var(--ink-soft)" }}>NAVIGATE is more intensive than an OPERATE partnership, and more situation-specific — leadership brought in for the length of a critical transition, focused on reaching a defined outcome rather than sustaining an open-ended function.</p>
-                            <div className="check-list" style={{ marginTop: "24px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+                            <ul className="check-list check-list-grid" style={{ marginTop: "24px", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "10px" }}>
                                 <li>More Intensive</li>
                                 <li>Situation-Specific</li>
                                 <li>Time-Bound</li>
                                 <li>Tied to a Critical Transition</li>
                                 <li>Focused on a Defined Outcome</li>
-                            </div>
+                            </ul>
                         </div>
                     </div>
                 </section>
@@ -117,7 +117,7 @@ export default function Page() {
                                 <h2 style={{ color: "#fff" }}>Have a situation that needs intensive leadership?</h2>
                                 <p>You don&apos;t need to diagnose the engagement before we talk. Start with the challenge, and we&apos;ll determine the right level of involvement together.</p>
                             </div>
-                            <div className="cta-band-actions">
+                            <div className="cta-band-actions" style={{ flexDirection: "column" }}>
                                 <a className="btn btn-brass" href="/contact">Start a Conversation</a>
                                 <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "14px", marginTop: "12px", textAlign: "center" }}>Confidential and practical.</p>
                             </div>
