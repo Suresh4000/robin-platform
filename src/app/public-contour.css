@@ -452,6 +452,9 @@ body.nav-lock {
   overflow: hidden;
   padding: 76px 0 96px;
   border-bottom: 1px solid var(--line);
+  background-color: var(--paper);
+  background-image: radial-gradient(rgba(18, 53, 36, 0.05) 1.5px, transparent 1.5px);
+  background-size: 32px 32px;
 }
 
 .hero-grid {
@@ -601,8 +604,12 @@ body.nav-lock {
 
 /* ============ SECTION ============ */
 .section {
+  position: relative;
   padding: 88px 0;
   border-bottom: 1px solid var(--line);
+  background-color: var(--paper);
+  background-image: radial-gradient(rgba(18, 53, 36, 0.05) 1.5px, transparent 1.5px);
+  background-size: 32px 32px;
 }
 
 .section.tight {
@@ -614,11 +621,15 @@ body.nav-lock {
 }
 
 .section-alt {
-  background: var(--paper-alt);
+  background-color: var(--paper-alt);
+  background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 15v10m-5-5h10' stroke='rgba(18, 53, 36, 0.07)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-size: 40px 40px;
 }
 
 .section-dark {
-  background: var(--ink);
+  background-color: var(--ink);
+  background-image: radial-gradient(rgba(255, 255, 255, 0.04) 1.5px, transparent 1.5px);
+  background-size: 32px 32px;
   color: var(--paper);
   border-bottom-color: transparent;
 }
