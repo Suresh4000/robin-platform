@@ -159,7 +159,7 @@ export default function Page() {
           </div>
         </section>
         {/*  ===================== HOW IT WORKS =====================  */}
-        <section className="section section-alt bg-pattern-blocks">
+        <section className="section section-alt ">
           <div className="container">
             <div className="section-head reveal">
               <div className="eyebrow">How It Works</div>
