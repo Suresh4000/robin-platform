@@ -633,6 +633,39 @@ body.nav-lock {
   color: #C6CAD3;
 }
 
+.bg-pattern-blocks {
+  position: relative;
+}
+
+.bg-pattern-blocks::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23123524' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+.bg-pattern-waves {
+  position: relative;
+}
+
+.bg-pattern-waves::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 10 Q 25 0, 50 10 T 100 10' fill='none' stroke='%23123524' stroke-opacity='0.06' stroke-width='1'/%3E%3C/svg%3E");
+  background-size: 100px 20px;
+  pointer-events: none;
+}
+
+.bg-pattern-blocks>.container,
+.bg-pattern-waves>.container {
+  position: relative;
+  z-index: 1;
+}
+
 .eyebrow {
   display: flex;
   align-items: center;

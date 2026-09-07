@@ -56,7 +56,7 @@ export default function Page() {
                     </div>
                 </section>
                 {/*  ===================== CAREER TIMELINE =====================  */}
-                <section className="section" data-bg-text="CAREER">
+                <section className="section bg-pattern-waves">
                     <div className="container">
                         <div className="section-head reveal">
                             <div className="eyebrow">Career Timeline</div>

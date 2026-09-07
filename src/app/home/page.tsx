@@ -98,7 +98,7 @@ export default function Page() {
           </div>
         </section>
         {/*  ===================== SERVICES OVERVIEW =====================  */}
-        <section className="section" data-bg-text="SERVICES">
+        <section className="section bg-pattern-waves">
           <div className="container">
             <div className="section-head reveal">
               <div className="eyebrow">Services</div>
