@@ -9,7 +9,7 @@ export default function Page() {
       <PublicNav />
       <div>
         {/*  ===================== HERO =====================  */}
-        <header className="hero">
+        <header className="hero" data-bg-text="GROWTH">
           <div className="container hero-grid">
             <div>
               <div className="hero-eyebrow-chips">
@@ -45,7 +45,7 @@ export default function Page() {
           </div>
         </header>
         {/*  ===================== WHO I HELP =====================  */}
-        <section className="section">
+        <section className="section" data-bg-text="LEADERS">
           <div className="container">
             <div className="section-head reveal">
               <div className="eyebrow">Who I Help</div>
@@ -76,7 +76,7 @@ export default function Page() {
           </div>
         </section>
         {/*  ===================== FRACTIONAL MODEL =====================  */}
-        <section className="section section-parallax" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1920&q=80')" }}>
+        <section className="section section-parallax" data-bg-text="FRACTIONAL" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1920&q=80')" }}>
           <div className="container">
             <div className="grid grid-2" style={{ "alignItems": "center", "gap": "56px" }}>
               <div className="reveal">
@@ -98,7 +98,7 @@ export default function Page() {
           </div>
         </section>
         {/*  ===================== SERVICES OVERVIEW =====================  */}
-        <section className="section">
+        <section className="section" data-bg-text="SERVICES">
           <div className="container">
             <div className="section-head reveal">
               <div className="eyebrow">Services</div>
@@ -127,7 +127,7 @@ export default function Page() {
           </div>
         </section>
         {/*  ===================== CTA BAND =====================  */}
-        <section className="section section-alt">
+        <section className="section section-alt" data-bg-text="CONNECT">
           <div className="container">
             <div className="cta-band reveal">
               <div>

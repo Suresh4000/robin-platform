@@ -54,7 +54,7 @@ Message: ${formData.notes}`;
       <PublicNav />
       <div>
         {/*  ===================== HERO =====================  */}
-        <div className="hero" style={{ "paddingBottom": "60px" }}>
+        <div className="hero" data-bg-text="CONTACT" style={{ "paddingBottom": "60px" }}>
           <div className="container">
             <div className="reveal" style={{ "maxWidth": "80%" }}>
               <div className="eyebrow">Contact</div>
@@ -64,7 +64,7 @@ Message: ${formData.notes}`;
           </div>
         </div>
         {/*  ===================== FORM + INFO =====================  */}
-        <section className="section no-border" style={{ "paddingTop": "80px" }}>
+        <section className="section no-border" data-bg-text="INQUIRY" style={{ "paddingTop": "80px" }}>
           <div className="container">
             <div className="grid grid-2" style={{ "gap": "48px", "alignItems": "flex-start" }}>
               <div className="form-wrap reveal">

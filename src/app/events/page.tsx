@@ -19,7 +19,7 @@ export default async function Page() {
   return (<><PublicNav />
     <div>
       {/*  ===================== HERO =====================  */}
-      <div className="hero">
+      <div className="hero" data-bg-text="EVENTS">
         <div className="container">
           <div className="reveal" style={{ "maxWidth": "760px" }}>
             <div className="eyebrow">Events</div>
@@ -81,7 +81,7 @@ export default async function Page() {
         </div>
       </section>
       {/*  ===================== PAST EVENTS =====================  */}
-      <section className="section">
+      <section className="section" data-bg-text="SCHEDULE">
         <div className="container">
           <div className="section-head reveal">
             <div className="eyebrow">Past Events</div>

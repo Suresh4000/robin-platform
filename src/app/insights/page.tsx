@@ -18,7 +18,7 @@ export default async function Page() {
       <PublicNav />
       <div>
         {/*  ===================== HERO =====================  */}
-        <div className="hero">
+        <div className="hero" data-bg-text="INSIGHTS">
           <div className="container">
             <div className="reveal" style={{ "maxWidth": "90%" }}>
               <div className="eyebrow">Insights &amp; Media</div>
@@ -29,7 +29,7 @@ export default async function Page() {
           </div>
         </div>
         {/*  ===================== CASE STUDIES =====================  */}
-        <section className="section section-alt">
+        <section className="section section-alt" data-bg-text="RESULTS">
           <div className="container">
             <div className="section-head reveal">
               <div className="eyebrow">Case Studies</div>
@@ -70,7 +70,7 @@ export default async function Page() {
         </section>
 
         {/*  ===================== SPEAKING & MEDIA =====================  */}
-        <section className="section">
+        <section className="section" data-bg-text="SPEAKING">
           <div className="container">
             <div className="grid grid-2" style={{ "gap": "56px", "alignItems": "center" }}>
               <div className="reveal">
@@ -90,7 +90,7 @@ export default async function Page() {
           </div>
         </section>
         {/*  ===================== STAY CONNECTED =====================  */}
-        <section className="section no-border">
+        <section className="section no-border" data-bg-text="CONNECT">
           <div className="container">
             <div className="cta-band reveal">
               <div>

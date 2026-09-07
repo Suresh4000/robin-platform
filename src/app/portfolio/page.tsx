@@ -16,7 +16,7 @@ export default function Page() {
             <PublicNav />
             <div>
                 {/*  ===================== HERO =====================  */}
-                <div className="hero">
+                <div className="hero" data-bg-text="IMPACT">
                     <div className="container">
                         <div className="reveal" style={{ "maxWidth": "80%" }}>
                             <div className="eyebrow">Experience &amp; Impact</div>
@@ -27,7 +27,7 @@ export default function Page() {
                     </div>
                 </div>
                 {/*  ===================== EXPERIENCE BANNER =====================  */}
-                <section className="section no-border" style={{ "paddingTop": "0" }}>
+                <section className="section no-border" data-bg-text="VISION" style={{ "paddingTop": "0" }}>
                     <div className="container">
                         <div className="reveal" style={{ "borderRadius": "20px", "overflow": "hidden", "aspectRatio": "21/8", "boxShadow": "0 30px 60px -20px rgba(20,15,5,.28)" }}>
                             <Image width={800} height={800} alt="A group of colleagues seated around a table discussing strategy" src="https://images.unsplash.com/photo-1739298061740-5ed03045b280?q=80&w=1600&auto=format&fit=crop" style={{ "width": "100%", "height": "100%", "objectFit": "cover" }} />
@@ -35,7 +35,7 @@ export default function Page() {
                     </div>
                 </section>
                 {/*  ===================== EXECUTIVE EXPERIENCE =====================  */}
-                <section className="section section-parallax" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1557682250-33bd709cbe85?auto=format&fit=crop&w=1920&q=80')" }}>
+                <section className="section section-parallax" data-bg-text="STRATEGY" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1557682250-33bd709cbe85?auto=format&fit=crop&w=1920&q=80')" }}>
                     <div className="container">
                         <div className="grid grid-2" style={{ "gap": "56px" }}>
                             <div className="reveal">
@@ -56,7 +56,7 @@ export default function Page() {
                     </div>
                 </section>
                 {/*  ===================== CAREER TIMELINE =====================  */}
-                <section className="section">
+                <section className="section" data-bg-text="CAREER">
                     <div className="container">
                         <div className="section-head reveal">
                             <div className="eyebrow">Career Timeline</div>
@@ -399,7 +399,7 @@ export default function Page() {
                     </div>
                 </section>
                 {/*  ===================== HOW I CREATE IMPACT =====================  */}
-                <section className="section">
+                <section className="section" data-bg-text="METHOD">
                     <div className="container">
                         <div className="section-head reveal">
                             <div className="eyebrow">How I Create Impact</div>
@@ -415,7 +415,7 @@ export default function Page() {
                     </div>
                 </section>
                 {/*  ===================== AREAS OF IMPACT =====================  */}
-                <section className="section section-alt">
+                <section className="section section-alt" data-bg-text="FOCUS">
                     <div className="container">
                         <div className="section-head reveal">
                             <div className="eyebrow">Areas of Impact</div>
@@ -446,7 +446,7 @@ export default function Page() {
                     </div>
                 </section>
                 {/*  ===================== NEXT STEP =====================  */}
-                <section className="section no-border">
+                <section className="section no-border" data-bg-text="START">
                     <div className="container">
                         <div className="cta-band reveal">
                             <div>

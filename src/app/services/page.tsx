@@ -9,7 +9,7 @@ export default function Page() {
       <PublicNav />
       <div>
         {/*  ===================== HERO =====================  */}
-        <div className="hero">
+        <div className="hero" data-bg-text="SERVICES">
           <div className="container">
             <div className="reveal" style={{ "maxWidth": "90%" }}>
               <div className="eyebrow">Services</div>
@@ -21,7 +21,7 @@ export default function Page() {
           </div>
         </div>
         {/*  ===================== ENGAGEMENT OPTIONS =====================  */}
-        <section className="section section-alt">
+        <section className="section section-alt" data-bg-text="ENGAGE">
           <div className="container">
             <div className="section-head reveal">
               <div className="eyebrow">Engagement Options</div>
@@ -47,7 +47,7 @@ export default function Page() {
           </div>
         </section>
         {/*  ===================== WORKING TOGETHER BANNER =====================  */}
-        <section className="section no-border" style={{ "paddingBottom": "0" }}>
+        <section className="section no-border" data-bg-text="COLLAB" style={{ "paddingBottom": "0" }}>
           <div className="container">
             <div className="featured-insight reveal">
               <div className="fi-img">
@@ -62,7 +62,7 @@ export default function Page() {
           </div>
         </section>
         {/*  ===================== WHAT I WORK ON -6 SERVICES =====================  */}
-        <section className="section">
+        <section className="section" data-bg-text="VALUE">
           <div className="container">
             <div className="section-head reveal">
               <div className="eyebrow">What I Work On</div>
@@ -159,7 +159,7 @@ export default function Page() {
           </div>
         </section>
         {/*  ===================== HOW IT WORKS =====================  */}
-        <section className="section section-alt">
+        <section className="section section-alt" data-bg-text="PROCESS">
           <div className="container">
             <div className="section-head reveal">
               <div className="eyebrow">How It Works</div>
@@ -178,7 +178,7 @@ export default function Page() {
           </div>
         </section>
         {/*  ===================== READY =====================  */}
-        <section className="section no-border">
+        <section className="section no-border" data-bg-text="START">
           <div className="container">
             <div className="cta-band reveal">
               <div>

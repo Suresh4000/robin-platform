@@ -19,7 +19,7 @@ export default async function Page() {
   return (<><PublicNav />
     <div>
       {/*  ===================== HERO =====================  */}
-      <div className="hero">
+      <div className="hero" data-bg-text="THOUGHTS">
         <div className="container">
           <div className="reveal" style={{}}>
             <div className="eyebrow">Blog</div>
@@ -46,7 +46,7 @@ export default async function Page() {
         </div>
       </section> */}
       {/*  ===================== ARTICLE GRID =====================  */}
-      <section className="section section-alt" id="blog-list">
+      <section className="section section-alt" id="blog-list" data-bg-text="ARCHIVE">
         <div className="container">
           <div className="grid grid-3">
             {initialPosts && initialPosts.length > 0 ? (
@@ -68,7 +68,7 @@ export default async function Page() {
         </div>
       </section>
       {/*  ===================== STAY CONNECTED =====================  */}
-      <section className="section no-border">
+      <section className="section no-border" data-bg-text="CONNECT">
         <div className="container">
           <div className="cta-band reveal">
             <div>
