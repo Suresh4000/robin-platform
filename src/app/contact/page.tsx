@@ -56,7 +56,7 @@ Message: ${formData.notes}`;
         {/*  ===================== HERO =====================  */}
         <div className="hero" style={{ "paddingBottom": "60px" }}>
           <div className="container">
-            <div className="reveal" style={{ "maxWidth": "720px" }}>
+            <div className="reveal" style={{ "maxWidth": "80%" }}>
               <div className="eyebrow">Contact</div>
               <h1 style={{ "marginBottom": "20px" }}>Let's talk about what's <em>next</em></h1>
               <p className="lead">A new growth opportunity, a business line, transformation, partnerships, or just an experienced outside view -it starts with a conversation. You don&apos;t need a fully defined project to reach out.</p>

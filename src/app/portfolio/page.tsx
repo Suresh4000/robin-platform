@@ -35,7 +35,7 @@ export default function Page() {
                     </div>
                 </section>
                 {/*  ===================== EXECUTIVE EXPERIENCE =====================  */}
-                <section className="section section-alt">
+                <section className="section section-parallax" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1557682250-33bd709cbe85?auto=format&fit=crop&w=1920&q=80')" }}>
                     <div className="container">
                         <div className="grid grid-2" style={{ "gap": "56px" }}>
                             <div className="reveal">

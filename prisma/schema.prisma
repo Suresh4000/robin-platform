@@ -178,3 +178,17 @@ model Notification {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+// ------------------------------------
+// Media Management
+// ------------------------------------
+model Media {
+  id        String   @id @default(cuid())
+  filename  String
+  type      String   // mime type e.g. image/png
+  size      Int      // file size in bytes
+  data      String   // Base64 encoded file data
+  isDeleted Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
