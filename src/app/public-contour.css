@@ -633,36 +633,6 @@ body.nav-lock {
   color: #C6CAD3;
 }
 
-/* Title Pattern Watermarks */
-.section[data-bg-text]::before,
-.hero[data-bg-text]::before {
-  content: attr(data-bg-text);
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: clamp(120px, 20vw, 240px);
-  font-family: var(--display);
-  font-weight: 800;
-  text-transform: uppercase;
-  color: rgba(18, 53, 36, 0.025);
-  z-index: 0;
-  white-space: nowrap;
-  pointer-events: none;
-  user-select: none;
-}
-
-.section-dark[data-bg-text]::before,
-.section-parallax[data-bg-text]::before {
-  color: rgba(255, 255, 255, 0.035);
-}
-
-.section>.container,
-.hero>.container {
-  position: relative;
-  z-index: 1;
-}
-
 .eyebrow {
   display: flex;
   align-items: center;
