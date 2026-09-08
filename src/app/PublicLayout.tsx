@@ -55,7 +55,7 @@ export function PublicFooter() {
         <div className="footer-grid">
           <div className="footer-brand">
             <Link className="brand" href="/">
-              <span className="mark"><span style={{ fontWeight: 700, fontSize: '15px' }}>RJ</span></span>
+              <span className="mark"><span style={{ fontWeight: 800, fontSize: '25px' }}>RJ</span></span>
               <span>Robin Jones</span>
             </Link>
             <p>Fractional executive leadership for organizations building new business value -through growth strategy, strategic partnerships, and transformation.</p>

@@ -30,7 +30,7 @@ export default function Page() {
                         <div className="section-head reveal">
                             <div className="eyebrow">The Situation</div>
                             <h2 className="section-title">When strategy needs someone to lead it forward.</h2>
-                            <p className="lead" style={{ marginTop: 8 }}>OPERATE fits when the direction is largely set, but the organization needs a senior operator to own it — not another slide deck, an executive who takes responsibility for moving it.</p>
+                            <p className="lead" style={{ marginTop: 8 }}>OPERATE fits when the direction is largely set, but the organization needs a senior operator to own it - not another slide deck, an executive who takes responsibility for moving it.</p>
                         </div>
                         <div className="grid grid-2 reveal" style={{ gap: "32px", marginTop: "40px" }}>
                             <div className="card">
@@ -69,7 +69,7 @@ export default function Page() {
                             <h2 className="section-title">A fractional COO partnership built around a defined phase of work.</h2>
                         </div>
                         <div className="reveal">
-                            <p className="lead" style={{ color: "var(--ink-soft)" }}>Robin works alongside the CEO and leadership team and takes meaningful responsibility for moving strategic priorities forward — sustained senior leadership without the cost or permanence of a full-time hire.</p>
+                            <p className="lead" style={{ color: "var(--ink-soft)" }}>Robin works alongside the CEO and leadership team and takes meaningful responsibility for moving strategic priorities forward - sustained senior leadership without the cost or permanence of a full-time hire.</p>
                             <ul className="check-list check-list-grid" style={{ marginTop: "24px", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "10px" }}>
                                 <li>Embedded Executive Leadership</li>
                                 <li>Cross-Functional Alignment</li>
@@ -90,7 +90,7 @@ export default function Page() {
                             <div className="reveal">
                                 <div className="eyebrow">How It Works</div>
                                 <h2 className="section-title">Embedded, not siloed.</h2>
-                                <p>Close enough to understand the constraints, the politics, and the day-to-day reality — while still bringing the outside perspective that made the engagement worth starting.</p>
+                                <p>Close enough to understand the constraints, the politics, and the day-to-day reality - while still bringing the outside perspective that made the engagement worth starting.</p>
                                 <div className="process" style={{ marginTop: "24px", gridTemplateColumns: "1fr", gap: "16px" }}>
                                     <div className="numbered"><div className="idx">01</div><div className="body"><h4 style={{ margin: 0 }}>Understand</h4></div></div>
                                     <div className="numbered"><div className="idx">02</div><div className="body"><h4 style={{ margin: 0 }}>Assess</h4></div></div>
@@ -106,7 +106,7 @@ export default function Page() {
                                 <ul className="check-list" style={{ marginTop: "24px" }}>
                                     <li>Leadership alignment around what actually matters</li>
                                     <li>Clear ownership of the priority, not a shared responsibility</li>
-                                    <li>Operating discipline — a cadence the team actually keeps</li>
+                                    <li>Operating discipline - a cadence the team actually keeps</li>
                                     <li>Faster decisions, with someone accountable for them</li>
                                     <li>Coordinated execution across functions, not in silos</li>
                                     <li>Visible progress against the strategic priorities that mattered on day one</li>
