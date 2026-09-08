@@ -956,7 +956,7 @@ p.lead {
 
 .numbered:first-of-type {
   border-top: none;
-  padding-top: 0;
+  /* padding-top: 0; */
 }
 
 .numbered .idx {
@@ -2009,13 +2009,13 @@ p.lead {
 .contact-list .row {
   display: flex;
   gap: 16px;
-  padding: 20px 0;
+  padding: 35px 0;
   border-top: 1px solid var(--line);
 }
 
 .contact-list .row:first-child {
   border-top: none;
-  padding-top: 0;
+  /* padding-top: 0; */
 }
 
 .contact-list .row .ic {
@@ -2306,14 +2306,16 @@ p.lead {
   color: var(--brass-deep);
   text-decoration: underline;
 }
+
 @media (max-width: 980px) {
   .nav.menu-open {
     position: fixed;
     width: 100%;
     left: 0;
   }
-  .nav-scrim.open, .nav-links.open {
+
+  .nav-scrim.open,
+  .nav-links.open {
     touch-action: none;
   }
 }
-

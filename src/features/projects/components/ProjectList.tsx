@@ -163,7 +163,7 @@ function ProjectWorkspace({ project, onBack, onProjectUpdated }: { project: Proj
                                     {tasks.map(task => (
                                         <div key={task.id} className={`${styles.taskRow} ${task.status === 'Done' ? styles.taskDone : ''}`}>
                                             <button className={`${styles.cbx} ${task.status === 'Done' ? styles.cbxDone : ''}`} onClick={() => toggleTask(task.id, task.status)} title="Toggle done">
-                                                <IcoCheck />
+                                                {task.status === 'Done' && <IcoCheck />}
                                             </button>
                                             <span className={styles.taskText}>{task.title}</span>
                                             {task.dueDate && <span className={styles.dueChip}>{new Date(task.dueDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</span>}
