@@ -303,7 +303,7 @@ export function ProjectList() {
                                     <h3 className={styles.cardTitle}>{project.title}</h3>
                                     <div className={styles.cardClient}><IcoBuilding /> {project.client.name} · {project.client.company}</div>
                                 </div>
-                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 8 }}>
+                                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-end', gap: 8 }}>
                                     <span className={styles.statusBadge} style={{ background: STATUS_COLORS[project.status] + '22', color: STATUS_COLORS[project.status], border: `1px solid ${STATUS_COLORS[project.status]}44` }}>
                                         {project.status}
                                     </span>
@@ -319,7 +319,11 @@ export function ProjectList() {
                                 <div className={styles.metric}><IcoTask /> <b>{project._count.tasks}</b> Tasks</div>
                                 <div className={styles.metric}><IcoClock /> <b>{project._count.timeLogs}</b> Time Logs</div>
                             </div>
-                            <div className={styles.cardOpenHint}><IcoChevron /></div>
+                            <div className={styles.cardOpenHint} style={{ opacity: 1, bottom: '12px', right: '16px' }}>
+                                <span className={styles.btnPrimary} style={{ background: 'transparent', color: 'var(--text-primary)', border: '1px solid var(--surface-border)', padding: '6px 12px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                    Add Task <IcoChevron />
+                                </span>
+                            </div>
                         </div>
                     ))}
                 </div>
