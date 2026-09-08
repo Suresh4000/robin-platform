@@ -22,10 +22,16 @@ export function PublicNav() {
             </span>
           </Link>
           <div className={navClass}>
-            <Link className={pathname === '/' ? 'active' : ''} href="/" onClick={() => setNavOpen(false)}>Home</Link>
             <Link className={pathname.startsWith('/about') ? 'active' : ''} href="/about" onClick={() => setNavOpen(false)}>About</Link>
             <Link className={pathname.startsWith('/portfolio') ? 'active' : ''} href="/portfolio" onClick={() => setNavOpen(false)}>Experience &amp; Impact</Link>
-            <Link className={pathname.startsWith('/services') ? 'active' : ''} href="/services" onClick={() => setNavOpen(false)}>Services</Link>
+            <div className="nav-item-dropdown">
+              <Link className={pathname.startsWith('/services') ? 'active' : ''} href="/services" onClick={() => setNavOpen(false)}>Services</Link>
+              <div className="nav-dropdown-menu">
+                <Link className={pathname.startsWith('/advise') ? 'active' : ''} href="/advise" onClick={() => setNavOpen(false)}>Advise</Link>
+                <Link className={pathname.startsWith('/operate') ? 'active' : ''} href="/operate" onClick={() => setNavOpen(false)}>Operate</Link>
+                <Link className={pathname.startsWith('/navigate') ? 'active' : ''} href="/navigate" onClick={() => setNavOpen(false)}>Navigate</Link>
+              </div>
+            </div>
             <Link className={pathname.startsWith('/insights') ? 'active' : ''} href="/insights" onClick={() => setNavOpen(false)}>Insights &amp; Media</Link>
             <Link className={pathname.startsWith('/blog') ? 'active' : ''} href="/blog" onClick={() => setNavOpen(false)}>Blog</Link>
             <Link className={pathname.startsWith('/events') ? 'active' : ''} href="/events" onClick={() => setNavOpen(false)}>Events</Link>
@@ -56,17 +62,11 @@ export function PublicFooter() {
           </div>
           <div className="footer-col">
             <h5>Quick Links</h5>
-            <Link href="/">Home</Link>
             <Link href="/about">About</Link>
             <Link href="/portfolio">Experience &amp; Impact</Link>
             <Link href="/services">Services</Link>
           </div>
-          <div className="footer-col">
-            <h5>Engagement Models</h5>
-            <Link href="/advise">Advise</Link>
-            <Link href="/operate">Operate</Link>
-            <Link href="/navigate">Navigate</Link>
-          </div>
+
           <div className="footer-col">
             <h5>More</h5>
             <Link href="/insights">Insights &amp; Media</Link>
