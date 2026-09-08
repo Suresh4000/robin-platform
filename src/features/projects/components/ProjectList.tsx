@@ -303,7 +303,7 @@ export function ProjectList() {
                                     <h3 className={styles.cardTitle}>{project.title}</h3>
                                     <div className={styles.cardClient}><IcoBuilding /> {project.client.name} · {project.client.company}</div>
                                 </div>
-                                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-end', gap: 8 }}>
+                                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', gap: 8 }}>
                                     <span className={styles.statusBadge} style={{ background: STATUS_COLORS[project.status] + '22', color: STATUS_COLORS[project.status], border: `1px solid ${STATUS_COLORS[project.status]}44` }}>
                                         {project.status}
                                     </span>

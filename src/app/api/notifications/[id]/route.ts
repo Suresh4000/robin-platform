@@ -1,15 +1,13 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/shared/lib/prisma';
 
-export async function PATCH(
-    request: Request,
-    { params }: { params: Promise<{ id: string }> }
-) {
+export async function PATCH(request: Request, context: { params: Promise<{ id: string }> }) {
     try {
-        const resolvedParams = await params;
+        const params = await context.params;
+        const id = params.id;
         const updated = await prisma.notification.update({
-            where: { id: resolvedParams.id },
-            data: { isRead: true }
+            where: { id },
+            data: { isRead: true },
         });
         return NextResponse.json({ data: updated });
     } catch (error) {

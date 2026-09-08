@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/shared/lib/prisma';
 
-export async function GET() {
+export async function GET(request: Request) {
     try {
         const notifications = await prisma.notification.findMany({
             orderBy: { createdAt: 'desc' },
-            take: 20
+            take: 50
         });
         return NextResponse.json({ data: notifications });
     } catch (error) {
@@ -13,11 +13,27 @@ export async function GET() {
     }
 }
 
-export async function DELETE() {
+export async function POST(request: Request) {
     try {
-        await prisma.notification.deleteMany({});
+        const body = await request.json();
+        const notification = await prisma.notification.create({
+            data: {
+                title: body.title,
+                message: body.message,
+                link: body.link || null,
+            }
+        });
+        return NextResponse.json({ data: notification });
+    } catch (error) {
+        return NextResponse.json({ error: 'Failed to create notification' }, { status: 500 });
+    }
+}
+
+export async function DELETE(request: Request) {
+    try {
+        await prisma.notification.deleteMany(); // Clear all notifications
         return NextResponse.json({ success: true });
     } catch (error) {
-        return NextResponse.json({ error: 'Failed to clear notifications' }, { status: 500 });
+        return NextResponse.json({ error: 'Failed to delete notifications' }, { status: 500 });
     }
 }
