@@ -21,7 +21,7 @@ export default async function Page() {
       {/*  ===================== HERO =====================  */}
       <div className="hero" data-bg-text="EVENTS">
         <div className="container">
-          <div className="reveal" style={{ "maxWidth": "760px" }}>
+          <div className="reveal" style={{ "maxWidth": "80%" }}>
             <div className="eyebrow">Events</div>
             <h1 style={{ "marginBottom": "20px" }}>Talks, workshops &amp; <em>conversations that move rooms</em></h1>
             <p className="lead">Upcoming appearances, panels, and workshops -plus a look at where I've spoken before. Available for leadership events, executive education, and podcasts.</p>

@@ -125,7 +125,7 @@ function ProjectWorkspace({ project, onBack, onProjectUpdated }: { project: Proj
             <div className={styles.wsHeader}>
                 <button className={styles.backBtn} onClick={onBack}><IcoBack /> Back to Projects</button>
                 <div className={styles.wsTitle}>
-                    <h2>{project.title}</h2>
+                    <h2 style={{ color: '#fff' }}>{project.title}</h2>
                     <span style={{ fontSize: 13, color: '#888', display: 'flex', alignItems: 'center', gap: 6 }}>
                         <IcoBuilding /> {project.client.name} · <span className={styles.statusPill} style={{ background: STATUS_COLORS[project.status] + '22', color: STATUS_COLORS[project.status], border: `1px solid ${STATUS_COLORS[project.status]}44` }}>{project.status}</span>
                     </span>
