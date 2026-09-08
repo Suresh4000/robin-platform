@@ -24,7 +24,7 @@ export function PublicNav() {
 
   return (
     <>
-      <nav className="nav">
+      <nav className={"nav" + (navOpen ? " menu-open" : "")}>
         <div className="nav-row">
           <Link className="brand" href="/">
             <span className="mark"><span style={{ fontWeight: 700, fontSize: '30px' }}>RJ</span></span>

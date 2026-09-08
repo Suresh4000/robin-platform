@@ -2306,3 +2306,14 @@ p.lead {
   color: var(--brass-deep);
   text-decoration: underline;
 }
+@media (max-width: 980px) {
+  .nav.menu-open {
+    position: fixed;
+    width: 100%;
+    left: 0;
+  }
+  .nav-scrim.open, .nav-links.open {
+    touch-action: none;
+  }
+}
+
