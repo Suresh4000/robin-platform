@@ -30,7 +30,7 @@ export default function Page() {
                         <div className="section-head reveal">
                             <div className="eyebrow">The Situation</div>
                             <h2 className="section-title">When something consequential is underway.</h2>
-                            <p className="lead" style={{ marginTop: 8 }}>NAVIGATE fits when the situation itself is the reason to bring someone in — not a general growth phase, but a specific, high-stakes moment with a beginning and an end.</p>
+                            <p className="lead" style={{ marginTop: 8 }}>NAVIGATE fits when the situation itself is the reason to bring someone in -not a general growth phase, but a specific, high-stakes moment with a beginning and an end.</p>
                         </div>
                         <div className="grid grid-2 reveal" style={{ gap: "32px", marginTop: "40px" }}>
                             <div className="card">
@@ -69,7 +69,7 @@ export default function Page() {
                             <h2 className="section-title">Deep executive involvement for a defined, high-stakes situation.</h2>
                         </div>
                         <div className="reveal">
-                            <p className="lead" style={{ color: "var(--ink-soft)" }}>NAVIGATE is more intensive than an OPERATE partnership, and more situation-specific — leadership brought in for the length of a critical transition, focused on reaching a defined outcome rather than sustaining an open-ended function.</p>
+                            <p className="lead" style={{ color: "var(--ink-soft)" }}>NAVIGATE is more intensive than an OPERATE partnership, and more situation-specific -leadership brought in for the length of a critical transition, focused on reaching a defined outcome rather than sustaining an open-ended function.</p>
                             <ul className="check-list check-list-grid" style={{ marginTop: "24px", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "10px" }}>
                                 <li>More Intensive</li>
                                 <li>Situation-Specific</li>
@@ -119,7 +119,7 @@ export default function Page() {
                             </div>
                             <div className="cta-band-actions" style={{ flexDirection: "column" }}>
                                 <a className="btn btn-brass" href="/contact">Start a Conversation</a>
-                                <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "14px", marginTop: "12px", textAlign: "center" }}>Confidential and practical.</p>
+                                {/* <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "14px", marginTop: "12px", textAlign: "center" }}>Confidential and practical.</p> */}
                             </div>
                         </div>
                     </div>

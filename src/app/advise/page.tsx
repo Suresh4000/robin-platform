@@ -30,7 +30,7 @@ export default function Page() {
                         <div className="section-head reveal">
                             <div className="eyebrow">The Situation</div>
                             <h2 className="section-title">When you need perspective, not another executive.</h2>
-                            <p className="lead" style={{ marginTop: 8 }}>ADVISE fits when the work is a decision, not a project — you don&apos;t need someone added to the org chart, you need someone who has made calls like this before.</p>
+                            <p className="lead" style={{ marginTop: 8 }}>ADVISE fits when the work is a decision, not a project - you don&apos;t need someone added to the org chart, you need someone who has made calls like this before.</p>
                         </div>
                         <div className="grid grid-2 reveal" style={{ gap: "32px", marginTop: "40px" }}>
                             <div className="card">
@@ -65,7 +65,7 @@ export default function Page() {
                             <h2 className="section-title">Senior operating judgment without the full-time commitment.</h2>
                         </div>
                         <div className="reveal">
-                            <p className="lead" style={{ color: "var(--ink-soft)" }}>Robin works with the leadership team at the level of the decision or challenge itself — not as an embedded operator, and not as a report-writing consultant. The engagement is scoped around a question, not a headcount.</p>
+                            <p className="lead" style={{ color: "var(--ink-soft)" }}>Robin works with the leadership team at the level of the decision or challenge itself - not as an embedded operator, and not as a report-writing consultant. The engagement is scoped around a question, not a headcount.</p>
                             <ul className="check-list check-list-grid" style={{ marginTop: "24px", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "10px" }}>
                                 <li>Outside Perspective</li>
                                 <li>Executive Challenge</li>
@@ -83,7 +83,7 @@ export default function Page() {
                         <div className="section-head reveal">
                             <div className="eyebrow">What Robin Can Help With</div>
                             <h2 className="section-title">The kinds of questions ADVISE is built for.</h2>
-                            <p className="lead" style={{ marginTop: 8 }}>These are situations, not separate services — ADVISE is the same engagement model applied wherever the leadership team needs a sharper outside view.</p>
+                            <p className="lead" style={{ marginTop: 8 }}>These are situations, not separate services - ADVISE is the same engagement model applied wherever the leadership team needs a sharper outside view.</p>
                         </div>
                         <div className="grid grid-2 reveal" style={{ gap: "32px", marginTop: "40px" }}>
                             <div className="service">
@@ -132,8 +132,8 @@ export default function Page() {
                         <div className="grid grid-2" style={{ gap: "56px" }}>
                             <div className="reveal">
                                 <div className="eyebrow">How It Works</div>
-                                <h2 className="section-title">A short, deliberate arc — not an open-ended retainer.</h2>
-                                <div className="process" style={{ marginTop: "24px", gridTemplateColumns: "1fr", gap: "16px" }}>
+                                <h2 className="section-title">A short, deliberate arc - not an open-ended retainer.</h2>
+                                <div className="process" style={{ marginTop: "24px", gridTemplateColumns: "1fr" }}>
                                     <div className="numbered"><div className="idx">01</div><div className="body"><h4 style={{ margin: 0 }}>Understand</h4></div></div>
                                     <div className="numbered"><div className="idx">02</div><div className="body"><h4 style={{ margin: 0 }}>Assess</h4></div></div>
                                     <div className="numbered"><div className="idx">03</div><div className="body"><h4 style={{ margin: 0 }}>Challenge</h4></div></div>
@@ -168,7 +168,7 @@ export default function Page() {
                             </div>
                             <div className="cta-band-actions" style={{ flexDirection: "column" }}>
                                 <a className="btn btn-brass" href="/contact">Discuss the Decision</a>
-                                <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "14px", marginTop: "12px", textAlign: "center" }}>Start with your challenge</p>
+                                {/* <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "14px", marginTop: "12px", textAlign: "center" }}>Start with your challenge</p> */}
                             </div>
                         </div>
                     </div>

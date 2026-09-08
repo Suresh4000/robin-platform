@@ -946,7 +946,7 @@ p.lead {
 .numbered {
   display: flex;
   gap: 22px;
-  padding: 20px 0px 0px 0px;
+  padding: 20px 0px 20px 0px;
   border-top: 1px solid var(--line);
 }
 
@@ -1031,7 +1031,7 @@ p.lead {
 
 .check-list li {
   position: relative;
-  padding: 0 0 9px 26px;
+  padding: 0 0 20px 26px;
   font-size: 14.5px;
   line-height: 1.55;
   color: var(--ink-soft);

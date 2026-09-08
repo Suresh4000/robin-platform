@@ -70,7 +70,7 @@ export default function Page() {
                         </div>
                         <div className="reveal">
                             <p className="lead" style={{ color: "var(--ink-soft)" }}>Robin works alongside the CEO and leadership team and takes meaningful responsibility for moving strategic priorities forward - sustained senior leadership without the cost or permanence of a full-time hire.</p>
-                            <ul className="check-list check-list-grid" style={{ marginTop: "24px", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "10px" }}>
+                            <ul className="check-list check-list-grid" style={{ marginTop: "24px", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "10px" }}>
                                 <li>Embedded Executive Leadership</li>
                                 <li>Cross-Functional Alignment</li>
                                 <li>Operating Cadence</li>
@@ -127,7 +127,7 @@ export default function Page() {
                             </div>
                             <div className="cta-band-actions" style={{ flexDirection: "column" }}>
                                 <a className="btn btn-brass" href="/contact">Discuss an Operating Partnership</a>
-                                <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "14px", marginTop: "12px", textAlign: "center" }}>Start with your challenge</p>
+                                {/* <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "14px", marginTop: "12px", textAlign: "center" }}>Start with your challenge</p> */}
                             </div>
                         </div>
                     </div>
