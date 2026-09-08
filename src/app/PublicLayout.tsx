@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import './public-contour.css';
@@ -10,6 +10,17 @@ export function PublicNav() {
   const [navOpen, setNavOpen] = useState(false);
   const navClass = "nav-links" + (navOpen ? " open" : "");
   const scrimClass = "nav-scrim" + (navOpen ? " open" : "");
+
+  useEffect(() => {
+    if (navOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [navOpen]);
 
   return (
     <>

@@ -393,7 +393,7 @@ button {
     top: 0;
     width: min(320px, 86vw);
     height: 100vh;
-    background: var(--brass-deep);
+    background: var(--ink);
     flex-direction: column;
     align-items: stretch;
     gap: 2px;
@@ -523,7 +523,7 @@ body.nav-lock {
 .hero {
   position: relative;
   overflow: hidden;
-  padding: 76px 0 96px;
+  padding: 76px 0 60px;
   border-bottom: 1px solid var(--line);
 }
 
@@ -668,6 +668,10 @@ body.nav-lock {
   .float-1 {
     top: -8%;
     left: -12%;
+  }
+
+  .section {
+    padding: 50px 0 !important;
   }
 
 }
@@ -984,7 +988,7 @@ p.lead {
   /* display: grid;
   grid-template-columns: 64px 1fr; */
   gap: 24px;
-  padding: 34px 0;
+  padding: 0px 0;
   /* border-top: 1px solid var(--line); */
 }
 
@@ -1374,7 +1378,7 @@ p.lead {
   .process,
   .process.steps-5 {
     grid-template-columns: 1fr;
-    gap: 28px;
+    gap: 0px;
   }
 
   .process .step:not(:last-child)::after {
