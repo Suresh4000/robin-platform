@@ -10,6 +10,7 @@ export async function middleware(request: NextRequest) {
         pathname.startsWith('/api/public') ||
         pathname.startsWith('/api/crm/leads') ||
         pathname.startsWith('/api/auth') ||
+        pathname.startsWith('/api/content/media') ||
         pathname.startsWith('/login') ||
         pathname.startsWith('/portfolio') ||
         pathname.startsWith('/blog') ||

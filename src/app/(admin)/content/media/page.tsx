@@ -11,6 +11,7 @@ interface MediaItem {
     url: string;
     isDeleted: boolean;
     createdAt: string;
+    isUsedOnWebsite: boolean;
 }
 
 export default function MediaPage() {
@@ -155,6 +156,9 @@ export default function MediaPage() {
                 {mediaList.map((media) => (
                     <div key={media.id} className={styles.card}>
                         <div className={styles.preview}>
+                            <div className={`${styles.badge} ${media.isUsedOnWebsite ? styles.badgeWebsite : styles.badgeAdmin}`}>
+                                {media.isUsedOnWebsite ? 'Website' : 'Admin'}
+                            </div>
                             {media.type.startsWith('image/') ? (
                                 <img src={media.url} alt={media.filename} style={{ objectFit: 'cover', width: '100%', height: '100%' }} />
                             ) : (

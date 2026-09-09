@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import styles from './TaskList.module.css';
 
 const IcoCheck = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" width={13} height={13}><polyline points="20 6 9 17 4 12" /></svg>;
@@ -18,14 +18,37 @@ export function TaskList() {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        fetch('/api/ops/tasks')
+    const [showDeletedTasks, setShowDeletedTasks] = useState(false);
+
+    const fetchTasks = useCallback(() => {
+        setIsLoading(true);
+        fetch(`/api/ops/tasks?isDeleted=${showDeletedTasks}`)
             .then(res => res.json())
             .then(data => {
                 if (data.data) setTasks(data.data);
                 setIsLoading(false);
             });
-    }, []);
+    }, [showDeletedTasks]);
+
+    useEffect(() => {
+        fetchTasks();
+    }, [fetchTasks]);
+
+    const deleteTask = async (id: string, hardDelete = false) => {
+        const msg = hardDelete ? 'Permanently delete this task?' : 'Move this task to trash?';
+        if (!confirm(msg)) return;
+        await fetch(`/api/ops/tasks/${id}${hardDelete ? '?hardDelete=true' : ''}`, { method: 'DELETE' });
+        fetchTasks();
+    };
+
+    const restoreTask = async (id: string) => {
+        await fetch(`/api/ops/tasks/${id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ isDeleted: false })
+        });
+        fetchTasks();
+    };
 
     const toggleTaskStatus = async (id: string, currentStatus: string) => {
         const newStatus = currentStatus === 'Done' ? 'Todo' : 'Done';
@@ -51,10 +74,19 @@ export function TaskList() {
                         Unified operational to-do list across all projects
                     </p>
                 </div>
-                <button className={styles.btnPrimary}>
-                    <IcoPlus />
-                    New Task
-                </button>
+                <div style={{ display: 'flex', gap: '12px' }}>
+                    <button
+                        className={styles.btnPrimary}
+                        style={{ background: 'var(--surface-sunken)', color: 'var(--text-primary)', border: '1px solid var(--surface-border)' }}
+                        onClick={() => setShowDeletedTasks(!showDeletedTasks)}
+                    >
+                        {showDeletedTasks ? 'Active Tasks' : 'Trash'}
+                    </button>
+                    <button className={styles.btnPrimary}>
+                        <IcoPlus />
+                        New Task
+                    </button>
+                </div>
             </header>
 
             {isLoading ? (
@@ -92,8 +124,17 @@ export function TaskList() {
                                     </div>
                                 </div>
 
-                                <div className={styles.taskRight}>
+                                <div className={styles.taskRight} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                                     <span className={styles.dueDate}>{formatDate(task.dueDate)}</span>
+                                    {showDeletedTasks ? (
+                                        <button className={styles.editBtn} style={{ color: '#3b82f6', background: 'none', border: 'none', cursor: 'pointer' }} onClick={() => restoreTask(task.id)} title="Restore">
+                                            Restore
+                                        </button>
+                                    ) : (
+                                        <button className={styles.delBtn} style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer' }} onClick={() => deleteTask(task.id)} title="Delete">
+                                            Delete
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         );

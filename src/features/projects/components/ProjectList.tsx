@@ -150,18 +150,18 @@ function ProjectWorkspace({ project, onBack, onProjectUpdated }: { project: Proj
             </div>
 
             {/* ── Tabs ── */}
-            <div className={styles.tabs} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+            <div className={styles.tabs} style={{ justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
                 <div>
                     <button className={`${styles.tab} ${activeTab === 'tasks' ? styles.tabActive : ''}`} onClick={() => setActiveTab('tasks')}><IcoTask /> Tasks <span className={styles.tabCount}>{tasks.length}</span></button>
                     <button className={`${styles.tab} ${activeTab === 'timelogs' ? styles.tabActive : ''}`} onClick={() => setActiveTab('timelogs')}><IcoClock /> Time Logs <span className={styles.tabCount}>{timeLogs.length}</span></button>
                 </div>
                 {activeTab === 'tasks' && (
                     <button
-                        className={styles.backBtn}
-                        style={{ padding: '4px 8px', fontSize: '12px' }}
+                        className={styles.btnPrimary}
+                        style={{ padding: '6px 12px', fontSize: '12px', background: showDeletedTasks ? '#1e1408' : 'transparent', color: showDeletedTasks ? '#fff' : '#888', border: '1px solid #e2ddd4' }}
                         onClick={() => setShowDeletedTasks(!showDeletedTasks)}
                     >
-                        {showDeletedTasks ? 'Active Tasks' : 'Trash'}
+                        {showDeletedTasks ? 'Back to Active Tasks' : 'Trash'}
                     </button>
                 )}
             </div>
@@ -191,7 +191,7 @@ function ProjectWorkspace({ project, onBack, onProjectUpdated }: { project: Proj
                                             {task.dueDate && <span className={styles.dueChip}>{new Date(task.dueDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</span>}
                                             <span className={`${styles.taskStatus} ${task.status === 'Done' ? styles.taskStatusDone : task.status === 'In Progress' ? styles.taskStatusWip : ''}`}>{task.status}</span>
                                             {showDeletedTasks ? (
-                                                <button className={styles.editBtn} style={{ color: '#3b82f6' }} onClick={() => restoreTask(task.id)} title="Restore"><IcoBack /></button>
+                                                <button className={styles.editBtn} style={{ color: '#3b82f6', fontSize: '13px', fontWeight: 600, padding: '4px 10px' }} onClick={() => restoreTask(task.id)} title="Restore">Restore</button>
                                             ) : (
                                                 <button className={styles.delBtn} onClick={() => deleteTask(task.id)} title="Delete"><IcoTrash /></button>
                                             )}
