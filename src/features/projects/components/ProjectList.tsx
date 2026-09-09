@@ -43,6 +43,7 @@ function ProjectWorkspace({ project, onBack, onProjectUpdated }: { project: Proj
     const [newTask, setNewTask] = useState('');
     const [taskDue, setTaskDue] = useState('');
     const [addingTask, setAddingTask] = useState(false);
+    const [showDeletedTasks, setShowDeletedTasks] = useState(false);
 
     // Time log form state
     const [logDesc, setLogDesc] = useState('');
@@ -55,16 +56,16 @@ function ProjectWorkspace({ project, onBack, onProjectUpdated }: { project: Proj
     const fetchDetail = useCallback(() => {
         setLoading(true);
         Promise.all([
-            fetch(`/api/ops/tasks?projectId=${project.id}`).then(r => r.json()),
+            fetch(`/api/ops/tasks?projectId=${project.id}&isDeleted=${showDeletedTasks}`).then(r => r.json()),
             fetch(`/api/ops/time-entries?projectId=${project.id}`).then(r => r.json()),
         ]).then(([t, tl]) => {
             if (t.data) setTasks(t.data);
             if (tl.data) setTimeLogs(tl.data);
             setLoading(false);
         });
-    }, [project.id]);
+    }, [project.id, showDeletedTasks]);
 
-    useEffect(() => { fetchDetail(); }, [fetchDetail]);
+    useEffect(() => { fetchDetail(); }, [fetchDetail, showDeletedTasks]);
 
     const toggleTask = async (id: string, current: string) => {
         const next = current === 'Done' ? 'Todo' : 'Done';
@@ -90,9 +91,19 @@ function ProjectWorkspace({ project, onBack, onProjectUpdated }: { project: Proj
         fetchDetail();
     };
 
-    const deleteTask = async (id: string) => {
-        if (!confirm('Delete this task?')) return;
-        await fetch(`/api/ops/tasks/${id}`, { method: 'DELETE' });
+    const deleteTask = async (id: string, hardDelete = false) => {
+        const msg = hardDelete ? 'Permanently delete this task?' : 'Move this task to trash?';
+        if (!confirm(msg)) return;
+        await fetch(`/api/ops/tasks/${id}${hardDelete ? '?hardDelete=true' : ''}`, { method: 'DELETE' });
+        fetchDetail();
+    };
+
+    const restoreTask = async (id: string) => {
+        await fetch(`/api/ops/tasks/${id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ isDeleted: false })
+        });
         fetchDetail();
     };
 
@@ -139,9 +150,20 @@ function ProjectWorkspace({ project, onBack, onProjectUpdated }: { project: Proj
             </div>
 
             {/* ── Tabs ── */}
-            <div className={styles.tabs}>
-                <button className={`${styles.tab} ${activeTab === 'tasks' ? styles.tabActive : ''}`} onClick={() => setActiveTab('tasks')}><IcoTask /> Tasks <span className={styles.tabCount}>{tasks.length}</span></button>
-                <button className={`${styles.tab} ${activeTab === 'timelogs' ? styles.tabActive : ''}`} onClick={() => setActiveTab('timelogs')}><IcoClock /> Time Logs <span className={styles.tabCount}>{timeLogs.length}</span></button>
+            <div className={styles.tabs} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                <div>
+                    <button className={`${styles.tab} ${activeTab === 'tasks' ? styles.tabActive : ''}`} onClick={() => setActiveTab('tasks')}><IcoTask /> Tasks <span className={styles.tabCount}>{tasks.length}</span></button>
+                    <button className={`${styles.tab} ${activeTab === 'timelogs' ? styles.tabActive : ''}`} onClick={() => setActiveTab('timelogs')}><IcoClock /> Time Logs <span className={styles.tabCount}>{timeLogs.length}</span></button>
+                </div>
+                {activeTab === 'tasks' && (
+                    <button
+                        className={styles.backBtn}
+                        style={{ padding: '4px 8px', fontSize: '12px' }}
+                        onClick={() => setShowDeletedTasks(!showDeletedTasks)}
+                    >
+                        {showDeletedTasks ? 'Active Tasks' : 'Trash'}
+                    </button>
+                )}
             </div>
 
             {loading ? <div className={styles.loading}>Loading…</div> : (
@@ -162,13 +184,17 @@ function ProjectWorkspace({ project, onBack, onProjectUpdated }: { project: Proj
                                 <div className={styles.taskList}>
                                     {tasks.map(task => (
                                         <div key={task.id} className={`${styles.taskRow} ${task.status === 'Done' ? styles.taskDone : ''}`}>
-                                            <button className={`${styles.cbx} ${task.status === 'Done' ? styles.cbxDone : ''}`} onClick={() => toggleTask(task.id, task.status)} title="Toggle done">
+                                            <button className={`${styles.cbx} ${task.status === 'Done' ? styles.cbxDone : ''}`} onClick={() => toggleTask(task.id, task.status)} title="Toggle done" disabled={showDeletedTasks}>
                                                 {task.status === 'Done' && <IcoCheck />}
                                             </button>
                                             <span className={styles.taskText}>{task.title}</span>
                                             {task.dueDate && <span className={styles.dueChip}>{new Date(task.dueDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</span>}
                                             <span className={`${styles.taskStatus} ${task.status === 'Done' ? styles.taskStatusDone : task.status === 'In Progress' ? styles.taskStatusWip : ''}`}>{task.status}</span>
-                                            <button className={styles.delBtn} onClick={() => deleteTask(task.id)} title="Delete"><IcoTrash /></button>
+                                            {showDeletedTasks ? (
+                                                <button className={styles.editBtn} style={{ color: '#3b82f6' }} onClick={() => restoreTask(task.id)} title="Restore"><IcoBack /></button>
+                                            ) : (
+                                                <button className={styles.delBtn} onClick={() => deleteTask(task.id)} title="Delete"><IcoTrash /></button>
+                                            )}
                                         </div>
                                     ))}
                                 </div>

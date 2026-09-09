@@ -5,10 +5,15 @@ import { createTaskSchema } from '@/features/tasks/schema';
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const projectId = searchParams.get('projectId');
+    const isDeleted = searchParams.get('isDeleted');
 
     try {
+        const whereClause: any = {};
+        if (projectId) whereClause.projectId = projectId;
+        whereClause.isDeleted = isDeleted === 'true';
+
         const tasks = await prisma.task.findMany({
-            where: projectId ? { projectId } : undefined,
+            where: whereClause,
             include: {
                 project: { select: { title: true, client: { select: { name: true } } } }
             },
