@@ -38,9 +38,8 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
 export async function DELETE(request: Request, context: { params: Promise<{ id: string }> }) {
     const params = await context.params;
     try {
-        await prisma.event.update({
+        await prisma.event.delete({
             where: { id: params.id },
-            data: { isDeleted: true }
         });
         return NextResponse.json({ success: true });
     } catch (error) {

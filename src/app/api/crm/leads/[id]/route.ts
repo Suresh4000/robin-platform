@@ -34,10 +34,19 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
 export async function DELETE(request: Request, context: { params: Promise<{ id: string }> }) {
     const params = await context.params;
     try {
-        await prisma.lead.update({
-            where: { id: params.id },
-            data: { isDeleted: true }
-        });
+        const { searchParams } = new URL(request.url);
+        const hardDelete = searchParams.get('hardDelete') === 'true';
+
+        if (hardDelete) {
+            await prisma.lead.delete({
+                where: { id: params.id }
+            });
+        } else {
+            await prisma.lead.update({
+                where: { id: params.id },
+                data: { isDeleted: true }
+            });
+        }
         return NextResponse.json({ success: true });
     } catch (error: any) {
         if (error.code === 'P2025') {

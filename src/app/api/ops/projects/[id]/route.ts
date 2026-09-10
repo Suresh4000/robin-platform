@@ -42,10 +42,19 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
 export async function DELETE(request: Request, context: { params: Promise<{ id: string }> }) {
     const params = await context.params;
     try {
-        await prisma.project.update({
-            where: { id: params.id },
-            data: { isDeleted: true }
-        });
+        const { searchParams } = new URL(request.url);
+        const hardDelete = searchParams.get('hardDelete') === 'true';
+
+        if (hardDelete) {
+            await prisma.project.delete({
+                where: { id: params.id }
+            });
+        } else {
+            await prisma.project.update({
+                where: { id: params.id },
+                data: { isDeleted: true }
+            });
+        }
         return NextResponse.json({ success: true });
     } catch (error) {
         return NextResponse.json({ error: 'Failed to delete project' }, { status: 500 });
