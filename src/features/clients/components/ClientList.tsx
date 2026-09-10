@@ -45,10 +45,10 @@ export function ClientList() {
         fetchClients(showDeleted);
     }, [showDeleted]);
 
-    const deleteClient = async (id: string, name: string) => {
-        if (!confirm(`Are you sure you want to move "${name}" to trash?`)) return;
+    const deleteClient = async (id: string, name: string, hardDelete = false) => {
+        if (!confirm(hardDelete ? `Permanently delete client "${name}"?` : `Are you sure you want to move "${name}" to trash?`)) return;
         try {
-            await fetch(`/api/crm/clients/${id}`, { method: 'DELETE' });
+            await fetch(`/api/crm/clients/${id}${hardDelete ? '?hardDelete=true' : ''}`, { method: 'DELETE' });
             fetchClients(showDeleted);
         } catch (e) {
             console.error(e);
@@ -148,13 +148,22 @@ export function ClientList() {
                                                 </button>
                                             )}
                                             {showDeleted ? (
-                                                <button
-                                                    onClick={() => restoreClient(client.id)}
-                                                    style={{ background: 'transparent', border: 'none', color: '#10b981', cursor: 'pointer', padding: '4px' }}
-                                                    title="Restore"
-                                                >
-                                                    <RefreshCw size={14} />
-                                                </button>
+                                                <>
+                                                    <button
+                                                        onClick={() => restoreClient(client.id)}
+                                                        style={{ background: 'transparent', border: 'none', color: '#10b981', cursor: 'pointer', padding: '4px' }}
+                                                        title="Restore"
+                                                    >
+                                                        <RefreshCw size={14} />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => deleteClient(client.id, client.name, true)}
+                                                        style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px' }}
+                                                        title="Delete Permanently"
+                                                    >
+                                                        <Trash2 size={14} />
+                                                    </button>
+                                                </>
                                             ) : (
                                                 <button
                                                     onClick={() => deleteClient(client.id, client.name)}

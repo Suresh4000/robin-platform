@@ -132,9 +132,14 @@ export function TaskList() {
                                 <div className={styles.taskRight} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                                     <span className={styles.dueDate}>{formatDate(task.dueDate)}</span>
                                     {showDeletedTasks ? (
-                                        <button className={styles.editBtn} style={{ color: '#3b82f6', background: 'none', border: 'none', cursor: 'pointer' }} onClick={() => restoreTask(task.id)} title="Restore">
-                                            Restore
-                                        </button>
+                                        <>
+                                            <button className={styles.editBtn} style={{ color: '#3b82f6', background: 'none', border: 'none', cursor: 'pointer' }} onClick={() => restoreTask(task.id)} title="Restore">
+                                                Restore
+                                            </button>
+                                            <button className={styles.delBtn} style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer' }} onClick={() => deleteTask(task.id, true)} title="Permanently Delete">
+                                                Delete Forever
+                                            </button>
+                                        </>
                                     ) : (
                                         <button className={styles.delBtn} style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer' }} onClick={() => deleteTask(task.id)} title="Delete">
                                             Delete

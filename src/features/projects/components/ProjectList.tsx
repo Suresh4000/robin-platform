@@ -277,11 +277,11 @@ export function ProjectList() {
     const openEdit = (p: Project, e: React.MouseEvent) => { e.stopPropagation(); setEditingItem(p); setIsModalOpen(true); };
     const openCreate = () => { setEditingItem(null); setIsModalOpen(true); };
 
-    const deleteProject = async (p: Project, e: React.MouseEvent) => {
+    const deleteProject = async (p: Project, e: React.MouseEvent, hardDelete = false) => {
         e.stopPropagation();
-        if (!confirm(`Move project "${p.title}" to trash?`)) return;
+        if (!confirm(hardDelete ? `Permanently delete project "${p.title}"?` : `Move project "${p.title}" to trash?`)) return;
         setProjects(prev => prev.filter(proj => proj.id !== p.id));
-        await fetch(`/api/ops/projects/${p.id}`, { method: 'DELETE' });
+        await fetch(`/api/ops/projects/${p.id}${hardDelete ? '?hardDelete=true' : ''}`, { method: 'DELETE' });
     };
 
     const restoreProject = async (p: Project, e: React.MouseEvent) => {
@@ -342,7 +342,10 @@ export function ProjectList() {
                                     </span>
                                     {!showDeleted && <button onClick={(e) => openEdit(project, e)} className={styles.editBtn} title="Edit"><IcoEdit /></button>}
                                     {showDeleted ? (
-                                        <button onClick={(e) => restoreProject(project, e)} className={styles.editBtn} style={{ color: '#3b82f6' }} title="Restore"><IcoBack /></button>
+                                        <>
+                                            <button onClick={(e) => restoreProject(project, e)} className={styles.editBtn} style={{ color: '#3b82f6' }} title="Restore"><IcoBack /></button>
+                                            <button onClick={(e) => deleteProject(project, e, true)} className={styles.editBtn} style={{ color: '#ef4444' }} title="Delete Permanently"><IcoTrash /></button>
+                                        </>
                                     ) : (
                                         <button onClick={(e) => deleteProject(project, e)} className={styles.editBtn} style={{ color: '#ef4444' }} title="Trash"><IcoTrash /></button>
                                     )}
