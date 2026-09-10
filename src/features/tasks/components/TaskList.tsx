@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import styles from './TaskList.module.css';
+import { Trash2, Folder } from 'lucide-react';
 
 const IcoCheck = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" width={13} height={13}><polyline points="20 6 9 17 4 12" /></svg>;
 const IcoPlus = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" width={16} height={16}><path d="M12 5v14M5 12h14" /></svg>;
@@ -71,16 +72,20 @@ export function TaskList() {
                 <div>
                     <h1 className={styles.title}>Task Management</h1>
                     <p style={{ color: 'var(--text-secondary)', marginTop: '4px' }}>
-                        Unified operational to-do list across all projects
+                        {!showDeletedTasks ? 'Unified operational to-do list across all projects' : 'Recycle Bin - Deleted Tasks'}
                     </p>
                 </div>
                 <div style={{ display: 'flex', gap: '12px' }}>
                     <button
-                        className={styles.btnPrimary}
-                        style={{ background: 'var(--surface-sunken)', color: 'var(--text-primary)', border: '1px solid var(--surface-border)' }}
                         onClick={() => setShowDeletedTasks(!showDeletedTasks)}
+                        style={{
+                            background: 'transparent', border: '1px solid var(--surface-border)',
+                            color: 'var(--text-primary)', padding: '10px 16px', borderRadius: '8px',
+                            display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer'
+                        }}
                     >
-                        {showDeletedTasks ? 'Active Tasks' : 'Trash'}
+                        {!showDeletedTasks ? <Trash2 size={16} /> : <Folder size={16} />}
+                        {!showDeletedTasks ? 'View Recycle Bin' : 'Back to Active Tasks'}
                     </button>
                     <button className={styles.btnPrimary}>
                         <IcoPlus />

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Plus, DollarSign, Edit, Trash2, Calendar, HardHat, RefreshCw } from 'lucide-react';
+import { Plus, DollarSign, Edit, Trash2, Calendar, HardHat, RefreshCw, Folder } from 'lucide-react';
 import styles from '@/features/clients/components/ClientList.module.css'; // Reuse table list styles
 import { SlideDrawer } from '@/shared/components/ui/Modal';
 import { InvoiceGenerator } from './InvoiceGenerator';
@@ -73,16 +73,20 @@ export function InvoiceList() {
                 <div>
                     <h1 className={styles.title}>Invoices</h1>
                     <p style={{ color: 'var(--text-secondary)', marginTop: '4px' }}>
-                        Manage and generate client billing
+                        {!showDeleted ? 'Manage and generate client billing' : 'Recycle Bin - Deleted Invoices'}
                     </p>
                 </div>
                 <div style={{ display: 'flex', gap: '12px' }}>
                     <button
-                        className={styles.btnPrimary}
-                        style={{ background: 'var(--surface-sunken)', color: 'var(--text-primary)', border: '1px solid var(--surface-border)' }}
                         onClick={() => setShowDeleted(!showDeleted)}
+                        style={{
+                            background: 'transparent', border: '1px solid var(--surface-border)',
+                            color: 'var(--text-primary)', padding: '10px 16px', borderRadius: '8px',
+                            display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer'
+                        }}
                     >
-                        {showDeleted ? 'Active Invoices' : 'Trash'}
+                        {!showDeleted ? <Trash2 size={16} /> : <Folder size={16} />}
+                        {!showDeleted ? 'View Recycle Bin' : 'Back to Active Invoices'}
                     </button>
                     {!showDeleted && (
                         <button className={styles.btnPrimary} onClick={() => setIsGeneratorOpen(true)}>

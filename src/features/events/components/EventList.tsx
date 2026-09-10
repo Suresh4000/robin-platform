@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Plus, MapPin, Clock, Users, Calendar, Edit, Trash2, Globe, RefreshCw } from 'lucide-react';
+import { Plus, MapPin, Clock, Users, Calendar, Edit, Trash2, Globe, RefreshCw, Folder } from 'lucide-react';
 import styles from './EventList.module.css';
 import { SlideDrawer } from '@/shared/components/ui/Modal';
 import { EventForm } from './EventForm';
@@ -97,21 +97,27 @@ export function EventList() {
             <header className={styles.header}>
                 <div>
                     <h1 className={styles.title}>Event Management</h1>
-                    <div style={{ display: 'flex', gap: '16px', marginTop: '4px' }}>
-                        <button
-                            onClick={() => setView('Active')}
-                            style={{ background: 'none', border: 'none', color: view === 'Active' ? 'var(--brass-deep)' : 'var(--text-secondary)', fontWeight: view === 'Active' ? 600 : 400, cursor: 'pointer', padding: 0 }}
-                        >Active ({events.filter(e => e.status !== 'Trash').length})</button>
-                        <button
-                            onClick={() => setView('Trash')}
-                            style={{ background: 'none', border: 'none', color: view === 'Trash' ? 'var(--brass-deep)' : 'var(--text-secondary)', fontWeight: view === 'Trash' ? 600 : 400, cursor: 'pointer', padding: 0 }}
-                        >Trash ({events.filter(e => e.status === 'Trash').length})</button>
-                    </div>
+                    <p style={{ color: 'var(--text-secondary)', marginTop: '4px' }}>
+                        {view === 'Active' ? 'Schedule and manage all your events' : 'Recycle Bin - Deleted Events'}
+                    </p>
                 </div>
-                <button className={styles.btnPrimary} onClick={openCreateModal}>
-                    <Plus size={16} />
-                    New Event
-                </button>
+                <div style={{ display: 'flex', gap: '12px' }}>
+                    <button
+                        onClick={() => setView(view === 'Active' ? 'Trash' : 'Active')}
+                        style={{
+                            background: 'transparent', border: '1px solid var(--surface-border)',
+                            color: 'var(--text-primary)', padding: '10px 16px', borderRadius: '8px',
+                            display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer'
+                        }}
+                    >
+                        {view === 'Active' ? <Trash2 size={16} /> : <Folder size={16} />}
+                        {view === 'Active' ? 'View Recycle Bin' : 'Back to Active Events'}
+                    </button>
+                    <button className={styles.btnPrimary} onClick={openCreateModal}>
+                        <Plus size={16} />
+                        New Event
+                    </button>
+                </div>
             </header>
 
             {isLoading ? (

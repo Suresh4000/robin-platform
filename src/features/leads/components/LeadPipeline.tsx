@@ -5,6 +5,7 @@ import styles from './LeadPipeline.module.css';
 import { LEAD_STAGES } from '../schema';
 import { SlideDrawer } from '@/shared/components/ui/Modal';
 import { LeadForm } from './LeadForm';
+import { Trash2, Folder } from 'lucide-react';
 
 /* ── Inline SVGs ── */
 const IcoPlus = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width={16} height={16}><path d="M5 12h14M12 5v14" /></svg>;
@@ -169,16 +170,20 @@ export function LeadPipeline() {
                 <div>
                     <h1 className={styles.title}>Lead Management</h1>
                     <p style={{ color: 'var(--text-secondary)', marginTop: '4px' }}>
-                        Track incoming enquiries and engagements
+                        {!showDeleted ? 'Track incoming enquiries and engagements' : 'Recycle Bin - Deleted Leads'}
                     </p>
                 </div>
                 <div className={styles.actions}>
                     <button
-                        className={styles.btnPrimary}
-                        style={{ background: 'var(--surface-sunken)', color: 'var(--text-primary)', border: '1px solid var(--surface-border)' }}
                         onClick={() => setShowDeleted(!showDeleted)}
+                        style={{
+                            background: 'transparent', border: '1px solid var(--surface-border)',
+                            color: 'var(--text-primary)', padding: '10px 16px', borderRadius: '8px',
+                            display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer'
+                        }}
                     >
-                        {showDeleted ? 'Active Leads' : 'Trash'}
+                        {!showDeleted ? <Trash2 size={16} /> : <Folder size={16} />}
+                        {!showDeleted ? 'View Recycle Bin' : 'Back to Active Leads'}
                     </button>
                     <button className={styles.btnPrimary} onClick={() => setIsAddModalOpen(true)}>
                         <IcoPlus />

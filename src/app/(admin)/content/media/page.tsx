@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
-import { UploadCloud, Trash2, RefreshCcw, Eye, Copy, Filter, FileText, Image as ImageIcon } from 'lucide-react';
+import { UploadCloud, Trash2, RefreshCcw, Eye, Copy, Filter, FileText, Image as ImageIcon, Folder } from 'lucide-react';
 import styles from './Media.module.css';
 
 interface MediaItem {
@@ -124,15 +124,21 @@ export default function MediaPage() {
             <div className={styles.header}>
                 <div>
                     <h1 className={styles.title}>Media Library</h1>
-                    <p className={styles.subtitle}>Upload images and documents to use across the platform.</p>
+                    <p className={styles.subtitle}>
+                        {!viewDeleted ? 'Upload images and documents to use across the platform.' : 'Recycle Bin - Deleted Media'}
+                    </p>
                 </div>
                 <div className={styles.actions}>
                     <button
-                        className={viewDeleted ? styles.btnOutlineActive : styles.btnOutline}
                         onClick={() => setViewDeleted(!viewDeleted)}
+                        style={{
+                            background: 'transparent', border: '1px solid var(--surface-border)',
+                            color: 'var(--text-primary)', padding: '10px 16px', borderRadius: '8px',
+                            display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer'
+                        }}
                     >
-                        <Filter size={16} />
-                        {viewDeleted ? 'Viewing Trash' : 'View Trash'}
+                        {!viewDeleted ? <Trash2 size={16} /> : <Folder size={16} />}
+                        {!viewDeleted ? 'View Recycle Bin' : 'Back to Active Media'}
                     </button>
                     <input
                         type="file"

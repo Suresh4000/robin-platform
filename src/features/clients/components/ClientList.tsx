@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Plus, Users, Edit, Trash2, RefreshCw } from 'lucide-react';
+import { Plus, Users, Edit, Trash2, RefreshCw, Folder } from 'lucide-react';
 import styles from './ClientList.module.css';
 import { SlideDrawer } from '@/shared/components/ui/Modal';
 import { ClientForm } from './ClientForm';
@@ -80,16 +80,20 @@ export function ClientList() {
                 <div>
                     <h1 className={styles.title}>Client Workspace</h1>
                     <p style={{ color: 'var(--text-secondary)', marginTop: '4px' }}>
-                        Manage active engagements and history
+                        {!showDeleted ? 'Manage active engagements and history' : 'Recycle Bin - Deleted Clients'}
                     </p>
                 </div>
                 <div style={{ display: 'flex', gap: '12px' }}>
                     <button
-                        className={styles.btnPrimary}
-                        style={{ background: 'var(--surface-sunken)', color: 'var(--text-primary)', border: '1px solid var(--surface-border)' }}
                         onClick={() => setShowDeleted(!showDeleted)}
+                        style={{
+                            background: 'transparent', border: '1px solid var(--surface-border)',
+                            color: 'var(--text-primary)', padding: '10px 16px', borderRadius: '8px',
+                            display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer'
+                        }}
                     >
-                        {showDeleted ? 'Active Clients' : 'Trash'}
+                        {!showDeleted ? <Trash2 size={16} /> : <Folder size={16} />}
+                        {!showDeleted ? 'View Recycle Bin' : 'Back to Active Clients'}
                     </button>
                     <button className={styles.btnPrimary} onClick={openCreateModal}>
                         <Plus size={16} />

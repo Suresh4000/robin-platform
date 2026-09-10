@@ -4,6 +4,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import styles from './ProjectList.module.css';
 import { SlideDrawer } from '@/shared/components/ui/Modal';
 import { ProjectForm } from './ProjectForm';
+import { Trash2, Folder } from 'lucide-react';
 
 /* ── Inline SVGs ── */
 const IcoPlus = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" width={16} height={16}><path d="M12 5v14M5 12h14" /></svg>;
@@ -302,15 +303,21 @@ export function ProjectList() {
             <header className={styles.header}>
                 <div>
                     <h1 className={styles.title}>Project Workspaces</h1>
-                    <p style={{ color: 'var(--text-secondary)', marginTop: 4 }}>Click any project to manage tasks and time logs</p>
+                    <p style={{ color: 'var(--text-secondary)', marginTop: 4 }}>
+                        {!showDeleted ? 'Click any project to manage tasks and time logs' : 'Recycle Bin - Deleted Projects'}
+                    </p>
                 </div>
                 <div style={{ display: 'flex', gap: '12px' }}>
                     <button
-                        className={styles.btnPrimary}
-                        style={{ background: 'var(--surface-sunken)', color: 'var(--text-primary)', border: '1px solid var(--surface-border)' }}
                         onClick={() => setShowDeleted(!showDeleted)}
+                        style={{
+                            background: 'transparent', border: '1px solid var(--surface-border)',
+                            color: 'var(--text-primary)', padding: '10px 16px', borderRadius: '8px',
+                            display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer'
+                        }}
                     >
-                        {showDeleted ? 'Active Projects' : 'Trash'}
+                        {!showDeleted ? <Trash2 size={16} /> : <Folder size={16} />}
+                        {!showDeleted ? 'View Recycle Bin' : 'Back to Active Projects'}
                     </button>
                     <button className={styles.btnPrimary} onClick={openCreate}><IcoPlus /> New Project</button>
                 </div>
