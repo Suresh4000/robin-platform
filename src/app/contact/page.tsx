@@ -8,6 +8,7 @@ export default function Page() {
 
   const [formData, setFormData] = useState({ name: '', lname: '', email: '', phone: '', company: '', role: '', topics: [] as string[], timing: '', notes: '', bookingDate: '', bookingTime: '' });
   const [formStatus, setFormStatus] = useState('');
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [msOpen, setMsOpen] = useState(false);
 
   const todayDateString = new Date().toISOString().split('T')[0];
@@ -39,7 +40,8 @@ Message: ${formData.notes}`;
       });
       const responseData = await res.json();
       if (res.ok) {
-        setFormStatus('Success! We will be in touch soon.');
+        setFormStatus('');
+        setShowSuccessModal(true);
         setFormData({ name: '', lname: '', email: '', phone: '', company: '', role: '', topics: [], timing: '', notes: '', bookingDate: '', bookingTime: '' });
       } else {
         setFormStatus("Error: " + (responseData.error || 'Failed to submit.'));
@@ -161,8 +163,24 @@ Message: ${formData.notes}`;
                   </div>
 
                   <button className="btn btn-brass" style={{ "width": "100%", "marginTop": "8px" }} type="submit">Send Enquiry</button>
-                  {formStatus && <p>{formStatus}</p>}
+                  {formStatus && <p style={{ marginTop: '12px', color: 'red' }}>{formStatus}</p>}
                 </form>
+
+                {/* Success Pop-up Modal */}
+                {showSuccessModal && (
+                  <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '20px' }}>
+                    <div className="reveal" style={{ background: 'var(--surface)', border: '1px solid var(--surface-border)', padding: '40px', borderRadius: '12px', maxWidth: '420px', width: '100%', textAlign: 'center', boxShadow: '0 20px 40px rgba(0,0,0,0.2)' }}>
+                      <div style={{ background: 'var(--brass-light)', width: '64px', height: '64px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--brass-deep)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                      </div>
+                      <h3 style={{ fontSize: '24px', marginBottom: '12px', color: 'var(--ink)' }}>Thank You!</h3>
+                      <p style={{ color: 'var(--ink-soft)', marginBottom: '32px', fontSize: '16px', lineHeight: '1.5' }}>Your enquiry has been sent successfully. We have received your details and will be in touch shortly.</p>
+                      <button className="btn btn-brass" onClick={() => setShowSuccessModal(false)} style={{ width: '100%' }}>Close Window</button>
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="reveal">
                 <div className="eyebrow">What Happens Next</div>
