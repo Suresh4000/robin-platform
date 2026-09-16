@@ -4,7 +4,6 @@ import { verifyToken } from './shared/lib/jwt';
 
 export async function middleware(request: NextRequest) {
     const basicAuth = request.headers.get('authorization');
-    const url = request.nextUrl;
 
     if (basicAuth) {
         const authValue = basicAuth.split(' ')[1];
