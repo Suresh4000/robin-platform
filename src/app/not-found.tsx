@@ -23,7 +23,7 @@ export default function NotFound() {
                                     Return to Home
                                 </Link>
                                 <Link href="/contact" className="btn btn-ghost">
-                                    Contact Support
+                                    Contact
                                 </Link>
                             </div>
                         </div>
