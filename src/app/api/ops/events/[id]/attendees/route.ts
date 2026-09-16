@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/shared/lib/prisma';
 import { z } from 'zod';
+import { sendNotificationEmail } from '@/shared/lib/email';
 
 const createAttendeeSchema = z.object({
     name: z.string().min(2, "Name must be at least 2 characters"),
@@ -57,6 +58,21 @@ export async function POST(
                 link: '/ops/events'
             }
         });
+
+        // Send Email Notification
+        const emailHTML = `
+            <h2>New Event Registration</h2>
+            <p><strong>Event:</strong> ${event.title}</p>
+            <p><strong>Name:</strong> ${validatedData.name}</p>
+            <p><strong>Email:</strong> ${validatedData.email}</p>
+            <p><strong>Phone:</strong> ${validatedData.phone || 'N/A'}</p>
+            <p><strong>Company:</strong> ${validatedData.company || 'N/A'}</p>
+        `;
+
+        await sendNotificationEmail(
+            `New Event Registration: ${validatedData.name}`,
+            emailHTML
+        );
 
         return NextResponse.json({ data: newAttendee }, { status: 201 });
     } catch (error: any) {

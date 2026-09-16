@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/shared/lib/prisma';
 import { createLeadSchema } from '@/features/leads/schema';
+import { sendNotificationEmail } from '@/shared/lib/email';
 
 
 export async function GET(request: Request) {
@@ -34,6 +35,22 @@ export async function POST(request: Request) {
                 link: '/crm/leads'
             }
         });
+
+        // Send Email Notification
+        const emailHTML = `
+            <h2>New Entry received via ${validatedData.source}</h2>
+            <p><strong>Name:</strong> ${validatedData.name}</p>
+            <p><strong>Email:</strong> ${validatedData.email}</p>
+            <p><strong>Phone:</strong> ${validatedData.phone || 'N/A'}</p>
+            <p><strong>Company:</strong> ${validatedData.company || 'N/A'}</p>
+            <h3>Notes:</h3>
+            <pre style="font-family: inherit; white-space: pre-wrap;">${validatedData.notes}</pre>
+        `;
+
+        await sendNotificationEmail(
+            `New Lead Inquiry: ${validatedData.name}`,
+            emailHTML
+        );
 
         return NextResponse.json({ data: newLead }, { status: 201 });
     } catch (error: any) {
