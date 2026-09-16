@@ -23,7 +23,7 @@ export const sendNotificationEmail = async (subject: string, htmlContent: string
 
         const info = await transporter.sendMail({
             from: `"${process.env.SMTP_FROM_NAME || 'Robin Platform'}" <${process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER}>`,
-            to: 'wordpress@svaan.in', // User requested to receive emails here
+            to: ['wordpress@svaan.in', 'sureshkumarmr2004@gmail.com'].join(', '), // User requested these two emails
             subject: subject,
             html: htmlContent,
         });
