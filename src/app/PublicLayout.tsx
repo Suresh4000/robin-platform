@@ -45,7 +45,7 @@ export function PublicNav() {
             </div>
             <Link className={pathname.startsWith('/insights') ? 'active' : ''} href="/insights" onClick={() => setNavOpen(false)}>Insights &amp; Media</Link>
             <Link className={pathname.startsWith('/blog') ? 'active' : ''} href="/blog" onClick={() => setNavOpen(false)}>Blog</Link>
-            <Link className={pathname.startsWith('/events') ? 'active' : ''} href="/events" onClick={() => setNavOpen(false)}>Events</Link>
+            {/* <Link className={pathname.startsWith('/events') ? 'active' : ''} href="/events" onClick={() => setNavOpen(false)}>Events</Link> */}
           </div>
           <div className="nav-cta">
             <Link className="btn btn-primary btn-sm" href="/contact">Book a Conversation</Link>

@@ -5,27 +5,22 @@ import { verifyToken } from './shared/lib/jwt';
 export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
-    // Paths that do not require authentication
-    const isPublicRoute =
-        pathname.startsWith('/api/public') ||
-        pathname.startsWith('/api/crm/leads') ||
-        pathname.startsWith('/api/auth') ||
-        pathname.startsWith('/api/content/media') ||
-        pathname.startsWith('/login') ||
-        pathname.startsWith('/portfolio') ||
-        pathname.startsWith('/blog') ||
-        pathname.startsWith('/home') ||
-        pathname.startsWith('/about') ||
-        pathname.startsWith('/services') ||
-        pathname.startsWith('/insights') ||
-        pathname.startsWith('/events') ||
-        pathname.startsWith('/contact') ||
-        pathname.startsWith('/advise') ||
-        pathname.startsWith('/operate') ||
-        pathname.startsWith('/navigate') ||
-        pathname === '/';
+    // Define protected route prefixes
+    const isProtectedRoute =
+        pathname.startsWith('/dashboard') ||
+        pathname.startsWith('/finance') ||
+        pathname.startsWith('/content') ||
+        pathname.startsWith('/crm') ||
+        pathname.startsWith('/ops') ||
+        pathname.startsWith('/settings') ||
+        (pathname.startsWith('/api') && !(
+            pathname.startsWith('/api/public') ||
+            pathname.startsWith('/api/crm/leads') ||
+            pathname.startsWith('/api/auth') ||
+            pathname.startsWith('/api/content/media')
+        ));
 
-    if (isPublicRoute) {
+    if (!isProtectedRoute) {
         return NextResponse.next();
     }
 
