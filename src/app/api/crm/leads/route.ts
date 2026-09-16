@@ -36,8 +36,8 @@ export async function POST(request: Request) {
             }
         });
 
-        // Send Email Notification
-        const emailHTML = `
+        // Send Internal Email Notification to Admins
+        const adminEmailHTML = `
             <h2>New Entry received via ${validatedData.source}</h2>
             <p><strong>Name:</strong> ${validatedData.name}</p>
             <p><strong>Email:</strong> ${validatedData.email}</p>
@@ -49,8 +49,29 @@ export async function POST(request: Request) {
 
         await sendNotificationEmail(
             `New Lead Inquiry: ${validatedData.name}`,
-            emailHTML
+            adminEmailHTML
         );
+
+        // Send Auto-Response Thank You Email to the Lead
+        if (validatedData.email) {
+            const leadThankYouHTML = `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #171b29;">
+                    <p>Hi ${validatedData.name.split(' ')[0]},</p>
+                    <p>Thank you for reaching out to the Robin Business Hub! Your inquiry has been successfully received.</p>
+                    <p>I am currently reviewing your information and will personally get back to you shortly to discuss how we might build a robust growth engine for your team.</p>
+                    <div style="margin: 32px 0; padding: 24px; background-color: #f1f3f7; border-radius: 8px;">
+                        <p style="margin-bottom: 0; font-weight: bold; color: #517352;">What to expect next?</p>
+                        <p style="margin-top: 8px; font-size: 14px; color: #5b6478;">I will evaluate your notes and reach out with an invitation for an initial discovery call so we can align on your specific friction points.</p>
+                    </div>
+                    <p>Best regards,<br>Robin Jones</p>
+                </div>
+            `;
+            await sendNotificationEmail(
+                `Thank you for reaching out! - Robin Jones`,
+                leadThankYouHTML,
+                [validatedData.email]
+            );
+        }
 
         return NextResponse.json({ data: newLead }, { status: 201 });
     } catch (error: any) {

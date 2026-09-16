@@ -7,11 +7,12 @@ import { SlideDrawer } from '@/shared/components/ui/Modal';
 import { LeadForm } from './LeadForm';
 import { Trash2, Folder } from 'lucide-react';
 
-/* ── Inline SVGs ── */
+// --- Lucide Icons ---
 const IcoPlus = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width={16} height={16}><path d="M5 12h14M12 5v14" /></svg>;
 const IcoTrash = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width={14} height={14}><polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" /><path d="M10 11v6M14 11v6" /><path d="M9 6V4h6v2" /></svg>;
 const IcoEye = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width={14} height={14}><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>;
 const IcoMail = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width={14} height={14}><rect width="20" height="16" x="2" y="4" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /></svg>;
+const IcoCalendar = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width={16} height={16}><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>;
 
 type Lead = {
     id: string;
@@ -25,48 +26,32 @@ type Lead = {
     createdAt: string;
 };
 
-function TemplateButton({ title, desc, lead, subject, body, onSent }: { title: string, desc: string, lead: Lead, subject: string, body: string, onSent: () => void }) {
-    const handleMailClick = async (e: React.MouseEvent) => {
-        e.preventDefault();
-
-        // Optimistic open mail client
-        window.location.href = `mailto:${lead.email}?subject=${subject}&body=${body}`;
-
-        // Log this action securely in the database
-        const logDate = new Date().toLocaleString();
-        const divider = `\n\n--- System Log: Sent template '${title}' on ${logDate} ---\n`;
-        const updatedNotes = (lead.notes || '') + divider;
-
-        try {
-            await fetch(`/api/crm/leads/${lead.id}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ notes: updatedNotes })
-            });
-            onSent();
-        } catch (e) { }
-    };
-
-    const hasBeenSent = lead.notes?.includes(`Sent template '${title}'`);
-
+function TemplateButton({ title, desc, isSent, disabled, onClick }: { title: string, desc: string, isSent: boolean, disabled?: boolean, onClick: () => void }) {
     return (
-        <a
-            href={`mailto:${lead.email}?subject=${subject}&body=${body}`}
-            onClick={handleMailClick}
-            style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', background: 'var(--surface-sunken)', border: '1px solid var(--surface-border)', borderRadius: '8px', color: 'var(--text-primary)', textDecoration: 'none', cursor: 'pointer' }}
+        <div
+            onClick={disabled ? undefined : onClick}
+            style={{
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px',
+                background: disabled ? 'var(--surface-default)' : 'var(--surface-sunken)',
+                border: '1px solid var(--surface-border)', borderRadius: '8px',
+                color: disabled ? 'var(--text-muted)' : 'var(--text-primary)',
+                cursor: disabled ? 'not-allowed' : 'pointer',
+                opacity: disabled ? 0.6 : 1,
+                transition: 'all 0.2s ease'
+            }}
         >
             <div>
-                <h4 style={{ margin: '0 0 4px 0', fontSize: '15px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    {title}
+                <h4 style={{ margin: '0 0 4px 0', fontSize: '15px', display: 'flex', alignItems: 'center', gap: '8px', color: disabled ? 'var(--text-muted)' : 'var(--text-primary)' }}>
+                    {title} {disabled && <span style={{ fontSize: '11px', fontWeight: 500, background: 'var(--surface-border)', padding: '2px 6px', borderRadius: '4px' }}>Locked</span>}
                 </h4>
                 <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-secondary)' }}>{desc}</p>
             </div>
-            {hasBeenSent && (
+            {isSent && !disabled && (
                 <div style={{ background: '#ecfdf5', color: '#10b981', fontSize: '11px', fontWeight: 600, padding: '4px 8px', borderRadius: '4px', border: '1px solid #a7f3d0' }}>
                     Sent ✓
                 </div>
             )}
-        </a>
+        </div>
     );
 }
 
@@ -78,6 +63,18 @@ export function LeadPipeline() {
     const [activeMailLead, setActiveMailLead] = useState<Lead | null>(null);
     const [toastMsg, setToastMsg] = useState<string | null>(null);
     const [showDeleted, setShowDeleted] = useState(false);
+    const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+    // Meet Scheduling & Email Flow
+    const [meetFlowState, setMeetFlowState] = useState<{
+        lead: Lead;
+        intent: 'schedule' | 'reschedule' | 'not-connected' | 'general-email';
+        templateTitle?: string;
+    } | null>(null);
+    const [meetLinkInput, setMeetLinkInput] = useState('');
+    const [meetSubjectInput, setMeetSubjectInput] = useState('');
+    const [meetMessageInput, setMeetMessageInput] = useState('');
+    const [isSendingMeet, setIsSendingMeet] = useState(false);
 
     const showToast = (msg: string) => {
         setToastMsg(msg);
@@ -114,35 +111,109 @@ export function LeadPipeline() {
 
             showToast(`Moved to ${newStatus}`);
 
-            if (newStatus === 'Meeting Scheduled' && oldStatus !== 'Meeting Scheduled' && leadToUpdate) {
-                const notes = leadToUpdate.notes || '';
-                const dateMatch = notes.match(/Booking Date:\s*([^\n\r]+)/);
-                const timeMatch = notes.match(/Booking Time:\s*([^\n\r]+)/);
+            // Trigger automated specific workflows for scheduling based on the status change
+            // Automatically generate a valid Google Meet formatted link constraint
+            const generateMeetLink = () => `https://meet.google.com/${Math.random().toString(36).substring(2, 5)}-${Math.random().toString(36).substring(2, 6)}-${Math.random().toString(36).substring(2, 5)}`;
 
-                const bookingDate = dateMatch ? dateMatch[1].trim() : null;
-                const bookingTime = timeMatch ? timeMatch[1].trim() : null;
-
-                if (bookingDate && bookingTime) {
-                    const startDt = new Date(`${bookingDate}T${bookingTime}:00`);
-                    const endDt = new Date(startDt.getTime() + 30 * 60000); // 30 minutes later
-
-                    // Format dates to YYYYMMDDTHHMMSSZ (UTC)
-                    const formatGoogleDate = (d: Date) => d.toISOString().replace(/-|:|\.\d\d\d/g, "");
-                    const startStr = formatGoogleDate(startDt);
-                    const endStr = formatGoogleDate(endDt);
-
-                    const title = encodeURIComponent(`Discovery Call: ${leadToUpdate.name}`);
-                    const details = encodeURIComponent(`Lead Details:\nCompany: ${leadToUpdate.company || 'N/A'}\nPhone: ${leadToUpdate.phone || 'N/A'}\nEmail: ${leadToUpdate.email || 'N/A'}\n\nEnquiry Notes:\n${notes}`);
-                    const location = encodeURIComponent('Virtual Google Meet');
-                    const addEmail = leadToUpdate.email ? `&add=${encodeURIComponent(leadToUpdate.email)}` : '';
-
-                    const gcalUrl = `https://calendar.google.com/calendar/r/eventedit?action=TEMPLATE&text=${title}&dates=${startStr}/${endStr}&details=${details}&location=${location}${addEmail}`;
-
-                    window.open(gcalUrl, '_blank');
-                }
+            if ((newStatus === 'Qualified' || newStatus === 'Meeting Scheduled') && oldStatus !== newStatus && leadToUpdate) {
+                setMeetFlowState({ lead: leadToUpdate, intent: 'schedule' });
+                setMeetLinkInput(generateMeetLink());
+                setMeetSubjectInput(`Confirmed: Alignment Call - Robin Jones`);
+                setMeetMessageInput(`I'm looking forward to our upcoming conversion. \n\nOur meeting is confirmed, you can join at the scheduled time using the Google Meet link below. To ensure we make the most of our time, please have your context ready.\n\nBest regards,\nRobin`);
+            } else if (newStatus === 'Not Connected' && oldStatus !== newStatus && leadToUpdate) {
+                setMeetFlowState({ lead: leadToUpdate, intent: 'not-connected' });
+                setMeetLinkInput(''); // No meeting link sent on not connected
+                setMeetSubjectInput(`Missed you - Reschedule our call`);
+                setMeetMessageInput(`Hi ${leadToUpdate.name.split(' ')[0]},\n\nI just jumped on our scheduled Google Meet but it looks like we missed each other.\n\nI know things can get remarkably busy! If you're still interested in aligning on your growth systems, please let me know when you might be free to reschedule our conversation.\n\nBest regards,\nRobin`);
+            } else if (newStatus === 'Rescheduled' && oldStatus !== newStatus && leadToUpdate) {
+                setMeetFlowState({ lead: leadToUpdate, intent: 'reschedule' });
+                setMeetLinkInput(generateMeetLink());
+                setMeetSubjectInput(`Updated: Rescheduled Alignment Call`);
+                setMeetMessageInput(`Hi ${leadToUpdate.name.split(' ')[0]},\n\nOur originally scheduled meeting has been successfully rescheduled.\n\nYou can find the updated date and time in the newly sent calendar invitation. Please use the Google Meet link below at the updated time.\n\nLooking forward to speaking!\n\nBest regards,\nRobin`);
             }
         } catch {
             fetchLeads(); // Revert on failure
+        }
+    };
+
+    const openGCalTemplate = (lead: Lead) => {
+        const notes = lead.notes || '';
+        const dateMatch = notes.match(/Booking Date:\s*([^\n\r]+)/);
+        const timeMatch = notes.match(/Booking Time:\s*([^\n\r]+)/);
+
+        const bookingDate = dateMatch ? dateMatch[1].trim() : null;
+        const bookingTime = timeMatch ? timeMatch[1].trim() : null;
+
+        let startStr, endStr;
+
+        if (bookingDate && bookingTime) {
+            const startDt = new Date(`${bookingDate}T${bookingTime}:00`);
+            const endDt = new Date(startDt.getTime() + 30 * 60000); // 30 mins later
+            const formatGoogleDate = (d: Date) => d.toISOString().replace(/-|:|\.\d\d\d/g, "");
+            startStr = formatGoogleDate(startDt);
+            endStr = formatGoogleDate(endDt);
+        } else {
+            // Default 30 min meeting starting soon 
+            const now = new Date();
+            const formatGoogleDate = (d: Date) => d.toISOString().replace(/-|:|\.\d\d\d/g, "");
+            startStr = formatGoogleDate(now);
+            endStr = formatGoogleDate(new Date(now.getTime() + 30 * 60000));
+        }
+
+        const title = encodeURIComponent(`Discovery Call: ${lead.name}`);
+        const details = encodeURIComponent(`Lead Details:\nCompany: ${lead.company || 'N/A'}\nPhone: ${lead.phone || 'N/A'}\nEmail: ${lead.email || 'N/A'}`);
+        const location = encodeURIComponent('Virtual Google Meet');
+        const addEmail = lead.email ? `&add=${encodeURIComponent(lead.email)}` : '';
+
+        const gcalUrl = `https://calendar.google.com/calendar/r/eventedit?action=TEMPLATE&text=${title}&dates=${startStr}/${endStr}&details=${details}&location=${location}${addEmail}`;
+        window.open(gcalUrl, '_blank');
+    };
+
+    const loadDraftFromTemplate = (title: string, subject: string, body: string) => {
+        if (!activeMailLead) return;
+        setMeetFlowState({ lead: activeMailLead, intent: 'general-email', templateTitle: title });
+        setMeetSubjectInput(subject);
+        setMeetMessageInput(body.replace(/%0D%0A/g, '\n'));
+        setMeetLinkInput('');
+        setActiveMailLead(null); // Close templates drawer
+    };
+
+    const sendMeetingEmail = async () => {
+        if (!meetFlowState) return;
+        setIsSendingMeet(true);
+        try {
+            const res = await fetch(`/api/crm/leads/${meetFlowState.lead.id}/send-email`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    subject: meetSubjectInput,
+                    message: meetMessageInput,
+                    meetLink: meetLinkInput
+                })
+            });
+            if (res.ok) {
+                // If it was a generic template, manually append the "Sent template..." marker to notes so the UI shows 'Sent ✓'
+                if (meetFlowState.intent === 'general-email' && meetFlowState.templateTitle) {
+                    const logDate = new Date().toLocaleString();
+                    const divider = `\n\n--- System Log: Sent template '${meetFlowState.templateTitle}' on ${logDate} ---\n`;
+                    const updatedNotes = (meetFlowState.lead.notes || '') + divider;
+                    await fetch(`/api/crm/leads/${meetFlowState.lead.id}`, {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ notes: updatedNotes })
+                    });
+                }
+
+                showToast(`Email successfully sent to ${meetFlowState.lead.email}`);
+                setMeetFlowState(null);
+                fetchLeads(); // refresh notes to show the audit history
+            } else {
+                showToast('Failed to send email. Check SMTP settings.');
+            }
+        } catch (e) {
+            showToast('Error connecting to CRM API.');
+        } finally {
+            setIsSendingMeet(false);
         }
     };
 
@@ -155,6 +226,7 @@ export function LeadPipeline() {
 
     const restoreLead = async (id: string) => {
         setLeads(prev => prev.filter(l => l.id !== id));
+        setSelectedIds(prev => { const n = new Set(prev); n.delete(id); return n; });
         await fetch(`/api/crm/leads/${id}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
@@ -163,6 +235,47 @@ export function LeadPipeline() {
         showToast('Lead restored');
     };
 
+    const toggleSelectAll = () => {
+        if (selectedIds.size === leads.length && leads.length > 0) {
+            setSelectedIds(new Set());
+        } else {
+            setSelectedIds(new Set(leads.map(l => l.id)));
+        }
+    };
+
+    const toggleSelect = (id: string) => {
+        const next = new Set(selectedIds);
+        if (next.has(id)) next.delete(id);
+        else next.add(id);
+        setSelectedIds(next);
+    };
+
+    const bulkDelete = async () => {
+        if (!window.confirm(`Permanently delete ${selectedIds.size} leads?`)) return;
+        const ids = Array.from(selectedIds);
+        setLeads(prev => prev.filter(l => !ids.includes(l.id)));
+        setSelectedIds(new Set());
+        await Promise.all(ids.map(id => fetch(`/api/crm/leads/${id}?hardDelete=true`, { method: 'DELETE' })));
+        showToast(`Permanently deleted ${ids.length} leads`);
+    };
+
+    const bulkRestore = async () => {
+        const ids = Array.from(selectedIds);
+        setLeads(prev => prev.filter(l => !ids.includes(l.id)));
+        setSelectedIds(new Set());
+        await Promise.all(ids.map(id => fetch(`/api/crm/leads/${id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ isDeleted: false })
+        })));
+        showToast(`Restored ${ids.length} leads`);
+    };
+
+
+    // Reset selection when switching views
+    useEffect(() => {
+        setSelectedIds(new Set());
+    }, [showDeleted]);
 
     return (
         <div className={styles.container}>
@@ -185,10 +298,22 @@ export function LeadPipeline() {
                         {!showDeleted ? <Trash2 size={16} /> : <Folder size={16} />}
                         {!showDeleted ? 'View Recycle Bin' : 'Back to Active Leads'}
                     </button>
-                    <button className={styles.btnPrimary} onClick={() => setIsAddModalOpen(true)}>
-                        <IcoPlus />
-                        New Lead
-                    </button>
+                    {showDeleted && selectedIds.size > 0 && (
+                        <>
+                            <button onClick={bulkRestore} style={{ background: '#ecfdf5', color: '#10b981', border: '1px solid #10b981', padding: '10px 16px', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}>
+                                Restore Selected ({selectedIds.size})
+                            </button>
+                            <button onClick={bulkDelete} style={{ background: '#fef2f2', color: '#ef4444', border: '1px solid #ef4444', padding: '10px 16px', borderRadius: '8px', cursor: 'pointer', fontWeight: 600 }}>
+                                <IcoTrash /> Delete Forever ({selectedIds.size})
+                            </button>
+                        </>
+                    )}
+                    {!showDeleted && (
+                        <button className={styles.btnPrimary} onClick={() => setIsAddModalOpen(true)}>
+                            <IcoPlus />
+                            New Lead
+                        </button>
+                    )}
                 </div>
             </header>
 
@@ -196,6 +321,16 @@ export function LeadPipeline() {
                 <table style={{ width: '100%', minWidth: '800px', borderCollapse: 'collapse', textAlign: 'left' }}>
                     <thead style={{ background: 'var(--surface-sunken)', borderBottom: '1px solid var(--surface-border)' }}>
                         <tr>
+                            {showDeleted && (
+                                <th style={{ padding: '12px 16px', width: '48px' }}>
+                                    <input
+                                        type="checkbox"
+                                        checked={leads.length > 0 && selectedIds.size === leads.length}
+                                        onChange={toggleSelectAll}
+                                        style={{ cursor: 'pointer', width: '16px', height: '16px' }}
+                                    />
+                                </th>
+                            )}
                             <th style={{ padding: '12px 16px', fontWeight: 600, fontSize: '14px', color: 'var(--text-secondary)' }}>Lead Name</th>
                             <th style={{ padding: '12px 16px', fontWeight: 600, fontSize: '14px', color: 'var(--text-secondary)' }}>Company</th>
                             <th style={{ padding: '12px 16px', fontWeight: 600, fontSize: '14px', color: 'var(--text-secondary)' }}>Source</th>
@@ -206,15 +341,25 @@ export function LeadPipeline() {
                     <tbody>
                         {isLoading ? (
                             <tr>
-                                <td colSpan={5} style={{ padding: '32px', textAlign: 'center', color: 'var(--text-muted)' }}>Loading...</td>
+                                <td colSpan={showDeleted ? 6 : 5} style={{ padding: '32px', textAlign: 'center', color: 'var(--text-muted)' }}>Loading...</td>
                             </tr>
                         ) : leads.length === 0 ? (
                             <tr>
-                                <td colSpan={5} style={{ padding: '32px', textAlign: 'center', color: 'var(--text-muted)' }}>No leads found.</td>
+                                <td colSpan={showDeleted ? 6 : 5} style={{ padding: '32px', textAlign: 'center', color: 'var(--text-muted)' }}>No leads found.</td>
                             </tr>
                         ) : (
                             leads.map(lead => (
-                                <tr key={lead.id} style={{ borderBottom: '1px solid var(--surface-border)' }}>
+                                <tr key={lead.id} style={{ borderBottom: '1px solid var(--surface-border)', background: selectedIds.has(lead.id) ? 'var(--surface-sunken)' : 'transparent' }}>
+                                    {showDeleted && (
+                                        <td style={{ padding: '16px', width: '48px' }}>
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedIds.has(lead.id)}
+                                                onChange={() => toggleSelect(lead.id)}
+                                                style={{ cursor: 'pointer', width: '16px', height: '16px' }}
+                                            />
+                                        </td>
+                                    )}
                                     <td style={{ padding: '16px', fontWeight: 500 }}>{lead.name}</td>
                                     <td style={{ padding: '16px', color: 'var(--text-secondary)' }}>{lead.company || '-'}</td>
                                     <td style={{ padding: '16px' }}>
@@ -347,48 +492,147 @@ export function LeadPipeline() {
                         <TemplateButton
                             title="1. New Lead (Intro)"
                             desc="Comprehensive welcome and discovery setup."
-                            lead={activeMailLead}
-                            onSent={fetchLeads}
-                            subject={`Exploring growth opportunities for ${activeMailLead.company || 'your team'} - Robin Jones`}
-                            body={`Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0AThank you for reaching out to the Robin Business Hub. I've reviewed your initial inquiry regarding ${activeMailLead.company || 'your organization'} and there is a clear opportunity for us to drive impact together.%0D%0A%0D%0AMy focus is on building robust growth engines and scalable operations for high-performing teams, and I'd love to learn more about the specific friction points you are experiencing right now.%0D%0A%0D%0AWhen would be a good time for a brief 15-minute alignment call next week to see if we are a fit to work together?%0D%0A%0D%0ALooking forward to speaking,%0D%0ARobin Jones`}
+                            isSent={!!activeMailLead.notes?.includes("Sent template '1. New Lead (Intro)'")}
+                            disabled={activeMailLead.status !== 'New Lead'}
+                            onClick={() => loadDraftFromTemplate(
+                                "1. New Lead (Intro)",
+                                `Exploring growth opportunities for ${activeMailLead.company || 'your team'} - Robin Jones`,
+                                `Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0AThank you for reaching out to the Robin Business Hub. I've reviewed your initial inquiry regarding ${activeMailLead.company || 'your organization'} and there is a clear opportunity for us to drive impact together.%0D%0A%0D%0AMy focus is on building robust growth engines and scalable operations for high-performing teams, and I'd love to learn more about the specific friction points you are experiencing right now.%0D%0A%0D%0AWhen would be a good time for a brief 15-minute alignment call next week to see if we are a fit to work together?%0D%0A%0D%0ALooking forward to speaking,%0D%0ARobin Jones`
+                            )}
                         />
 
                         <TemplateButton
-                            title="2. Meeting Scheduled"
-                            desc="Extensive logistics and pre-meeting context."
-                            lead={activeMailLead}
-                            onSent={fetchLeads}
-                            subject={`Confirmed: Initial Alignment Call - Robin Jones`}
-                            body={`Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0AI'm looking forward to our upcoming conversation. Our meeting is confirmed, and you can join at the scheduled time using the following link:%0D%0A[INSERT_MEETING_LINK]%0D%0A%0D%0ATo ensure we make the most of our time, our agenda will focus on:%0D%0A1. Your primary growth or operational challenge%0D%0A2. Current bottlenecks and systems in place%0D%0A3. How my advisory framework might be applied to your specific scenario%0D%0A%0D%0AIf you have any context or materials you'd like me to review beforehand, feel free to drop them here.%0D%0A%0D%0ABest regards,%0D%0ARobin Jones`}
+                            title="2. Meeting Scheduled (Custom)"
+                            desc="Extensive logistics and pre-meeting context without Auto-Schedule."
+                            isSent={!!activeMailLead.notes?.includes("Sent template '2. Meeting Scheduled (Custom)'")}
+                            disabled={activeMailLead.status !== 'Qualified' && activeMailLead.status !== 'Meeting Scheduled'}
+                            onClick={() => loadDraftFromTemplate(
+                                "2. Meeting Scheduled (Custom)",
+                                `Confirmed: Initial Alignment Call - Robin Jones`,
+                                `Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0AI'm looking forward to our upcoming conversation. Our meeting is confirmed, and you can join at the scheduled time using the following link:%0D%0A[INSERT_MEETING_LINK]%0D%0A%0D%0ATo ensure we make the most of our time, our agenda will focus on:%0D%0A1. Your primary growth or operational challenge%0D%0A2. Current bottlenecks and systems in place%0D%0A3. How my advisory framework might be applied to your specific scenario%0D%0A%0D%0AIf you have any context or materials you'd like me to review beforehand, feel free to drop them here.%0D%0A%0D%0ABest regards,%0D%0ARobin Jones`
+                            )}
                         />
 
                         <TemplateButton
                             title="3. Proposal Sent"
                             desc="Detailed proposal handoff."
-                            lead={activeMailLead}
-                            onSent={fetchLeads}
-                            subject={`Partnership Proposal: ${activeMailLead.company || 'Strategic Growth'} - Robin Jones`}
-                            body={`Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0AIt was a pleasure speaking with you and learning more about the vision for ${activeMailLead.company || 'your team'}.%0D%0A%0D%0AI have synthesized our discussion into a formal engagement proposal, attached here. This document outlines the proposed scope of work, timeline, and the specific strategic milestones we will target in Phase 1.%0D%0A%0D%0AAttachment: [INSERT_PROPOSAL_LINK]%0D%0A%0D%0APlease review the details, and let me know if you would like to schedule a brief follow-up call to walk through the deliverables and address any questions.%0D%0A%0D%0AThank you,%0D%0ARobin Jones`}
+                            isSent={!!activeMailLead.notes?.includes("Sent template '3. Proposal Sent'")}
+                            disabled={activeMailLead.status !== 'Proposal Sent'}
+                            onClick={() => loadDraftFromTemplate(
+                                "3. Proposal Sent",
+                                `Partnership Proposal: ${activeMailLead.company || 'Strategic Growth'} - Robin Jones`,
+                                `Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0AIt was a pleasure speaking with you and learning more about the vision for ${activeMailLead.company || 'your team'}.%0D%0A%0D%0AI have synthesized our discussion into a formal engagement proposal, attached here. This document outlines the proposed scope of work, timeline, and the specific strategic milestones we will target in Phase 1.%0D%0A%0D%0AAttachment: [INSERT_PROPOSAL_LINK_HERE]%0D%0A%0D%0APlease review the details, and let me know if you would like to schedule a brief follow-up call to walk through the deliverables and address any questions.%0D%0A%0D%0AThank you,%0D%0ARobin Jones`
+                            )}
                         />
 
                         <TemplateButton
                             title="4. Contract / Formalities"
                             desc="Closing documents or gracious wrap-up."
-                            lead={activeMailLead}
-                            onSent={fetchLeads}
-                            subject={`Next Steps & Engagement Formalities - Robin Jones`}
-                            body={`Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0AI am thrilled that we are moving forward.%0D%0A%0D%0AAttached are the finalized engagement agreements and terms of service. Please review and sign where indicated so we can officially kick off our work together.%0D%0A%0D%0A[ATTACH_DOCUMENTS_HERE]%0D%0A%0D%0AOnce these are executed, I will send over the onboarding packet and our first set of action items.%0D%0A%0D%0ALet me know if anything requires clarification.%0D%0A%0D%0ABest,%0D%0ARobin Jones`}
+                            isSent={!!activeMailLead.notes?.includes("Sent template '4. Contract / Formalities'")}
+                            disabled={activeMailLead.status !== 'Negotiation' && activeMailLead.status !== 'Closed Won'}
+                            onClick={() => loadDraftFromTemplate(
+                                "4. Contract / Formalities",
+                                `Next Steps & Engagement Formalities - Robin Jones`,
+                                `Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0AI am thrilled that we are moving forward.%0D%0A%0D%0AAttached are the finalized engagement agreements and terms of service. Please review and sign where indicated so we can officially kick off our work together.%0D%0A%0D%0A[ATTACH_DOCUMENTS_HERE]%0D%0A%0D%0AOnce these are executed, I will send over the onboarding packet and our first set of action items.%0D%0A%0D%0ALet me know if anything requires clarification.%0D%0A%0D%0ABest,%0D%0ARobin Jones`
+                            )}
                         />
 
                         <TemplateButton
                             title="5. Response Delay (Bump)"
                             desc="Professional follow-up when communications stall."
-                            lead={activeMailLead}
-                            onSent={fetchLeads}
-                            subject={`Checking in on our previous conversation`}
-                            body={`Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0AI am just bringing this thread back to the top of your inbox.%0D%0A%0D%0AI know things can get remarkably busy, but I wanted to check if you had any outstanding questions regarding the materials I previously sent over.%0D%0A%0D%0AIf priorities have shifted on your end or if the timing is no longer ideal, just let me know. Otherwise, I look forward to hearing your thoughts.%0D%0A%0D%0ABest regards,%0D%0ARobin`}
+                            isSent={!!activeMailLead.notes?.includes("Sent template '5. Response Delay (Bump)'")}
+                            disabled={activeMailLead.status !== 'Not Connected' && activeMailLead.status !== 'Rescheduled'}
+                            onClick={() => loadDraftFromTemplate(
+                                "5. Response Delay (Bump)",
+                                `Checking in on our previous conversation`,
+                                `Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0AI am just bringing this thread back to the top of your inbox.%0D%0A%0D%0AI know things can get remarkably busy, but I wanted to check if you had any outstanding questions regarding the materials I previously sent over.%0D%0A%0D%0AIf priorities have shifted on your end or if the timing is no longer ideal, just let me know. Otherwise, I look forward to hearing your thoughts.%0D%0A%0D%0ABest regards,%0D%0ARobin`
+                            )}
                         />
 
+                    </div>
+                )}
+            </SlideDrawer>
+
+            {/* Meeting & Lifecycle Mail Flows */}
+            <SlideDrawer
+                isOpen={!!meetFlowState}
+                onClose={() => !isSendingMeet && setMeetFlowState(null)}
+                title={meetFlowState?.intent === 'not-connected' ? "Draft Reschedule Request" : (meetFlowState?.intent === 'general-email' ? `Send: ${meetFlowState.templateTitle}` : "Send Meeting Details")}
+            >
+                {meetFlowState?.lead && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+
+                        {meetFlowState.intent !== 'not-connected' && meetFlowState.intent !== 'general-email' && (
+                            <div style={{ background: '#eef2ff', border: '1px solid #c7d2fe', padding: '16px', borderRadius: '8px' }}>
+                                <h4 style={{ margin: '0 0 8px 0', color: '#4338ca', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                    <IcoCalendar /> Step 1: Manage Google Calendar
+                                </h4>
+                                <p style={{ margin: '0 0 12px 0', fontSize: '13px', color: '#4f46e5' }}>
+                                    {meetFlowState.intent === 'reschedule'
+                                        ? "Update the existing event date/time in Google Calendar. Retain the same Meet link to prevent duplicate entries."
+                                        : "Create the Google Calendar event and click Add Google Meet video conferencing."}
+                                    Then, copy the Meet Link below.
+                                </p>
+                                <button
+                                    onClick={() => openGCalTemplate(meetFlowState.lead)}
+                                    style={{ background: '#4f46e5', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: 600 }}
+                                >
+                                    Open Google Calendar
+                                </button>
+                            </div>
+                        )}
+
+                        {meetFlowState.intent !== 'not-connected' && meetFlowState.intent !== 'general-email' && (
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)' }}>
+                                    Step 2: Paste Google Meet Link
+                                </label>
+                                <input
+                                    type="url"
+                                    value={meetLinkInput}
+                                    onChange={(e) => setMeetLinkInput(e.target.value)}
+                                    placeholder="https://meet.google.com/xxx-xxxx-xxx (Optional)"
+                                    style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--surface-border)', borderRadius: '6px', fontSize: '14px', outline: 'none' }}
+                                />
+                            </div>
+                        )}
+
+                        <div>
+                            <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)' }}>
+                                Email Subject
+                            </label>
+                            <input
+                                type="text"
+                                value={meetSubjectInput}
+                                onChange={(e) => setMeetSubjectInput(e.target.value)}
+                                style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--surface-border)', borderRadius: '6px', fontSize: '14px', outline: 'none', marginBottom: '16px' }}
+                            />
+
+                            <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)' }}>
+                                Email Draft Message
+                            </label>
+                            <textarea
+                                value={meetMessageInput}
+                                onChange={(e) => setMeetMessageInput(e.target.value)}
+                                style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--surface-border)', borderRadius: '6px', fontSize: '14px', outline: 'none', minHeight: '160px', resize: 'vertical' }}
+                            />
+                            <p style={{ marginTop: '6px', fontSize: '12px', color: 'var(--text-muted)' }}>
+                                All history and notes will be preserved. This action will be logged chronologically to prevent duplication.
+                            </p>
+                        </div>
+
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '8px' }}>
+                            <button onClick={() => setMeetFlowState(null)} style={{ padding: '10px 16px', background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', fontWeight: 500 }} disabled={isSendingMeet}>
+                                Keep as Draft (Cancel)
+                            </button>
+                            <button
+                                onClick={sendMeetingEmail}
+                                disabled={isSendingMeet || !meetFlowState.lead.email}
+                                style={{ padding: '10px 20px', background: 'var(--color-primary)', color: '#fff', border: 'none', borderRadius: '6px', cursor: (isSendingMeet || !meetFlowState.lead.email) ? 'not-allowed' : 'pointer', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}
+                            >
+                                {isSendingMeet ? 'Sending...' : 'Send Email to Lead'}
+                            </button>
+                        </div>
                     </div>
                 )}
             </SlideDrawer>

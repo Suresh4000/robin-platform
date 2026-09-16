@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 
-export const sendNotificationEmail = async (subject: string, htmlContent: string) => {
+export const sendNotificationEmail = async (subject: string, htmlContent: string, toEmails?: string[]) => {
     try {
         // By default we need some SMTP settings
         // If they are not provided, we will just log it for debugging
@@ -21,9 +21,13 @@ export const sendNotificationEmail = async (subject: string, htmlContent: string
             },
         });
 
+        const recipients = toEmails && toEmails.length > 0
+            ? toEmails.join(', ')
+            : ['wordpress@svaan.in', 'sureshkumarmr2004@gmail.com'].join(', ');
+
         const info = await transporter.sendMail({
             from: `"${process.env.SMTP_FROM_NAME || 'Robin Platform'}" <${process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER}>`,
-            to: ['wordpress@svaan.in', 'sureshkumarmr2004@gmail.com'].join(', '), // User requested these two emails
+            to: recipients,
             subject: subject,
             html: htmlContent,
         });

@@ -1,21 +1,21 @@
 /* Globals using Next.js imported fonts (--font-inter, --font-manrope) */
 :root {
-  /* Colors - Design Tokens */
-  --color-primary: #0A9FE7;
-  --color-secondary: #01BFBA;
-  --brand-gradient: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
-  --color-accent: #E05A26;
+  /* Colors - Design Tokens (Ivory, Deep Forest, Sage Palette) */
+  --color-primary: #6A8F6B;
+  --color-secondary: #8BAF8C;
+  --brand-gradient: linear-gradient(135deg, #123524, #6A8F6B);
+  --color-accent: #517352;
 
   /* Surfaces */
-  --bg-main: #F7F8FA;
+  --bg-main: #F7F7F2;
   --surface-default: #FFFFFF;
-  --surface-hover: #F1F3F7;
-  --surface-border: #E1E4EC;
+  --surface-hover: #EBEBE6;
+  --surface-border: #E2E4DE;
 
   /* Typography Colors */
-  --text-primary: #171B29;
-  --text-secondary: #5B6478;
-  --text-muted: #97A0B5;
+  --text-primary: #123524;
+  --text-secondary: #2B4A3A;
+  --text-muted: #526E60;
 
   /* Layout constraints */
   --sidebar-width: 272px;
