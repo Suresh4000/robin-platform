@@ -20,7 +20,7 @@ export default function NotFound() {
 
                             <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
                                 <Link href="/home" className="btn btn-brass">
-                                    Return to Home
+                                    Back to Home
                                 </Link>
                                 <Link href="/contact" className="btn btn-ghost">
                                     Contact
