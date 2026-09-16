@@ -3,6 +3,26 @@ import type { NextRequest } from 'next/server';
 import { verifyToken } from './shared/lib/jwt';
 
 export async function middleware(request: NextRequest) {
+    const basicAuth = request.headers.get('authorization');
+    const url = request.nextUrl;
+
+    if (basicAuth) {
+        const authValue = basicAuth.split(' ')[1];
+        const [user, pwd] = atob(authValue).split(':');
+
+        if (user !== 'RobinJones' || pwd !== 'robin@2026') {
+            return new NextResponse('Auth required', {
+                status: 401,
+                headers: { 'WWW-Authenticate': 'Basic realm="Secure Area"' }
+            });
+        }
+    } else {
+        return new NextResponse('Auth required', {
+            status: 401,
+            headers: { 'WWW-Authenticate': 'Basic realm="Secure Area"' }
+        });
+    }
+
     const { pathname } = request.nextUrl;
 
     // Paths that do not require authentication
