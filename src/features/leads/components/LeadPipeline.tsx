@@ -74,6 +74,8 @@ export function LeadPipeline() {
     const [meetLinkInput, setMeetLinkInput] = useState('');
     const [meetSubjectInput, setMeetSubjectInput] = useState('');
     const [meetMessageInput, setMeetMessageInput] = useState('');
+    const [meetDateInput, setMeetDateInput] = useState('');
+    const [meetTimeInput, setMeetTimeInput] = useState('');
     const [isSendingMeet, setIsSendingMeet] = useState(false);
 
     const showToast = (msg: string) => {
@@ -115,9 +117,18 @@ export function LeadPipeline() {
             // Automatically generate a valid Google Meet formatted link constraint
             const generateMeetLink = () => `https://meet.google.com/${Math.random().toString(36).substring(2, 5)}-${Math.random().toString(36).substring(2, 6)}-${Math.random().toString(36).substring(2, 5)}`;
 
+            // Parse existing date/time from notes if present
+            const notesStr = leadToUpdate?.notes || '';
+            const dtMatch = notesStr.match(/Booking Date:\s*([^\n\r]+)/);
+            const tmMatch = notesStr.match(/Booking Time:\s*([^\n\r]+)/);
+            const initialDate = dtMatch ? dtMatch[1].trim() : new Date().toISOString().split('T')[0];
+            const initialTime = tmMatch ? tmMatch[1].trim() : "10:00";
+
             if ((newStatus === 'Qualified' || newStatus === 'Meeting Scheduled') && oldStatus !== newStatus && leadToUpdate) {
                 setMeetFlowState({ lead: leadToUpdate, intent: 'schedule' });
                 setMeetLinkInput(generateMeetLink());
+                setMeetDateInput(initialDate);
+                setMeetTimeInput(initialTime);
                 setMeetSubjectInput(`Confirmed: Alignment Call - Robin Jones`);
                 setMeetMessageInput(`I'm looking forward to our upcoming conversion. \n\nOur meeting is confirmed, you can join at the scheduled time using the Google Meet link below. To ensure we make the most of our time, please have your context ready.\n\nBest regards,\nRobin`);
             } else if (newStatus === 'Not Connected' && oldStatus !== newStatus && leadToUpdate) {
@@ -128,6 +139,8 @@ export function LeadPipeline() {
             } else if (newStatus === 'Rescheduled' && oldStatus !== newStatus && leadToUpdate) {
                 setMeetFlowState({ lead: leadToUpdate, intent: 'reschedule' });
                 setMeetLinkInput(generateMeetLink());
+                setMeetDateInput(initialDate);
+                setMeetTimeInput(initialTime);
                 setMeetSubjectInput(`Updated: Rescheduled Alignment Call`);
                 setMeetMessageInput(`Hi ${leadToUpdate.name.split(' ')[0]},\n\nOur originally scheduled meeting has been successfully rescheduled.\n\nYou can find the updated date and time in the newly sent calendar invitation. Please use the Google Meet link below at the updated time.\n\nLooking forward to speaking!\n\nBest regards,\nRobin`);
             }
@@ -136,13 +149,13 @@ export function LeadPipeline() {
         }
     };
 
-    const openGCalTemplate = (lead: Lead) => {
+    const openGCalTemplate = (lead: Lead, explicitDate?: string, explicitTime?: string) => {
         const notes = lead.notes || '';
         const dateMatch = notes.match(/Booking Date:\s*([^\n\r]+)/);
         const timeMatch = notes.match(/Booking Time:\s*([^\n\r]+)/);
 
-        const bookingDate = dateMatch ? dateMatch[1].trim() : null;
-        const bookingTime = timeMatch ? timeMatch[1].trim() : null;
+        const bookingDate = explicitDate || (dateMatch ? dateMatch[1].trim() : null);
+        const bookingTime = explicitTime || (timeMatch ? timeMatch[1].trim() : null);
 
         let startStr, endStr;
 
@@ -182,6 +195,23 @@ export function LeadPipeline() {
         if (!meetFlowState) return;
         setIsSendingMeet(true);
         try {
+            // Overwrite CRM notes with new date and time for Reschedules so the master Calendar instantly updates
+            if (meetFlowState.intent === 'schedule' || meetFlowState.intent === 'reschedule') {
+                let finalNotes = meetFlowState.lead.notes || '';
+                if (finalNotes.includes('Booking Date:')) {
+                    finalNotes = finalNotes.replace(/Booking Date:\s*[^\n\r]+/, `Booking Date: ${meetDateInput}`);
+                    finalNotes = finalNotes.replace(/Booking Time:\s*[^\n\r]+/, `Booking Time: ${meetTimeInput}`);
+                } else {
+                    finalNotes += `\n\nBooking Date: ${meetDateInput}\nBooking Time: ${meetTimeInput}`;
+                }
+
+                await fetch(`/api/crm/leads/${meetFlowState.lead.id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ notes: finalNotes })
+                });
+            }
+
             const res = await fetch(`/api/crm/leads/${meetFlowState.lead.id}/send-email`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -565,16 +595,35 @@ export function LeadPipeline() {
                         {meetFlowState.intent !== 'not-connected' && meetFlowState.intent !== 'general-email' && (
                             <div style={{ background: '#eef2ff', border: '1px solid #c7d2fe', padding: '16px', borderRadius: '8px' }}>
                                 <h4 style={{ margin: '0 0 8px 0', color: '#4338ca', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <IcoCalendar /> Step 1: Manage Google Calendar
+                                    <IcoCalendar /> {meetFlowState.intent === 'reschedule' ? 'Step 1: Set Reschedule Date/Time' : 'Step 1: Confirm Date/Time'}
                                 </h4>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
+                                    <div>
+                                        <label style={{ display: 'block', fontSize: '13px', color: '#4f46e5', marginBottom: '4px' }}>Date</label>
+                                        <input
+                                            type="date"
+                                            value={meetDateInput}
+                                            onChange={e => setMeetDateInput(e.target.value)}
+                                            style={{ width: '100%', padding: '8px', border: '1px solid #c7d2fe', borderRadius: '4px', color: '#312e81', fontSize: '13px', outline: 'none' }}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label style={{ display: 'block', fontSize: '13px', color: '#4f46e5', marginBottom: '4px' }}>Time</label>
+                                        <input
+                                            type="time"
+                                            value={meetTimeInput}
+                                            onChange={e => setMeetTimeInput(e.target.value)}
+                                            style={{ width: '100%', padding: '8px', border: '1px solid #c7d2fe', borderRadius: '4px', color: '#312e81', fontSize: '13px', outline: 'none' }}
+                                        />
+                                    </div>
+                                </div>
                                 <p style={{ margin: '0 0 12px 0', fontSize: '13px', color: '#4f46e5' }}>
                                     {meetFlowState.intent === 'reschedule'
-                                        ? "Update the existing event date/time in Google Calendar. Retain the same Meet link to prevent duplicate entries."
-                                        : "Create the Google Calendar event and click Add Google Meet video conferencing."}
-                                    Then, copy the Meet Link below.
+                                        ? "Selecting the new date updates your Master Calendar locally. Next, open Google Calendar to update the existing event."
+                                        : "Create the Google Calendar event and securely lock the date into your CRM Master Calendar."}
                                 </p>
                                 <button
-                                    onClick={() => openGCalTemplate(meetFlowState.lead)}
+                                    onClick={() => openGCalTemplate(meetFlowState.lead, meetDateInput, meetTimeInput)}
                                     style={{ background: '#4f46e5', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: 600 }}
                                 >
                                     Open Google Calendar
