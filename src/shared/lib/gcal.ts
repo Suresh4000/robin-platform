@@ -13,12 +13,11 @@ export async function getCalendarAuth() {
     // Google API requires newlines in the private key to be literal \n
     const privateKey = admin.gcalPrivateKey.replace(/\\n/g, '\n');
 
-    const auth = new google.auth.JWT(
-        admin.gcalClientEmail,
-        undefined,
-        privateKey,
-        ['https://www.googleapis.com/auth/calendar.events']
-    );
+    const auth = new google.auth.JWT({
+        email: admin.gcalClientEmail,
+        key: privateKey,
+        scopes: ['https://www.googleapis.com/auth/calendar.events']
+    });
 
     return { auth, calendarId: admin.gcalCalendarId };
 }

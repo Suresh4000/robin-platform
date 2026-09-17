@@ -13,6 +13,9 @@ export default function SettingsPage() {
     const [activeHelp, setActiveHelp] = useState<string | null>(null);
 
     const [isSaving, setIsSaving] = useState(false);
+    const [isTesting, setIsTesting] = useState(false);
+    const [testStatus, setTestStatus] = useState<{ success?: boolean; message?: string } | null>(null);
+
     const [toast, setToast] = useState('');
 
     useEffect(() => {
@@ -39,6 +42,28 @@ export default function SettingsPage() {
             setToast('Failed to save settings');
         } finally {
             setIsSaving(false);
+        }
+    };
+
+    const handleTestConnection = async () => {
+        setIsTesting(true);
+        setTestStatus(null);
+        try {
+            const res = await fetch('/api/ops/settings/test-gcal', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ gcalClientEmail, gcalPrivateKey, gcalCalendarId })
+            });
+            const data = await res.json();
+            if (data.success) {
+                setTestStatus({ success: true, message: 'Connection Successful! Verification passed.' });
+            } else {
+                setTestStatus({ success: false, message: data.error || 'Authentication Failed.' });
+            }
+        } catch (e) {
+            setTestStatus({ success: false, message: 'Server reached an error checking connection.' });
+        } finally {
+            setIsTesting(false);
         }
     };
 
@@ -123,6 +148,25 @@ export default function SettingsPage() {
                             onChange={(e) => setGcalPrivateKey(e.target.value)}
                         />
                         <span style={{ fontSize: '12px', color: '#888', marginTop: '4px', display: 'block' }}>Store this key safely! It operates with absolute server authority.</span>
+                    </div>
+
+                    <div style={{ marginTop: '24px', borderTop: '1px solid var(--surface-border)', paddingTop: '16px', display: 'flex', alignItems: 'center', gap: '16px' }}>
+                        <button
+                            onClick={handleTestConnection}
+                            disabled={isTesting || !gcalCalendarId || !gcalClientEmail || !gcalPrivateKey}
+                            style={{
+                                background: '#10b981', color: '#fff', border: 'none', padding: '10px 16px', borderRadius: '8px', cursor: (isTesting || !gcalCalendarId || !gcalClientEmail || !gcalPrivateKey) ? 'not-allowed' : 'pointer', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px', opacity: (isTesting || !gcalCalendarId || !gcalClientEmail || !gcalPrivateKey) ? 0.6 : 1
+                            }}
+                        >
+                            {isTesting ? <Loader2 size={16} className="spinner" /> : '🔌'}
+                            {isTesting ? 'Verifying...' : 'Test Connection'}
+                        </button>
+                        {testStatus && (
+                            <span style={{ fontSize: '14px', fontWeight: 500, color: testStatus.success ? '#10b981' : '#ef4444' }}>
+                                {testStatus.success ? '✓ ' : '✕ '}
+                                {testStatus.message}
+                            </span>
+                        )}
                     </div>
                 </div>
 
