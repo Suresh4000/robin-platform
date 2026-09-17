@@ -78,6 +78,27 @@ export function LeadPipeline() {
     const [meetTimeInput, setMeetTimeInput] = useState('');
     const [isSendingMeet, setIsSendingMeet] = useState(false);
 
+    const autoSaveDateTime = (newDate: string, newTime: string) => {
+        if (!meetFlowState?.lead) return;
+        let finalNotes = meetFlowState.lead.notes || '';
+        if (finalNotes.includes('Booking Date:')) {
+            finalNotes = finalNotes.replace(/Booking Date:\s*[^\n\r]+/, `Booking Date: ${newDate}`);
+            finalNotes = finalNotes.replace(/Booking Time:\s*[^\n\r]+/, `Booking Time: ${newTime}`);
+        } else {
+            finalNotes += `\n\nBooking Date: ${newDate}\nBooking Time: ${newTime}`;
+        }
+
+        // Update local state so it doesn't get overwritten
+        const updatedLead = { ...meetFlowState.lead, notes: finalNotes };
+        setMeetFlowState(prev => prev ? { ...prev, lead: updatedLead } : prev);
+
+        fetch(`/api/crm/leads/${meetFlowState.lead.id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ notes: finalNotes })
+        }).catch(console.error);
+    };
+
     const showToast = (msg: string) => {
         setToastMsg(msg);
         setTimeout(() => setToastMsg(null), 3000);
@@ -603,7 +624,10 @@ export function LeadPipeline() {
                                         <input
                                             type="date"
                                             value={meetDateInput}
-                                            onChange={e => setMeetDateInput(e.target.value)}
+                                            onChange={e => {
+                                                setMeetDateInput(e.target.value);
+                                                autoSaveDateTime(e.target.value, meetTimeInput);
+                                            }}
                                             style={{ width: '100%', padding: '8px', border: '1px solid #c7d2fe', borderRadius: '4px', color: '#312e81', fontSize: '13px', outline: 'none' }}
                                         />
                                     </div>
@@ -612,7 +636,10 @@ export function LeadPipeline() {
                                         <input
                                             type="time"
                                             value={meetTimeInput}
-                                            onChange={e => setMeetTimeInput(e.target.value)}
+                                            onChange={e => {
+                                                setMeetTimeInput(e.target.value);
+                                                autoSaveDateTime(meetDateInput, e.target.value);
+                                            }}
                                             style={{ width: '100%', padding: '8px', border: '1px solid #c7d2fe', borderRadius: '4px', color: '#312e81', fontSize: '13px', outline: 'none' }}
                                         />
                                     </div>

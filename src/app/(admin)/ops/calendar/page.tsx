@@ -77,7 +77,7 @@ export default function CalendarPage() {
                                     type: 'Call',
                                     title: `Discovery Call: ${l.name}`,
                                     date: new Date(`${dateStr}T${timeStr}:00`),
-                                    status: 'Scheduled',
+                                    status: l.status === 'Rescheduled' ? 'Rescheduled' : (l.status === 'Meeting Scheduled' ? 'Scheduled' : l.status),
                                     details: `Company: ${l.company || 'N/A'} | Contact: ${l.email || l.phone}`
                                 });
                             }
