@@ -103,7 +103,7 @@ export function InvoiceGenerator({ onSuccess }: { onSuccess: () => void }) {
                         </div>
                         <div className={styles.formGroup}>
                             <label className={styles.label}>Due Date</label>
-                            <input type="date" className={styles.input} value={dueDate} onChange={e => setDueDate(e.target.value)} />
+                            <input type="date" className={styles.input} min={new Date().toISOString().slice(0, 10)} value={dueDate} onChange={e => setDueDate(e.target.value)} />
                         </div>
                     </div>
 

@@ -175,7 +175,7 @@ function ProjectWorkspace({ project, onBack, onProjectUpdated }: { project: Proj
                             {/* Add task form */}
                             <form onSubmit={submitTask} className={styles.quickForm}>
                                 <input className={styles.qInput} value={newTask} onChange={e => setNewTask(e.target.value)} placeholder="Add a task…" required />
-                                <input type="date" className={styles.qInput} style={{ width: 150 }} value={taskDue} onChange={e => setTaskDue(e.target.value)} />
+                                <input type="date" className={styles.qInput} style={{ width: 150 }} min={new Date().toISOString().slice(0, 10)} value={taskDue} onChange={e => setTaskDue(e.target.value)} />
                                 <button type="submit" className={styles.qBtn} disabled={addingTask}>{addingTask ? '…' : <><IcoPlus /> Add Task</>}</button>
                             </form>
 

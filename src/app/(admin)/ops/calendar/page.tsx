@@ -99,9 +99,14 @@ export default function CalendarPage() {
                     });
                 }
 
+                // Filter out past entries (before start of today)
+                const now = new Date();
+                now.setHours(0, 0, 0, 0);
+                const upcomingCombined = combined.filter(item => item.date.getTime() >= now.getTime());
+
                 // Sort by date ascending
-                combined.sort((a, b) => a.date.getTime() - b.date.getTime());
-                setItems(combined);
+                upcomingCombined.sort((a, b) => a.date.getTime() - b.date.getTime());
+                setItems(upcomingCombined);
             } catch (error) {
                 console.error("Failed to load operations schedule");
             } finally {

@@ -175,7 +175,7 @@ export function EventForm({ onSuccess, initialData }: { onSuccess: () => void; i
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                 <div className={styles.formGroup} style={{ margin: 0 }}>
                     <label className={styles.label}>Date & Time *</label>
-                    <input type="datetime-local" className={styles.input} {...register('date')} />
+                    <input type="datetime-local" className={styles.input} min={new Date().toISOString().slice(0, 16)} {...register('date')} />
                     {errors.date && <span className={styles.errorText}>{errors.date.message as string}</span>}
                 </div>
                 <div className={styles.formGroup} style={{ margin: 0 }}>

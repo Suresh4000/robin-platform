@@ -648,6 +648,7 @@ export function LeadPipeline() {
                                         <label style={{ display: 'block', fontSize: '13px', color: '#4f46e5', marginBottom: '4px' }}>Date</label>
                                         <input
                                             type="date"
+                                            min={new Date().toISOString().slice(0, 10)}
                                             value={meetDateInput}
                                             onChange={e => setMeetDateInput(e.target.value)}
                                             style={{ width: '100%', padding: '8px', border: '1px solid #c7d2fe', borderRadius: '4px', color: '#312e81', fontSize: '13px', outline: 'none' }}
