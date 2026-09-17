@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import styles from '@/features/portfolio/components/PortfolioList.module.css';
-import { Trash2, History, RefreshCcw, CheckSquare, Square } from 'lucide-react';
+import { Trash2, History, RefreshCcw, CheckSquare, Square, Loader2 } from 'lucide-react';
 
 type HistoryItem = {
     id: string;
@@ -59,6 +59,16 @@ export default function HistoryPage() {
 
     return (
         <div className={styles.container}>
+            <style dangerouslySetInnerHTML={{
+                __html: `
+                @keyframes spin {
+                    from { transform: rotate(0deg); }
+                    to { transform: rotate(360deg); }
+                }
+                .spinner {
+                    animation: spin 1s linear infinite;
+                }
+            `}} />
             <header className={styles.header}>
                 <div>
                     <h1 className={styles.title}>System History & Recycle Bin</h1>
@@ -87,7 +97,10 @@ export default function HistoryPage() {
 
                 <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                     {isLoading ? (
-                        <li style={{ padding: '32px', textAlign: 'center', color: 'var(--text-muted)' }}>Analyzing system history...</li>
+                        <li style={{ padding: '48px', textAlign: 'center', color: 'var(--text-muted)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}>
+                            <Loader2 className="spinner" size={32} style={{ color: 'var(--color-primary)' }} />
+                            <span>Analyzing system history...</span>
+                        </li>
                     ) : filteredItems.length === 0 ? (
                         <li style={{ padding: '32px', textAlign: 'center', color: 'var(--text-muted)' }}>No logs found. Modifying items will trigger logs here.</li>
                     ) : (
@@ -126,10 +139,14 @@ export default function HistoryPage() {
                                 borderRadius: '20px',
                                 cursor: isLoadingMore ? 'not-allowed' : 'pointer',
                                 fontSize: '14px',
-                                fontWeight: 500
+                                fontWeight: 500,
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '8px'
                             }}
                         >
-                            {isLoadingMore ? 'Loading...' : 'Load More'}
+                            {isLoadingMore && <Loader2 className="spinner" size={16} />}
+                            {isLoadingMore ? 'Loading History...' : 'Load More History'}
                         </button>
                     </div>
                 )}
