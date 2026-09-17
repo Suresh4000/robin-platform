@@ -6,7 +6,6 @@ import formStyles from '@/shared/components/forms/forms.module.css';
 import styles from '@/features/portfolio/components/PortfolioList.module.css';
 
 export default function SettingsPage() {
-    const [schedulingUrl, setSchedulingUrl] = useState('');
     const [gcalClientEmail, setGcalClientEmail] = useState('');
     const [gcalPrivateKey, setGcalPrivateKey] = useState('');
     const [gcalCalendarId, setGcalCalendarId] = useState('');
@@ -18,7 +17,6 @@ export default function SettingsPage() {
         fetch('/api/ops/settings')
             .then(res => res.json())
             .then(data => {
-                if (data.schedulingUrl) setSchedulingUrl(data.schedulingUrl);
                 if (data.gcalClientEmail) setGcalClientEmail(data.gcalClientEmail);
                 if (data.gcalPrivateKey) setGcalPrivateKey(data.gcalPrivateKey);
                 if (data.gcalCalendarId) setGcalCalendarId(data.gcalCalendarId);
@@ -31,7 +29,7 @@ export default function SettingsPage() {
             await fetch('/api/ops/settings', {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ schedulingUrl, gcalClientEmail, gcalPrivateKey, gcalCalendarId })
+                body: JSON.stringify({ gcalClientEmail, gcalPrivateKey, gcalCalendarId })
             });
             setToast('Settings saved successfully');
             setTimeout(() => setToast(''), 3000);
@@ -67,27 +65,6 @@ export default function SettingsPage() {
             </header>
 
             <div style={{ display: 'grid', gap: '32px', gridTemplateColumns: '1fr', maxWidth: '800px' }}>
-
-                {/* Integration Settings */}
-                <div style={{ background: 'var(--surface-default)', padding: '24px', borderRadius: '12px', border: '1px solid var(--surface-border)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                        <CalIcon size={20} style={{ color: 'var(--color-primary)' }} />
-                        <h2 style={{ fontSize: '18px', fontWeight: 600 }}>External Scheduling Links</h2>
-                    </div>
-                    <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '24px' }}>
-                        Set your global scheduling link (Calendly, SavvyCal, etc). This will automatically be appended to relevant Email Templates when leads need to reschedule.
-                    </p>
-
-                    <div className={formStyles.formGroup}>
-                        <label className={formStyles.label}>Scheduling Link (URL)</label>
-                        <input
-                            className={formStyles.input}
-                            placeholder="e.g. https://calendly.com/robin-jones"
-                            value={schedulingUrl}
-                            onChange={(e) => setSchedulingUrl(e.target.value)}
-                        />
-                    </div>
-                </div>
 
                 {/* Master Calendar Auto-Sync */}
                 <div style={{ background: 'var(--surface-default)', padding: '24px', borderRadius: '12px', border: '1px solid var(--surface-border)' }}>
