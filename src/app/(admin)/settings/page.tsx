@@ -4,11 +4,13 @@ import React, { useState, useEffect } from 'react';
 import { Save, User, Shield, Bell, Calendar as CalIcon, Loader2, Info } from 'lucide-react';
 import formStyles from '@/shared/components/forms/forms.module.css';
 import styles from '@/features/portfolio/components/PortfolioList.module.css';
+import { SlideDrawer } from '@/shared/components/ui/Modal';
 
 export default function SettingsPage() {
     const [gcalClientEmail, setGcalClientEmail] = useState('');
     const [gcalPrivateKey, setGcalPrivateKey] = useState('');
     const [gcalCalendarId, setGcalCalendarId] = useState('');
+    const [activeHelp, setActiveHelp] = useState<string | null>(null);
 
     const [isSaving, setIsSaving] = useState(false);
     const [toast, setToast] = useState('');
@@ -66,51 +68,6 @@ export default function SettingsPage() {
 
             <div style={{ display: 'grid', gap: '32px', gridTemplateColumns: '1fr', maxWidth: '800px' }}>
 
-                <style>{`
-                    .info-tooltip {
-                        position: relative;
-                        display: inline-flex;
-                        cursor: help;
-                    }
-                    .info-tooltip .tooltip-text {
-                        visibility: hidden;
-                        width: 280px;
-                        background: var(--surface-sunken);
-                        color: var(--text-primary);
-                        border: 1px solid var(--surface-border);
-                        text-align: left;
-                        border-radius: 6px;
-                        padding: 12px;
-                        position: absolute;
-                        z-index: 999;
-                        bottom: 150%;
-                        left: 50%;
-                        transform: translateX(-50%);
-                        font-size: 13px;
-                        font-weight: 400;
-                        line-height: 1.4;
-                        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-                        opacity: 0;
-                        transition: opacity 0.2s, bottom 0.2s;
-                        pointer-events: none;
-                    }
-                    .info-tooltip .tooltip-text::after {
-                        content: "";
-                        position: absolute;
-                        top: 100%;
-                        left: 50%;
-                        margin-left: -6px;
-                        border-width: 6px;
-                        border-style: solid;
-                        border-color: var(--surface-border) transparent transparent transparent;
-                    }
-                    .info-tooltip:hover .tooltip-text {
-                        visibility: visible;
-                        opacity: 1;
-                        bottom: 130%;
-                    }
-                `}</style>
-
                 {/* Master Calendar Auto-Sync */}
                 <div style={{ background: 'var(--surface-default)', padding: '24px', borderRadius: '12px', border: '1px solid var(--surface-border)' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
@@ -124,10 +81,9 @@ export default function SettingsPage() {
                     <div className={formStyles.formGroup}>
                         <label className={formStyles.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                             Target Calendar ID (Email)
-                            <span className="info-tooltip">
-                                <Info size={14} style={{ color: 'var(--text-muted)' }} />
-                                <span className="tooltip-text">The specific email address of the Google Calendar you want the events pushed to (e.g., your primary Google Workspace email).</span>
-                            </span>
+                            <button onClick={() => setActiveHelp('calendar_id')} style={{ background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', color: 'var(--color-primary)' }}>
+                                <Info size={16} />
+                            </button>
                         </label>
                         <input
                             className={formStyles.input}
@@ -140,10 +96,9 @@ export default function SettingsPage() {
                     <div className={formStyles.formGroup} style={{ marginTop: '16px' }}>
                         <label className={formStyles.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                             Google Cloud Server Email (Client Email)
-                            <span className="info-tooltip">
-                                <Info size={14} style={{ color: 'var(--text-muted)' }} />
-                                <span className="tooltip-text">Found in your Google Cloud Console &gt; IAM &amp; Admin &gt; Service Accounts. Format looks like: app-name@project-id.iam.gserviceaccount.com</span>
-                            </span>
+                            <button onClick={() => setActiveHelp('client_email')} style={{ background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', color: 'var(--color-primary)' }}>
+                                <Info size={16} />
+                            </button>
                         </label>
                         <input
                             className={formStyles.input}
@@ -156,10 +111,9 @@ export default function SettingsPage() {
                     <div className={formStyles.formGroup} style={{ marginTop: '16px' }}>
                         <label className={formStyles.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                             RSA Private Key
-                            <span className="info-tooltip">
-                                <Info size={14} style={{ color: 'var(--text-muted)' }} />
-                                <span className="tooltip-text">Generated when creating a new JSON Key for your Service Account in Google Cloud. Make sure to copy the entire block including the -----BEGIN PRIVATE KEY----- lines.</span>
-                            </span>
+                            <button onClick={() => setActiveHelp('private_key')} style={{ background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', color: 'var(--color-primary)' }}>
+                                <Info size={16} />
+                            </button>
                         </label>
                         <textarea
                             className={formStyles.textarea}
@@ -233,6 +187,59 @@ export default function SettingsPage() {
                 </div>
 
             </div>
+
+            <SlideDrawer isOpen={activeHelp !== null} onClose={() => setActiveHelp(null)} title="Configuration Instructions">
+                <div style={{ fontSize: '15px', lineHeight: '1.6', color: 'var(--text-primary)' }}>
+                    {activeHelp === 'calendar_id' && (
+                        <div>
+                            <h3 style={{ marginBottom: '12px' }}>Locating your Calendar ID</h3>
+                            <p style={{ marginBottom: '16px' }}>The Target Calendar ID defines exactly which Google Calendar receives the automated bookings.</p>
+                            <ol style={{ paddingLeft: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                <li>Open <b>Google Calendar</b> in your browser.</li>
+                                <li>On the left panel, hover over the specific calendar you want to use (often your main name/email).</li>
+                                <li>Click the three vertical dots (Options) and select <b>Settings and sharing</b>.</li>
+                                <li>Scroll down to the <b>Integrate calendar</b> section.</li>
+                                <li>Copy the <b>Calendar ID</b>. If it is your primary account, it is typically just your email address (e.g. <i>admin@robinjones.com</i>).</li>
+                            </ol>
+                        </div>
+                    )}
+
+                    {activeHelp === 'client_email' && (
+                        <div>
+                            <h3 style={{ marginBottom: '12px' }}>Getting your Service Account Email</h3>
+                            <p style={{ marginBottom: '16px' }}>The Server Email allows your CRM backend to securely proxy requests to Google without login prompts.</p>
+                            <ol style={{ paddingLeft: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                <li>Log into the <b>Google Cloud Console</b> (console.cloud.google.com).</li>
+                                <li>Ensure your Project is selected in the top left dropdown.</li>
+                                <li>Search for <b>Service Accounts</b> in the top search bar.</li>
+                                <li>If you haven't created one, click <b>+ CREATE SERVICE ACCOUNT</b> at the top.</li>
+                                <li>Once created, look at the table. Copy the long email address under the <b>Email</b> column. It will end in <i>.iam.gserviceaccount.com</i>.</li>
+                            </ol>
+                            <div style={{ marginTop: '24px', background: '#eef2ff', padding: '16px', borderRadius: '8px', border: '1px solid #c7d2fe', fontSize: '14px' }}>
+                                <b>Important Step:</b> You must go back to your actual Google Calendar Settings, click "Share with specific people", and add this Service Account Email with the permission level <b>"Make changes to events"</b>.
+                            </div>
+                        </div>
+                    )}
+
+                    {activeHelp === 'private_key' && (
+                        <div>
+                            <h3 style={{ marginBottom: '12px' }}>Generating your RSA Private Key</h3>
+                            <p style={{ marginBottom: '16px' }}>This cryptographic key allows your server to prove its identity to Google automatically.</p>
+                            <ol style={{ paddingLeft: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                <li>In the Google Cloud Console, navigate to your <b>Service Accounts</b> page.</li>
+                                <li>Click on the email address of the service account you created.</li>
+                                <li>Go to the <b>KEYS</b> tab at the top.</li>
+                                <li>Click <b>ADD KEY</b> &gt; <b>Create new key</b>.</li>
+                                <li>Select <b>JSON</b> and click Create. A file will download to your computer.</li>
+                                <li>Open that downloaded JSON file in Notepad or VSCode.</li>
+                                <li>Find the property named <code>"private_key"</code>.</li>
+                                <li>Copy the entire string value, including <code>-----BEGIN PRIVATE KEY-----</code> and <code>-----END PRIVATE KEY-----</code>.</li>
+                                <li>Paste it directly into the settings field here.</li>
+                            </ol>
+                        </div>
+                    )}
+                </div>
+            </SlideDrawer>
         </div>
     );
 }
