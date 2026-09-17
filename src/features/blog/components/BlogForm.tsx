@@ -52,18 +52,44 @@ export function BlogForm({ onSuccess, initialData }: { onSuccess: () => void; in
         const file = e.target.files?.[0];
         if (!file) return;
         setIsUploading(true);
+
         const reader = new FileReader();
         reader.onload = (ev) => {
             const dataUrl = ev.target?.result as string;
-            setCoverPreview(dataUrl);
-            // inject into react-hook-form
-            const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')!.set;
-            const hiddenInput = document.getElementById('coverImageHidden') as HTMLInputElement;
-            if (hiddenInput && nativeInputValueSetter) {
-                nativeInputValueSetter.call(hiddenInput, dataUrl);
-                hiddenInput.dispatchEvent(new Event('input', { bubbles: true }));
-            }
-            setIsUploading(false);
+
+            // Compress Image
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+
+                // Max width 1200px
+                const MAX_WIDTH = 1200;
+                if (width > MAX_WIDTH) {
+                    height = Math.round((height * MAX_WIDTH) / width);
+                    width = MAX_WIDTH;
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                if (ctx) {
+                    ctx.drawImage(img, 0, 0, width, height);
+                    // Compress as WebP at 80% quality (drastically reduces file size and avoids 413)
+                    const compressedDataUrl = canvas.toDataURL('image/webp', 0.8);
+
+                    setCoverPreview(compressedDataUrl);
+                    const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')!.set;
+                    const hiddenInput = document.getElementById('coverImageHidden') as HTMLInputElement;
+                    if (hiddenInput && nativeInputValueSetter) {
+                        nativeInputValueSetter.call(hiddenInput, compressedDataUrl);
+                        hiddenInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    }
+                }
+                setIsUploading(false);
+            };
+            img.src = dataUrl;
         };
         reader.readAsDataURL(file);
     };
