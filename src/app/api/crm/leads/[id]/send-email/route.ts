@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/shared/lib/prisma';
 import { sendNotificationEmail } from '@/shared/lib/email';
+import { createGoogleCalendarEvent } from '@/shared/lib/gcal';
 
 export async function POST(request: Request, { params }: { params: { id: string } }) {
     try {
         const body = await request.json();
-        const { subject, message, meetLink } = body;
+        let { subject, message, meetLink, useNativeGcal, meetingDateObj } = body;
 
         const lead = await prisma.lead.findUnique({
             where: { id: params.id }
@@ -13,6 +14,25 @@ export async function POST(request: Request, { params }: { params: { id: string 
 
         if (!lead || !lead.email) {
             return NextResponse.json({ error: 'Lead not found or has no email address.' }, { status: 404 });
+        }
+
+        if (useNativeGcal && meetingDateObj) {
+            try {
+                const gcalEvent = await createGoogleCalendarEvent({
+                    leadEmail: lead.email,
+                    leadName: lead.name,
+                    subject: subject,
+                    description: message,
+                    startDateObj: new Date(meetingDateObj),
+                    durationMinutes: 30
+                });
+                if (gcalEvent.hangoutLink) {
+                    meetLink = gcalEvent.hangoutLink;
+                }
+            } catch (err) {
+                console.error("Google Calendar Native Sync Failed:", err);
+                // Gracefully fallback to old logic
+            }
         }
 
         // Build the HTML for the email

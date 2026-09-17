@@ -67,6 +67,7 @@ export function LeadPipeline() {
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
     const [statusFilter, setStatusFilter] = useState<string>('All');
     const [globalSchedulingUrl, setGlobalSchedulingUrl] = useState<string>('https://calendly.com/robin-jones/alignment');
+    const [isGcalBackendConfigured, setIsGcalBackendConfigured] = useState(false);
 
     // Meet Scheduling & Email Flow
     const [meetFlowState, setMeetFlowState] = useState<{
@@ -120,6 +121,7 @@ export function LeadPipeline() {
             .then(res => res.json())
             .then(data => {
                 if (data.schedulingUrl) setGlobalSchedulingUrl(data.schedulingUrl);
+                if (data.isGcalBackendConfigured) setIsGcalBackendConfigured(data.isGcalBackendConfigured);
             })
             .catch(() => { });
     };
@@ -264,7 +266,9 @@ export function LeadPipeline() {
                 body: JSON.stringify({
                     subject: meetSubjectInput,
                     message: meetMessageInput,
-                    meetLink: meetLinkInput
+                    meetLink: meetLinkInput,
+                    useNativeGcal: isGcalBackendConfigured && (meetFlowState.intent === 'schedule' || meetFlowState.intent === 'reschedule'),
+                    meetingDateObj: meetDateInput && meetTimeInput ? new Date(`${meetDateInput}T${meetTimeInput}:00`).toISOString() : null
                 })
             });
             if (res.ok) {
@@ -703,29 +707,33 @@ export function LeadPipeline() {
                                     </div>
                                 </div>
                                 <p style={{ margin: '0 0 12px 0', fontSize: '13px', color: '#4f46e5' }}>
-                                    {meetFlowState.intent === 'reschedule'
-                                        ? "Selecting the new date updates your Master Calendar locally. Next, open Google Calendar to update the existing event."
-                                        : "Create the Google Calendar event and securely lock the date into your CRM Master Calendar."}
+                                    {isGcalBackendConfigured
+                                        ? "Google Calendar Auto-Sync is ACTIVE. We will construct the Google Calendar invite silently and insert the correct meeting link to the email automatically."
+                                        : meetFlowState.intent === 'reschedule'
+                                            ? "Selecting the new date updates your Master Calendar locally. Next, open Google Calendar to update the existing event."
+                                            : "Create the Google Calendar event and securely lock the date into your CRM Master Calendar."}
                                 </p>
-                                <div style={{ display: 'flex', gap: '8px' }}>
-                                    <button
-                                        onClick={() => openGCalTemplate(meetFlowState.lead, meetDateInput, meetTimeInput)}
-                                        style={{ background: '#4f46e5', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: 600, flex: 1 }}
-                                    >
-                                        Open Google Calendar
-                                    </button>
-                                    <button
-                                        onClick={confirmMeetingDate}
-                                        disabled={isSendingMeet}
-                                        style={{ background: '#fff', color: '#4f46e5', border: '1px solid #c7d2fe', padding: '8px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: 600, flex: 1 }}
-                                    >
-                                        {isSendingMeet ? 'Saving...' : 'Only Confirm Date'}
-                                    </button>
-                                </div>
+                                {!isGcalBackendConfigured && (
+                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                        <button
+                                            onClick={() => openGCalTemplate(meetFlowState.lead, meetDateInput, meetTimeInput)}
+                                            style={{ background: '#4f46e5', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: 600, flex: 1 }}
+                                        >
+                                            Open Google Calendar
+                                        </button>
+                                        <button
+                                            onClick={confirmMeetingDate}
+                                            disabled={isSendingMeet}
+                                            style={{ background: '#fff', color: '#4f46e5', border: '1px solid #c7d2fe', padding: '8px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: 600, flex: 1 }}
+                                        >
+                                            {isSendingMeet ? 'Saving...' : 'Only Confirm Date'}
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         )}
 
-                        {meetFlowState.intent !== 'not-connected' && meetFlowState.intent !== 'general-email' && (
+                        {!isGcalBackendConfigured && meetFlowState.intent !== 'not-connected' && meetFlowState.intent !== 'general-email' && (
                             <div>
                                 <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)' }}>
                                     Step 2: Paste Google Meet Link

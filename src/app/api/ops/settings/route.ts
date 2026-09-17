@@ -13,6 +13,7 @@ export async function GET() {
             gcalClientEmail: admin.gcalClientEmail || '',
             gcalPrivateKey: admin.gcalPrivateKey || '',
             gcalCalendarId: admin.gcalCalendarId || '',
+            isGcalBackendConfigured: !!(admin.gcalClientEmail && admin.gcalPrivateKey && admin.gcalCalendarId)
         });
     } catch {
         return NextResponse.json({});
