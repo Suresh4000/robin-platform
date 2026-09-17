@@ -158,19 +158,19 @@ export function LeadPipeline() {
                 setMeetDateInput(initialDate);
                 setMeetTimeInput(initialTime);
                 setMeetSubjectInput(`Confirmed: Alignment Call - Robin Jones`);
-                setMeetMessageInput(`I'm looking forward to our upcoming conversion. \n\nOur meeting is confirmed, you can join at the scheduled time using the Google Meet link below. To ensure we make the most of our time, please have your context ready.\n\nBest regards,\nRobin`);
+                setMeetMessageInput(`Hi ${leadToUpdate.name.split(' ')[0]},\n\nI'm looking forward to our upcoming conversation. \n\nOur meeting is confirmed, and you can join at the scheduled time using the Google Meet link below. To ensure we make the most of our time, please have any relevant context regarding your team's friction points prepared in advance.\n\nBest regards,\nRobin Jones`);
             } else if (newStatus === 'Not Connected' && oldStatus !== newStatus && leadToUpdate) {
                 setMeetFlowState({ lead: leadToUpdate, intent: 'not-connected' });
                 setMeetLinkInput(''); // No meeting link sent on not connected
                 setMeetSubjectInput(`Missed you - Reschedule our call`);
-                setMeetMessageInput(`Hi ${leadToUpdate.name.split(' ')[0]},\n\nI just jumped on our scheduled Google Meet but it looks like we missed each other.\n\nI know things can get remarkably busy! If you're still interested in aligning on your growth systems, please let me know when you might be free to reschedule our conversation.\n\nBest regards,\nRobin`);
+                setMeetMessageInput(`Hi ${leadToUpdate.name.split(' ')[0]},\n\nI just jumped onto our scheduled Google Meet but it looks like we missed each other.\n\nI know things can get remarkably busy! If you're still interested in aligning on your growth systems, please let me know when you might be free to reschedule our conversation.\n\nBest regards,\nRobin Jones`);
             } else if (newStatus === 'Rescheduled' && oldStatus !== newStatus && leadToUpdate) {
                 setMeetFlowState({ lead: leadToUpdate, intent: 'reschedule' });
                 setMeetLinkInput(generateMeetLink());
                 setMeetDateInput(initialDate);
                 setMeetTimeInput(initialTime);
                 setMeetSubjectInput(`Updated: Rescheduled Alignment Call`);
-                setMeetMessageInput(`Hi ${leadToUpdate.name.split(' ')[0]},\n\nOur originally scheduled meeting has been successfully rescheduled.\n\nYou can find the updated date and time in the newly sent calendar invitation. Please use the Google Meet link below at the updated time.\n\nLooking forward to speaking!\n\nBest regards,\nRobin`);
+                setMeetMessageInput(`Hi ${leadToUpdate.name.split(' ')[0]},\n\nOur originally scheduled meeting has been successfully rescheduled.\n\nYou can find the updated date and time in the newly sent calendar invitation. Please use the Google Meet link below at the updated time.\n\nLooking forward to speaking!\n\nBest regards,\nRobin Jones`);
             }
         } catch {
             fetchLeads(); // Revert on failure
@@ -556,7 +556,7 @@ export function LeadPipeline() {
                             onClick={() => loadDraftFromTemplate(
                                 "1. New Lead (Intro)",
                                 `Exploring growth opportunities for ${activeMailLead.company || 'your team'} - Robin Jones`,
-                                `Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0AThank you for reaching out to the Robin Business Hub. I've reviewed your initial inquiry regarding ${activeMailLead.company || 'your organization'} and there is a clear opportunity for us to drive impact together.%0D%0A%0D%0AMy focus is on building robust growth engines and scalable operations for high-performing teams, and I'd love to learn more about the specific friction points you are experiencing right now.%0D%0A%0D%0AWhen would be a good time for a brief 15-minute alignment call next week to see if we are a fit to work together?%0D%0A%0D%0ALooking forward to speaking,%0D%0ARobin Jones`
+                                `Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0AThank you for reaching out to the Robin Business Hub. I've reviewed your initial inquiry regarding ${activeMailLead.company || 'your organization'} and there is a clear opportunity for us to drive impact together.%0D%0A%0D%0AMy focus is on building robust growth engines and scalable operations for high-performing teams, and I'd love to learn more about the specific friction points you are experiencing right now.%0D%0A%0D%0AWhen would be a good time for a brief 30-minute alignment call next week to see if we are a fit to work together?%0D%0A%0D%0ALooking forward to speaking,%0D%0ARobin Jones`
                             )}
                         />
 
@@ -568,7 +568,7 @@ export function LeadPipeline() {
                             onClick={() => loadDraftFromTemplate(
                                 "2. Meeting Scheduled (Custom)",
                                 `Confirmed: Initial Alignment Call - Robin Jones`,
-                                `Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0AI'm looking forward to our upcoming conversation. Our meeting is confirmed, and you can join at the scheduled time using the following link:%0D%0A[INSERT_MEETING_LINK]%0D%0A%0D%0ATo ensure we make the most of our time, our agenda will focus on:%0D%0A1. Your primary growth or operational challenge%0D%0A2. Current bottlenecks and systems in place%0D%0A3. How my advisory framework might be applied to your specific scenario%0D%0A%0D%0AIf you have any context or materials you'd like me to review beforehand, feel free to drop them here.%0D%0A%0D%0ABest regards,%0D%0ARobin Jones`
+                                `Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0AI'm looking forward to our upcoming conversation. Our meeting is confirmed for ${activeMailLead.meetingDate ? new Date(activeMailLead.meetingDate).toLocaleString(undefined, { weekday: 'long', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '[INSERT_SCHEDULED_TIME]'}, and you can join at the scheduled time using the following link:%0D%0A[INSERT_MEETING_LINK]%0D%0A%0D%0ATo ensure we make the most of our time, our agenda will focus on:%0D%0A1. Your primary growth or operational challenge%0D%0A2. Current bottlenecks and systems in place%0D%0A3. How my advisory framework might be applied to your specific scenario%0D%0A%0D%0AIf you have any context or materials you'd like me to review beforehand, feel free to drop them here.%0D%0A%0D%0ABest regards,%0D%0ARobin Jones`
                             )}
                         />
 
@@ -579,8 +579,8 @@ export function LeadPipeline() {
                             disabled={activeMailLead.status !== 'Proposal Sent'}
                             onClick={() => loadDraftFromTemplate(
                                 "3. Proposal Sent",
-                                `Partnership Proposal: ${activeMailLead.company || 'Strategic Growth'} - Robin Jones`,
-                                `Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0AIt was a pleasure speaking with you and learning more about the vision for ${activeMailLead.company || 'your team'}.%0D%0A%0D%0AI have synthesized our discussion into a formal engagement proposal, attached here. This document outlines the proposed scope of work, timeline, and the specific strategic milestones we will target in Phase 1.%0D%0A%0D%0AAttachment: [INSERT_PROPOSAL_LINK_HERE]%0D%0A%0D%0APlease review the details, and let me know if you would like to schedule a brief follow-up call to walk through the deliverables and address any questions.%0D%0A%0D%0AThank you,%0D%0ARobin Jones`
+                                `Strategic Partnership Proposal: ${activeMailLead.company || 'Growth Systems'} - Robin Jones`,
+                                `Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0AIt was a pleasure speaking with you and diving deeper into the vision for ${activeMailLead.company || 'your team'}.%0D%0A%0D%0AI have synthesized our discussion into a formal engagement proposal, attached below. This document outlines the proposed scope of work, timeline, and the specific strategic milestones we will target moving forward.%0D%0A%0D%0AAttachment: [INSERT_PROPOSAL_LINK_HERE]%0D%0A%0D%0APlease review the details, and let me know if you would like to schedule a brief follow-up call across the coming days to walk through the deliverables and address any immediate questions.%0D%0A%0D%0AThank you,%0D%0ARobin Jones`
                             )}
                         />
 
@@ -592,7 +592,7 @@ export function LeadPipeline() {
                             onClick={() => loadDraftFromTemplate(
                                 "4. Contract / Formalities",
                                 `Next Steps & Engagement Formalities - Robin Jones`,
-                                `Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0AI am thrilled that we are moving forward.%0D%0A%0D%0AAttached are the finalized engagement agreements and terms of service. Please review and sign where indicated so we can officially kick off our work together.%0D%0A%0D%0A[ATTACH_DOCUMENTS_HERE]%0D%0A%0D%0AOnce these are executed, I will send over the onboarding packet and our first set of action items.%0D%0A%0D%0ALet me know if anything requires clarification.%0D%0A%0D%0ABest,%0D%0ARobin Jones`
+                                `Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0AI am thrilled that we are officially moving forward.%0D%0A%0D%0AAttached are the finalized engagement agreements and terms of service. Please review and sign where indicated so we can officially kick off our work together.%0D%0A%0D%0A[ATTACH_DOCUMENTS_HERE]%0D%0A%0D%0AOnce these are executed, I will send over the onboarding packet and our first core set of action items.%0D%0A%0D%0ALet me know if anything requires clarification.%0D%0A%0D%0ABest,%0D%0ARobin Jones`
                             )}
                         />
 
@@ -604,7 +604,7 @@ export function LeadPipeline() {
                             onClick={() => loadDraftFromTemplate(
                                 "5. Response Delay (Bump)",
                                 `Checking in on our previous conversation`,
-                                `Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0AI am just bringing this thread back to the top of your inbox.%0D%0A%0D%0AI know things can get remarkably busy, but I wanted to check if you had any outstanding questions regarding the materials I previously sent over.%0D%0A%0D%0AIf priorities have shifted on your end or if the timing is no longer ideal, just let me know. Otherwise, I look forward to hearing your thoughts.%0D%0A%0D%0ABest regards,%0D%0ARobin`
+                                `Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0AI am just bringing this thread back to the top of your inbox.%0D%0A%0D%0AI know things can get remarkably busy, but I wanted to check if you had any outstanding questions or if you needed further clarification regarding the materials I previously sent over.%0D%0A%0D%0AIf priorities have shifted on your end or if the timing is no longer ideal, just let me know—otherwise, I look forward to hearing your thoughts soon.%0D%0A%0D%0ABest regards,%0D%0ARobin Jones`
                             )}
                         />
 
