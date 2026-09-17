@@ -4,6 +4,7 @@ export const LEAD_STAGES = [
     'New Lead',
     'Qualified',
     'Meeting Scheduled',
+    'Postponed',
     'Not Connected',
     'Rescheduled',
     'Proposal Sent',

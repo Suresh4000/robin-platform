@@ -159,6 +159,11 @@ export function LeadPipeline() {
                 setMeetTimeInput(initialTime);
                 setMeetSubjectInput(`Confirmed: Alignment Call - Robin Jones`);
                 setMeetMessageInput(`Hi ${leadToUpdate.name.split(' ')[0]},\n\nI'm looking forward to our upcoming conversation. \n\nOur meeting is confirmed, and you can join at the scheduled time using the Google Meet link below. To ensure we make the most of our time, please have any relevant context regarding your team's friction points prepared in advance.\n\nBest regards,\nRobin Jones`);
+            } else if (newStatus === 'Postponed' && oldStatus !== newStatus && leadToUpdate) {
+                setMeetFlowState({ lead: leadToUpdate, intent: 'general-email', templateTitle: 'Automated Postponed' });
+                setMeetLinkInput('');
+                setMeetSubjectInput(`Rescheduling our Alignment Call - Robin Jones`);
+                setMeetMessageInput(`Hi ${leadToUpdate.name.split(' ')[0]},\n\nIt looks like we'll need to reschedule our upcoming conversation. I know how remarkably busy things can get.\n\nTo make this as seamless as possible, you can select a new time that works best for you directly from my calendar here:\n[INSERT_CALENDLY_OR_SCHEDULING_LINK]\n\nAlternatively, if none of those times align, please let me know and we will manually find a slot that works.\n\nLooking forward to speaking soon,\nRobin Jones`);
             } else if (newStatus === 'Not Connected' && oldStatus !== newStatus && leadToUpdate) {
                 setMeetFlowState({ lead: leadToUpdate, intent: 'not-connected' });
                 setMeetLinkInput(''); // No meeting link sent on not connected
@@ -573,36 +578,48 @@ export function LeadPipeline() {
                         />
 
                         <TemplateButton
-                            title="3. Proposal Sent"
+                            title="3. Meeting Postponed"
+                            desc="Admin availability picker for user selection."
+                            isSent={!!activeMailLead.notes?.includes("Sent template '3. Meeting Postponed'")}
+                            disabled={activeMailLead.status !== 'Postponed'}
+                            onClick={() => loadDraftFromTemplate(
+                                "3. Meeting Postponed",
+                                `Rescheduling our Alignment Call - Robin Jones`,
+                                `Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0AIt looks like we'll need to reschedule our upcoming conversation. I know how remarkably busy things can get.%0D%0A%0D%0ATo make this as seamless as possible, you can select a new time that works best for you directly from my calendar here:%0D%0A[INSERT_CALENDLY_OR_SCHEDULING_LINK]%0D%0A%0D%0AAlternatively, if none of those times align, please let me know and we will manually find a slot that works.%0D%0A%0D%0ALooking forward to speaking soon,%0D%0ARobin Jones`
+                            )}
+                        />
+
+                        <TemplateButton
+                            title="4. Proposal Sent"
                             desc="Detailed proposal handoff."
-                            isSent={!!activeMailLead.notes?.includes("Sent template '3. Proposal Sent'")}
+                            isSent={!!activeMailLead.notes?.includes("Sent template '4. Proposal Sent'") || !!activeMailLead.notes?.includes("Sent template '3. Proposal Sent'")}
                             disabled={activeMailLead.status !== 'Proposal Sent'}
                             onClick={() => loadDraftFromTemplate(
-                                "3. Proposal Sent",
+                                "4. Proposal Sent",
                                 `Strategic Partnership Proposal: ${activeMailLead.company || 'Growth Systems'} - Robin Jones`,
                                 `Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0AIt was a pleasure speaking with you and diving deeper into the vision for ${activeMailLead.company || 'your team'}.%0D%0A%0D%0AI have synthesized our discussion into a formal engagement proposal, attached below. This document outlines the proposed scope of work, timeline, and the specific strategic milestones we will target moving forward.%0D%0A%0D%0AAttachment: [INSERT_PROPOSAL_LINK_HERE]%0D%0A%0D%0APlease review the details, and let me know if you would like to schedule a brief follow-up call across the coming days to walk through the deliverables and address any immediate questions.%0D%0A%0D%0AThank you,%0D%0ARobin Jones`
                             )}
                         />
 
                         <TemplateButton
-                            title="4. Contract / Formalities"
+                            title="5. Contract / Formalities"
                             desc="Closing documents or gracious wrap-up."
-                            isSent={!!activeMailLead.notes?.includes("Sent template '4. Contract / Formalities'")}
+                            isSent={!!activeMailLead.notes?.includes("Sent template '5. Contract / Formalities'") || !!activeMailLead.notes?.includes("Sent template '4. Contract / Formalities'")}
                             disabled={activeMailLead.status !== 'Negotiation' && activeMailLead.status !== 'Closed Won'}
                             onClick={() => loadDraftFromTemplate(
-                                "4. Contract / Formalities",
+                                "5. Contract / Formalities",
                                 `Next Steps & Engagement Formalities - Robin Jones`,
                                 `Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0AI am thrilled that we are officially moving forward.%0D%0A%0D%0AAttached are the finalized engagement agreements and terms of service. Please review and sign where indicated so we can officially kick off our work together.%0D%0A%0D%0A[ATTACH_DOCUMENTS_HERE]%0D%0A%0D%0AOnce these are executed, I will send over the onboarding packet and our first core set of action items.%0D%0A%0D%0ALet me know if anything requires clarification.%0D%0A%0D%0ABest,%0D%0ARobin Jones`
                             )}
                         />
 
                         <TemplateButton
-                            title="5. Response Delay (Bump)"
+                            title="6. Response Delay (Bump)"
                             desc="Professional follow-up when communications stall."
-                            isSent={!!activeMailLead.notes?.includes("Sent template '5. Response Delay (Bump)'")}
+                            isSent={!!activeMailLead.notes?.includes("Sent template '6. Response Delay (Bump)'") || !!activeMailLead.notes?.includes("Sent template '5. Response Delay (Bump)'")}
                             disabled={activeMailLead.status !== 'Not Connected' && activeMailLead.status !== 'Rescheduled'}
                             onClick={() => loadDraftFromTemplate(
-                                "5. Response Delay (Bump)",
+                                "6. Response Delay (Bump)",
                                 `Checking in on our previous conversation`,
                                 `Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0AI am just bringing this thread back to the top of your inbox.%0D%0A%0D%0AI know things can get remarkably busy, but I wanted to check if you had any outstanding questions or if you needed further clarification regarding the materials I previously sent over.%0D%0A%0D%0AIf priorities have shifted on your end or if the timing is no longer ideal, just let me know—otherwise, I look forward to hearing your thoughts soon.%0D%0A%0D%0ABest regards,%0D%0ARobin Jones`
                             )}
