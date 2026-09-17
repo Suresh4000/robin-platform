@@ -5,11 +5,15 @@ import { verifyToken } from '@/shared/lib/jwt';
 
 export async function GET() {
     try {
-        const adminUsers = await (prisma as any).admin.findMany();
+        const adminUsers = await prisma.admin.findMany({
+            include: { googleAccounts: true }
+        });
         if (adminUsers.length === 0) return NextResponse.json({});
         const admin = adminUsers[0];
         return NextResponse.json({
-            bookingIframe: admin.schedulingUrl || ''
+            googleClientId: admin.googleClientId || '',
+            googleClientSecret: admin.googleClientSecret || '',
+            googleAccounts: admin.googleAccounts || []
         });
     } catch {
         return NextResponse.json({});
@@ -25,21 +29,19 @@ export async function PATCH(request: Request) {
         if (!sessionPayload) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
         const body = await request.json();
-
-        // Update the first admin user (since it's a single tenant system)
-        const admins = await (prisma as any).admin.findMany({ take: 1 });
+        const admins = await prisma.admin.findMany({ take: 1 });
         if (admins.length > 0) {
-            await (prisma as any).admin.update({
+            await prisma.admin.update({
                 where: { id: admins[0].id },
                 data: {
-                    schedulingUrl: body.bookingIframe,
+                    googleClientId: body.googleClientId,
+                    googleClientSecret: body.googleClientSecret,
                 }
             });
             return NextResponse.json({ success: true });
         }
-
-        return NextResponse.json({ success: false });
-    } catch (error) {
-        return NextResponse.json({ error: 'Update failed' }, { status: 500 });
+        return NextResponse.json({ error: 'No admin found' }, { status: 404 });
+    } catch (e: any) {
+        return NextResponse.json({ error: e.message }, { status: 500 });
     }
 }

@@ -9,15 +9,19 @@ datasource db {
 
 model Admin {
   id            String   @id @default(cuid())
-  email         String   @unique
-  password      String
-  schedulingUrl   String?
-  bookingIframe   String?
-  gcalClientEmail String?
-  gcalPrivateKey  String?
-  gcalCalendarId  String?
-  createdAt       DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  email              String   @unique
+  password           String
+  schedulingUrl      String?
+  
+  // Platform-level Google OAuth App Credentials
+  googleClientId     String?
+  googleClientSecret String?
+
+  // Connected multiple accounts
+  googleAccounts     GoogleIntegration[]
+
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 }
 
 model Lead {
@@ -95,6 +99,20 @@ model TimeEntry {
   invoice     Invoice? @relation(fields: [invoiceId], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model GoogleIntegration {
+  id           String   @id @default(cuid())
+  adminId      String
+  admin        Admin    @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  
+  email        String   // The Google account email (e.g. robin@gmail.com)
+  accessToken  String   @db.Text
+  refreshToken String?  @db.Text
+  expiryDate   BigInt?
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model Invoice {

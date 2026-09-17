@@ -66,7 +66,8 @@ export function LeadPipeline() {
     const [showDeleted, setShowDeleted] = useState(false);
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
     const [statusFilter, setStatusFilter] = useState<string>('All');
-    const [bookingIframe, setBookingIframe] = useState<string>('');
+    const [googleAccounts, setGoogleAccounts] = useState<any[]>([]);
+    const [selectedGoogleAccount, setSelectedGoogleAccount] = useState<string>('');
 
     // Meet Scheduling & Email Flow
     const [meetFlowState, setMeetFlowState] = useState<{
@@ -119,7 +120,10 @@ export function LeadPipeline() {
         fetch('/api/ops/settings')
             .then(res => res.json())
             .then(data => {
-                if (data.bookingIframe) setBookingIframe(data.bookingIframe);
+                if (data.googleAccounts && data.googleAccounts.length > 0) {
+                    setGoogleAccounts(data.googleAccounts);
+                    setSelectedGoogleAccount(data.googleAccounts[0].id);
+                }
             })
             .catch(() => { });
     };
@@ -259,7 +263,8 @@ export function LeadPipeline() {
                     subject: meetSubjectInput,
                     message: meetMessageInput,
                     meetLink: meetLinkInput,
-                    useNativeGcal: false,
+                    useNativeGcal: !!selectedGoogleAccount,
+                    googleIntegrationId: selectedGoogleAccount,
                     meetingDateObj: meetDateInput && meetTimeInput ? new Date(`${meetDateInput}T${meetTimeInput}:00`).toISOString() : null
                 })
             });
@@ -698,29 +703,49 @@ export function LeadPipeline() {
                                     </div>
                                 </div>
                                 <p style={{ margin: '0 0 12px 0', fontSize: '13px', color: '#4f46e5' }}>
-                                    {meetFlowState.intent === 'reschedule'
-                                        ? "Selecting the new date updates your Master Calendar locally. Next, open Google Calendar to update the existing event."
-                                        : "Create the Google Calendar event and securely lock the date into your CRM Master Calendar."}
+                                    {googleAccounts.length > 0
+                                        ? "Google Calendar Sync is ACTIVE. We will construct the Google Calendar invite silently and insert the correct meeting link to the email automatically."
+                                        : meetFlowState.intent === 'reschedule'
+                                            ? "Selecting the new date updates your Master Calendar locally. Next, open Google Calendar to update the existing event."
+                                            : "Create the Google Calendar event and securely lock the date into your CRM Master Calendar."}
                                 </p>
-                                <div style={{ display: 'flex', gap: '8px' }}>
-                                    <button
-                                        onClick={() => openGCalTemplate(meetFlowState.lead, meetDateInput, meetTimeInput)}
-                                        style={{ background: '#4f46e5', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: 600, flex: 1 }}
-                                    >
-                                        Open Google Calendar
-                                    </button>
-                                    <button
-                                        onClick={confirmMeetingDate}
-                                        disabled={isSendingMeet}
-                                        style={{ background: '#fff', color: '#4f46e5', border: '1px solid #c7d2fe', padding: '8px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: 600, flex: 1 }}
-                                    >
-                                        {isSendingMeet ? 'Saving...' : 'Only Confirm Date'}
-                                    </button>
-                                </div>
+
+                                {googleAccounts.length > 0 && (
+                                    <div style={{ marginBottom: '16px' }}>
+                                        <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '8px', color: '#10b981' }}>Select Organizer Account</label>
+                                        <select
+                                            value={selectedGoogleAccount}
+                                            onChange={(e) => setSelectedGoogleAccount(e.target.value)}
+                                            style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #10b981', outline: 'none' }}
+                                        >
+                                            {googleAccounts.map(acc => (
+                                                <option key={acc.id} value={acc.id}>{acc.email}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                )}
+
+                                {googleAccounts.length === 0 && (
+                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                        <button
+                                            onClick={() => openGCalTemplate(meetFlowState.lead, meetDateInput, meetTimeInput)}
+                                            style={{ background: '#4f46e5', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: 600, flex: 1 }}
+                                        >
+                                            Open Google Calendar
+                                        </button>
+                                        <button
+                                            onClick={confirmMeetingDate}
+                                            disabled={isSendingMeet}
+                                            style={{ background: '#fff', color: '#4f46e5', border: '1px solid #c7d2fe', padding: '8px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: 600, flex: 1 }}
+                                        >
+                                            {isSendingMeet ? 'Saving...' : 'Only Confirm Date'}
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         )}
 
-                        {meetFlowState.intent !== 'not-connected' && meetFlowState.intent !== 'general-email' && (
+                        {googleAccounts.length === 0 && meetFlowState.intent !== 'not-connected' && meetFlowState.intent !== 'general-email' && (
                             <div>
                                 <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)' }}>
                                     Step 2: Paste Google Meet Link
@@ -732,11 +757,9 @@ export function LeadPipeline() {
                                     placeholder="https://meet.google.com/xxx-xxxx-xxx (Optional)"
                                     style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--surface-border)', borderRadius: '6px', fontSize: '14px', outline: 'none' }}
                                 />
-                                {bookingIframe && (
-                                    <div style={{ marginTop: '12px', fontSize: '12px', color: '#10b981' }}>
-                                        ✓ Booking setup detected. Clients can also book via your public scheduling tools if needed.
-                                    </div>
-                                )}
+                                <div style={{ marginTop: '8px', fontSize: '12px', color: 'var(--text-muted)' }}>
+                                    (Tip: You can automate this by connecting Google Calendar in Settings)
+                                </div>
                             </div>
                         )}
 
