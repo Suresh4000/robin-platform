@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Save, User, Shield, Bell, Calendar as CalIcon, Loader2 } from 'lucide-react';
+import { Save, User, Shield, Bell, Calendar as CalIcon, Loader2, Info } from 'lucide-react';
 import formStyles from '@/shared/components/forms/forms.module.css';
 import styles from '@/features/portfolio/components/PortfolioList.module.css';
 
@@ -77,7 +77,10 @@ export default function SettingsPage() {
                     </p>
 
                     <div className={formStyles.formGroup}>
-                        <label className={formStyles.label}>Target Calendar ID (Email)</label>
+                        <label className={formStyles.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            Target Calendar ID (Email)
+                            <span title="The specific email address of the Google Calendar you want the events pushed to (e.g., your primary Google Workspace email)."><Info size={14} style={{ color: 'var(--text-muted)' }} /></span>
+                        </label>
                         <input
                             className={formStyles.input}
                             placeholder="e.g. robinjones@gmail.com"
@@ -87,7 +90,10 @@ export default function SettingsPage() {
                     </div>
 
                     <div className={formStyles.formGroup} style={{ marginTop: '16px' }}>
-                        <label className={formStyles.label}>Google Cloud Server Email (Client Email)</label>
+                        <label className={formStyles.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            Google Cloud Server Email (Client Email)
+                            <span title="Found in your Google Cloud Console -> IAM & Admin -> Service Accounts. Format looks like: app-name@project-id.iam.gserviceaccount.com"><Info size={14} style={{ color: 'var(--text-muted)' }} /></span>
+                        </label>
                         <input
                             className={formStyles.input}
                             placeholder="e.g. your-app-name@your-project-id.iam.gserviceaccount.com"
@@ -97,7 +103,10 @@ export default function SettingsPage() {
                     </div>
 
                     <div className={formStyles.formGroup} style={{ marginTop: '16px' }}>
-                        <label className={formStyles.label}>RSA Private Key</label>
+                        <label className={formStyles.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            RSA Private Key
+                            <span title="Generated when creating a new JSON Key for your Service Account in Google Cloud. Make sure to copy the entire block including the -----BEGIN PRIVATE KEY----- lines."><Info size={14} style={{ color: 'var(--text-muted)' }} /></span>
+                        </label>
                         <textarea
                             className={formStyles.textarea}
                             rows={3}
