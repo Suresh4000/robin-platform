@@ -64,23 +64,37 @@ export default function CalendarPage() {
 
                 if (leadsData.data) {
                     leadsData.data.forEach((l: any) => {
-                        // Extract booking date / time from notes if it exists
-                        const notes = l.notes || '';
-                        const dateMatch = notes.match(/Booking Date:\s*([^\n\r]+)/);
-                        const timeMatch = notes.match(/Booking Time:\s*([^\n\r]+)/);
-                        if (dateMatch && timeMatch) {
-                            const dateStr = dateMatch[1].trim();
-                            const timeStr = timeMatch[1].trim();
-                            if (dateStr && timeStr) {
-                                combined.push({
-                                    id: `call_${l.id}`,
-                                    type: 'Call',
-                                    title: `Discovery Call: ${l.name}`,
-                                    date: new Date(`${dateStr}T${timeStr}:00`),
-                                    status: l.status === 'Rescheduled' ? 'Rescheduled' : (l.status === 'Meeting Scheduled' ? 'Scheduled' : l.status),
-                                    details: `Company: ${l.company || 'N/A'} | Contact: ${l.email || l.phone}`
-                                });
+                        // Only show leads that are actively scheduled in pipeline
+                        const activeStatuses = ['Qualified', 'Meeting Scheduled', 'Rescheduled'];
+                        if (!activeStatuses.includes(l.status)) return;
+
+                        let dateToUse = null;
+
+                        if (l.meetingDate) {
+                            dateToUse = new Date(l.meetingDate);
+                        } else {
+                            // Extract booking date / time from notes if it exists (legacy)
+                            const notes = l.notes || '';
+                            const dateMatch = notes.match(/Booking Date:\s*([^\n\r]+)/);
+                            const timeMatch = notes.match(/Booking Time:\s*([^\n\r]+)/);
+                            if (dateMatch && timeMatch) {
+                                const dateStr = dateMatch[1].trim();
+                                const timeStr = timeMatch[1].trim();
+                                if (dateStr && timeStr) {
+                                    dateToUse = new Date(`${dateStr}T${timeStr}:00`);
+                                }
                             }
+                        }
+
+                        if (dateToUse) {
+                            combined.push({
+                                id: `call_${l.id}`,
+                                type: 'Call',
+                                title: `Discovery Call: ${l.name}`,
+                                date: dateToUse,
+                                status: l.status === 'Rescheduled' ? 'Rescheduled' : (l.status === 'Meeting Scheduled' ? 'Scheduled' : l.status),
+                                details: `Company: ${l.company || 'N/A'} | Contact: ${l.email || l.phone}`
+                            });
                         }
                     });
                 }

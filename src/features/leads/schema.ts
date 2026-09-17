@@ -22,6 +22,7 @@ export const createLeadSchema = z.object({
     expectedValue: z.number().min(0).default(0),
     notes: z.string().optional(),
     isDeleted: z.boolean().optional(),
+    meetingDate: z.coerce.date().optional().nullable(),
 });
 
 export const updateLeadSchema = createLeadSchema.partial();

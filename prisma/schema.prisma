@@ -28,6 +28,7 @@ model Lead {
   isDeleted     Boolean  @default(false)
   client        Client?  @relation(fields: [clientId], references: [id])
   clientId      String?  @unique
+  meetingDate   DateTime?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }

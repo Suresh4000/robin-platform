@@ -23,6 +23,7 @@ type Lead = {
     source: string;
     status: string;
     notes: string | null;
+    meetingDate: string | null;
     createdAt: string;
 };
 
@@ -78,25 +79,23 @@ export function LeadPipeline() {
     const [meetTimeInput, setMeetTimeInput] = useState('');
     const [isSendingMeet, setIsSendingMeet] = useState(false);
 
-    const autoSaveDateTime = (newDate: string, newTime: string) => {
+    const confirmMeetingDate = async () => {
         if (!meetFlowState?.lead) return;
-        let finalNotes = meetFlowState.lead.notes || '';
-        if (finalNotes.includes('Booking Date:')) {
-            finalNotes = finalNotes.replace(/Booking Date:\s*[^\n\r]+/, `Booking Date: ${newDate}`);
-            finalNotes = finalNotes.replace(/Booking Time:\s*[^\n\r]+/, `Booking Time: ${newTime}`);
-        } else {
-            finalNotes += `\n\nBooking Date: ${newDate}\nBooking Time: ${newTime}`;
+        setIsSendingMeet(true);
+        try {
+            const isoDate = meetDateInput && meetTimeInput ? new Date(`${meetDateInput}T${meetTimeInput}:00`).toISOString() : null;
+            await fetch(`/api/crm/leads/${meetFlowState.lead.id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ meetingDate: isoDate })
+            });
+            showToast('Meeting Date Confirmed & Synced');
+            fetchLeads();
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setIsSendingMeet(false);
         }
-
-        // Update local state so it doesn't get overwritten
-        const updatedLead = { ...meetFlowState.lead, notes: finalNotes };
-        setMeetFlowState(prev => prev ? { ...prev, lead: updatedLead } : prev);
-
-        fetch(`/api/crm/leads/${meetFlowState.lead.id}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ notes: finalNotes })
-        }).catch(console.error);
     };
 
     const showToast = (msg: string) => {
@@ -138,12 +137,20 @@ export function LeadPipeline() {
             // Automatically generate a valid Google Meet formatted link constraint
             const generateMeetLink = () => `https://meet.google.com/${Math.random().toString(36).substring(2, 5)}-${Math.random().toString(36).substring(2, 6)}-${Math.random().toString(36).substring(2, 5)}`;
 
-            // Parse existing date/time from notes if present
-            const notesStr = leadToUpdate?.notes || '';
-            const dtMatch = notesStr.match(/Booking Date:\s*([^\n\r]+)/);
-            const tmMatch = notesStr.match(/Booking Time:\s*([^\n\r]+)/);
-            const initialDate = dtMatch ? dtMatch[1].trim() : new Date().toISOString().split('T')[0];
-            const initialTime = tmMatch ? tmMatch[1].trim() : "10:00";
+            // Parse existing date/time from explicit mapping (with fallback to old notes format for legacy)
+            let initialDate = new Date().toISOString().split('T')[0];
+            let initialTime = "10:00";
+            if (leadToUpdate?.meetingDate) {
+                const dateObj = new Date(leadToUpdate.meetingDate);
+                initialDate = dateObj.toISOString().split('T')[0];
+                initialTime = dateObj.toISOString().split('T')[1].substring(0, 5);
+            } else {
+                const notesStr = leadToUpdate?.notes || '';
+                const dtMatch = notesStr.match(/Booking Date:\s*([^\n\r]+)/);
+                const tmMatch = notesStr.match(/Booking Time:\s*([^\n\r]+)/);
+                if (dtMatch) initialDate = dtMatch[1].trim();
+                if (tmMatch) initialTime = tmMatch[1].trim();
+            }
 
             if ((newStatus === 'Qualified' || newStatus === 'Meeting Scheduled') && oldStatus !== newStatus && leadToUpdate) {
                 setMeetFlowState({ lead: leadToUpdate, intent: 'schedule' });
@@ -170,13 +177,21 @@ export function LeadPipeline() {
         }
     };
 
-    const openGCalTemplate = (lead: Lead, explicitDate?: string, explicitTime?: string) => {
-        const notes = lead.notes || '';
-        const dateMatch = notes.match(/Booking Date:\s*([^\n\r]+)/);
-        const timeMatch = notes.match(/Booking Time:\s*([^\n\r]+)/);
+    const openGCalTemplate = (lead: Lead, explicitDate?: string | null, explicitTime?: string | null) => {
+        let bookingDate = explicitDate;
+        let bookingTime = explicitTime;
 
-        const bookingDate = explicitDate || (dateMatch ? dateMatch[1].trim() : null);
-        const bookingTime = explicitTime || (timeMatch ? timeMatch[1].trim() : null);
+        if (!bookingDate && lead.meetingDate) {
+            const dateObj = new Date(lead.meetingDate);
+            bookingDate = dateObj.toISOString().split('T')[0];
+            bookingTime = dateObj.toISOString().split('T')[1].substring(0, 5);
+        } else if (!bookingDate) {
+            const notes = lead.notes || '';
+            const dateMatch = notes.match(/Booking Date:\s*([^\n\r]+)/);
+            const timeMatch = notes.match(/Booking Time:\s*([^\n\r]+)/);
+            bookingDate = dateMatch ? dateMatch[1].trim() : null;
+            bookingTime = timeMatch ? timeMatch[1].trim() : null;
+        }
 
         let startStr, endStr;
 
@@ -216,20 +231,13 @@ export function LeadPipeline() {
         if (!meetFlowState) return;
         setIsSendingMeet(true);
         try {
-            // Overwrite CRM notes with new date and time for Reschedules so the master Calendar instantly updates
+            // Explicitly sync the meeting date to database instead of text manipulation
             if (meetFlowState.intent === 'schedule' || meetFlowState.intent === 'reschedule') {
-                let finalNotes = meetFlowState.lead.notes || '';
-                if (finalNotes.includes('Booking Date:')) {
-                    finalNotes = finalNotes.replace(/Booking Date:\s*[^\n\r]+/, `Booking Date: ${meetDateInput}`);
-                    finalNotes = finalNotes.replace(/Booking Time:\s*[^\n\r]+/, `Booking Time: ${meetTimeInput}`);
-                } else {
-                    finalNotes += `\n\nBooking Date: ${meetDateInput}\nBooking Time: ${meetTimeInput}`;
-                }
-
+                const isoDate = meetDateInput && meetTimeInput ? new Date(`${meetDateInput}T${meetTimeInput}:00`).toISOString() : null;
                 await fetch(`/api/crm/leads/${meetFlowState.lead.id}`, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ notes: finalNotes })
+                    body: JSON.stringify({ meetingDate: isoDate })
                 });
             }
 
@@ -624,10 +632,7 @@ export function LeadPipeline() {
                                         <input
                                             type="date"
                                             value={meetDateInput}
-                                            onChange={e => {
-                                                setMeetDateInput(e.target.value);
-                                                autoSaveDateTime(e.target.value, meetTimeInput);
-                                            }}
+                                            onChange={e => setMeetDateInput(e.target.value)}
                                             style={{ width: '100%', padding: '8px', border: '1px solid #c7d2fe', borderRadius: '4px', color: '#312e81', fontSize: '13px', outline: 'none' }}
                                         />
                                     </div>
@@ -636,10 +641,7 @@ export function LeadPipeline() {
                                         <input
                                             type="time"
                                             value={meetTimeInput}
-                                            onChange={e => {
-                                                setMeetTimeInput(e.target.value);
-                                                autoSaveDateTime(meetDateInput, e.target.value);
-                                            }}
+                                            onChange={e => setMeetTimeInput(e.target.value)}
                                             style={{ width: '100%', padding: '8px', border: '1px solid #c7d2fe', borderRadius: '4px', color: '#312e81', fontSize: '13px', outline: 'none' }}
                                         />
                                     </div>
@@ -649,12 +651,21 @@ export function LeadPipeline() {
                                         ? "Selecting the new date updates your Master Calendar locally. Next, open Google Calendar to update the existing event."
                                         : "Create the Google Calendar event and securely lock the date into your CRM Master Calendar."}
                                 </p>
-                                <button
-                                    onClick={() => openGCalTemplate(meetFlowState.lead, meetDateInput, meetTimeInput)}
-                                    style={{ background: '#4f46e5', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: 600 }}
-                                >
-                                    Open Google Calendar
-                                </button>
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                    <button
+                                        onClick={() => openGCalTemplate(meetFlowState.lead, meetDateInput, meetTimeInput)}
+                                        style={{ background: '#4f46e5', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: 600, flex: 1 }}
+                                    >
+                                        Open Google Calendar
+                                    </button>
+                                    <button
+                                        onClick={confirmMeetingDate}
+                                        disabled={isSendingMeet}
+                                        style={{ background: '#fff', color: '#4f46e5', border: '1px solid #c7d2fe', padding: '8px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: 600, flex: 1 }}
+                                    >
+                                        {isSendingMeet ? 'Saving...' : 'Only Confirm Date'}
+                                    </button>
+                                </div>
                             </div>
                         )}
 
