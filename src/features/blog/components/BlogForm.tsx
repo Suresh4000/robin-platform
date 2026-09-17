@@ -28,7 +28,13 @@ export function BlogForm({ onSuccess, initialData }: { onSuccess: () => void; in
         resolver: zodResolver(initialData ? updateBlogSchema : createBlogSchema),
         defaultValues: initialData ? {
             ...initialData,
-            publishedAt: initialData.publishedAt ? new Date(initialData.publishedAt).toISOString().slice(0, 16) : ''
+            publishedAt: initialData.publishedAt
+                ? (function () {
+                    const d = new Date(initialData.publishedAt);
+                    const pad = (n: number) => n.toString().padStart(2, '0');
+                    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+                })()
+                : ''
         } : {
             status: 'Draft',
             category: 'Thoughts',
@@ -65,12 +71,18 @@ export function BlogForm({ onSuccess, initialData }: { onSuccess: () => void; in
     const onSubmit = async (data: any) => {
         setIsSubmitting(true);
         try {
+            const payload = { ...data };
+            if (payload.publishedAt) {
+                // Force parsing as local time in the user's browser, then send absolute ISO
+                payload.publishedAt = new Date(payload.publishedAt).toISOString();
+            }
+
             const url = initialData ? `/api/content/blog/${initialData.id}` : '/api/content/blog';
             const method = initialData ? 'PATCH' : 'POST';
             const res = await fetch(url, {
                 method,
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data),
+                body: JSON.stringify(payload),
             });
             const responseData = await res.json();
             if (!res.ok) throw new Error(responseData.error || 'Failed to save post');
@@ -84,9 +96,17 @@ export function BlogForm({ onSuccess, initialData }: { onSuccess: () => void; in
 
     useEffect(() => {
         if (initialData) {
+            let localDateString = '';
+            if (initialData.publishedAt) {
+                // Convert absolute database ISO to the local datetime-local string
+                const d = new Date(initialData.publishedAt);
+                const pad = (n: number) => n.toString().padStart(2, '0');
+                localDateString = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+            }
+
             reset({
                 ...initialData,
-                publishedAt: initialData.publishedAt ? new Date(initialData.publishedAt).toISOString().slice(0, 16) : ''
+                publishedAt: localDateString
             });
         } else {
             reset({
