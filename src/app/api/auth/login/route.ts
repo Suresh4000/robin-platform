@@ -28,8 +28,8 @@ export async function POST(request: Request) {
         if (adminCount === 0) {
             await prisma.admin.create({
                 data: {
-                    email: 'admin@rbos.com',
-                    password: 'password123', // In real prod, this MUST be bcrypt hashed
+                    email: 'robinjones@gmail.com',
+                    password: 'admin@robin',
                 }
             });
         }

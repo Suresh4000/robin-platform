@@ -28,14 +28,14 @@ export async function middleware(request: NextRequest) {
     const token = request.cookies.get('rbos_token')?.value;
 
     if (!token) {
-        return NextResponse.redirect(new URL('/login', request.url));
+        return NextResponse.redirect(new URL('/admin-login', request.url));
     }
 
     const verifiedPayload = await verifyToken(token);
 
     if (!verifiedPayload) {
         // Token is invalid or expired
-        const response = NextResponse.redirect(new URL('/login', request.url));
+        const response = NextResponse.redirect(new URL('/admin-login', request.url));
         response.cookies.delete('rbos_token');
         return response;
     }
