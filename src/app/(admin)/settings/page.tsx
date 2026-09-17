@@ -7,6 +7,10 @@ import styles from '@/features/portfolio/components/PortfolioList.module.css';
 
 export default function SettingsPage() {
     const [schedulingUrl, setSchedulingUrl] = useState('');
+    const [gcalClientEmail, setGcalClientEmail] = useState('');
+    const [gcalPrivateKey, setGcalPrivateKey] = useState('');
+    const [gcalCalendarId, setGcalCalendarId] = useState('');
+
     const [isSaving, setIsSaving] = useState(false);
     const [toast, setToast] = useState('');
 
@@ -15,6 +19,9 @@ export default function SettingsPage() {
             .then(res => res.json())
             .then(data => {
                 if (data.schedulingUrl) setSchedulingUrl(data.schedulingUrl);
+                if (data.gcalClientEmail) setGcalClientEmail(data.gcalClientEmail);
+                if (data.gcalPrivateKey) setGcalPrivateKey(data.gcalPrivateKey);
+                if (data.gcalCalendarId) setGcalCalendarId(data.gcalCalendarId);
             });
     }, []);
 
@@ -24,7 +31,7 @@ export default function SettingsPage() {
             await fetch('/api/ops/settings', {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ schedulingUrl })
+                body: JSON.stringify({ schedulingUrl, gcalClientEmail, gcalPrivateKey, gcalCalendarId })
             });
             setToast('Settings saved successfully');
             setTimeout(() => setToast(''), 3000);
@@ -65,7 +72,7 @@ export default function SettingsPage() {
                 <div style={{ background: 'var(--surface-default)', padding: '24px', borderRadius: '12px', border: '1px solid var(--surface-border)' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
                         <CalIcon size={20} style={{ color: 'var(--color-primary)' }} />
-                        <h2 style={{ fontSize: '18px', fontWeight: 600 }}>Calendar Integrations</h2>
+                        <h2 style={{ fontSize: '18px', fontWeight: 600 }}>External Scheduling Links</h2>
                     </div>
                     <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '24px' }}>
                         Set your global scheduling link (Calendly, SavvyCal, etc). This will automatically be appended to relevant Email Templates when leads need to reschedule.
@@ -79,6 +86,49 @@ export default function SettingsPage() {
                             value={schedulingUrl}
                             onChange={(e) => setSchedulingUrl(e.target.value)}
                         />
+                    </div>
+                </div>
+
+                {/* Master Calendar Auto-Sync */}
+                <div style={{ background: 'var(--surface-default)', padding: '24px', borderRadius: '12px', border: '1px solid var(--surface-border)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                        <CalIcon size={20} style={{ color: '#10b981' }} />
+                        <h2 style={{ fontSize: '18px', fontWeight: 600 }}>Google Calendar Automation API (Backend)</h2>
+                    </div>
+                    <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '24px' }}>
+                        Connect a Google Service Account to enable automated background calendar invites without manually confirming them in new browser tabs.
+                    </p>
+
+                    <div className={formStyles.formGroup}>
+                        <label className={formStyles.label}>Target Calendar ID (Email)</label>
+                        <input
+                            className={formStyles.input}
+                            placeholder="e.g. robinjones@gmail.com"
+                            value={gcalCalendarId}
+                            onChange={(e) => setGcalCalendarId(e.target.value)}
+                        />
+                    </div>
+
+                    <div className={formStyles.formGroup} style={{ marginTop: '16px' }}>
+                        <label className={formStyles.label}>Google Cloud Server Email (Client Email)</label>
+                        <input
+                            className={formStyles.input}
+                            placeholder="e.g. your-app-name@your-project-id.iam.gserviceaccount.com"
+                            value={gcalClientEmail}
+                            onChange={(e) => setGcalClientEmail(e.target.value)}
+                        />
+                    </div>
+
+                    <div className={formStyles.formGroup} style={{ marginTop: '16px' }}>
+                        <label className={formStyles.label}>RSA Private Key</label>
+                        <textarea
+                            className={formStyles.textarea}
+                            rows={3}
+                            placeholder="-----BEGIN PRIVATE KEY-----\n..."
+                            value={gcalPrivateKey}
+                            onChange={(e) => setGcalPrivateKey(e.target.value)}
+                        />
+                        <span style={{ fontSize: '12px', color: '#888', marginTop: '4px', display: 'block' }}>Store this key safely! It operates with absolute server authority.</span>
                     </div>
                 </div>
 

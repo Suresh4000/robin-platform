@@ -6,10 +6,16 @@ import { verifyToken } from '@/shared/lib/jwt';
 export async function GET() {
     try {
         const adminUsers = await (prisma as any).admin.findMany();
-        if (adminUsers.length === 0) return NextResponse.json({ schedulingUrl: '' });
-        return NextResponse.json({ schedulingUrl: adminUsers[0].schedulingUrl || '' });
+        if (adminUsers.length === 0) return NextResponse.json({});
+        const admin = adminUsers[0];
+        return NextResponse.json({
+            schedulingUrl: admin.schedulingUrl || '',
+            gcalClientEmail: admin.gcalClientEmail || '',
+            gcalPrivateKey: admin.gcalPrivateKey || '',
+            gcalCalendarId: admin.gcalCalendarId || '',
+        });
     } catch {
-        return NextResponse.json({ schedulingUrl: '' });
+        return NextResponse.json({});
     }
 }
 
@@ -28,9 +34,14 @@ export async function PATCH(request: Request) {
         if (admins.length > 0) {
             await (prisma as any).admin.update({
                 where: { id: admins[0].id },
-                data: { schedulingUrl: body.schedulingUrl }
+                data: {
+                    schedulingUrl: body.schedulingUrl,
+                    gcalClientEmail: body.gcalClientEmail,
+                    gcalPrivateKey: body.gcalPrivateKey,
+                    gcalCalendarId: body.gcalCalendarId
+                }
             });
-            return NextResponse.json({ success: true, schedulingUrl: body.schedulingUrl });
+            return NextResponse.json({ success: true });
         }
 
         return NextResponse.json({ success: false });
