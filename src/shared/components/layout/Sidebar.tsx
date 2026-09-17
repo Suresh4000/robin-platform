@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
-import { LogOut, LayoutDashboard, Briefcase, Users, FileText, Calendar, HardHat, FileBox, Building, Clock, DollarSign, Settings, FolderOpen, PenTool, Image as ImageIcon } from 'lucide-react';
+import { LogOut, LayoutDashboard, Briefcase, Users, FileText, Calendar, HardHat, FileBox, Building, Clock, DollarSign, Settings, FolderOpen, PenTool, Image as ImageIcon, History } from 'lucide-react';
 import styles from './Sidebar.module.css';
 import { NotificationBell } from './NotificationBell';
 
@@ -20,6 +20,7 @@ const ROUTES = [
     { path: '/content/blog', label: 'Blog CMS', Icon: FileText, num: '09' },
     { path: '/content/media', label: 'Media', Icon: ImageIcon, num: '10' },
     { path: '/settings', label: 'Settings', Icon: Settings, num: '11' },
+    { path: '/history', label: 'History / Bin', Icon: History, num: '12' },
 ];
 
 export function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
