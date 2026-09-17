@@ -40,7 +40,7 @@ export default function HistoryPage() {
     }, []);
 
     const filteredItems = items.filter(item => activeFilter === 'All' ? true : item.type === activeFilter);
-    const filterOptions = ['All', 'Lead', 'Project', 'Task', 'Invoice', 'Event', 'Client', 'Media'];
+    const filterOptions = ['All', ...Array.from(new Set(items.map(item => item.type)))];
 
     return (
         <div className={styles.container}>
@@ -90,7 +90,7 @@ export default function HistoryPage() {
                                         </span>
                                     </div>
                                     <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
-                                        Deleted on {item.date.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                        Logged on {item.date.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                                     </div>
                                 </div>
                             </li>
