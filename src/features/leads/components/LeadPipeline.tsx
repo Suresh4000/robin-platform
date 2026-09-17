@@ -65,6 +65,7 @@ export function LeadPipeline() {
     const [toastMsg, setToastMsg] = useState<string | null>(null);
     const [showDeleted, setShowDeleted] = useState(false);
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+    const [statusFilter, setStatusFilter] = useState<string>('All');
 
     // Meet Scheduling & Email Flow
     const [meetFlowState, setMeetFlowState] = useState<{
@@ -381,6 +382,32 @@ export function LeadPipeline() {
                 </div>
             </header>
 
+            {!showDeleted && (
+                <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '24px' }}>
+                    <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-secondary)' }}>Filter by Status:</span>
+                    <select
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                        style={{
+                            padding: '8px 16px',
+                            borderRadius: '8px',
+                            border: '1px solid var(--surface-border)',
+                            background: 'var(--surface-default)',
+                            color: 'var(--text-primary)',
+                            fontSize: '14px',
+                            outline: 'none',
+                            cursor: 'pointer',
+                            minWidth: '200px'
+                        }}
+                    >
+                        <option value="All">All Active Leads</option>
+                        {LEAD_STAGES.map(stage => (
+                            <option key={stage} value={stage}>{stage}</option>
+                        ))}
+                    </select>
+                </div>
+            )}
+
             <div style={{ overflowX: 'auto', background: 'var(--surface-default)', border: '1px solid var(--surface-border)', borderRadius: '8px' }}>
                 <table style={{ width: '100%', minWidth: '800px', borderCollapse: 'collapse', textAlign: 'left' }}>
                     <thead style={{ background: 'var(--surface-sunken)', borderBottom: '1px solid var(--surface-border)' }}>
@@ -407,12 +434,12 @@ export function LeadPipeline() {
                             <tr>
                                 <td colSpan={showDeleted ? 6 : 5} style={{ padding: '32px', textAlign: 'center', color: 'var(--text-muted)' }}>Loading...</td>
                             </tr>
-                        ) : leads.length === 0 ? (
+                        ) : leads.filter(l => statusFilter === 'All' ? true : l.status === statusFilter).length === 0 ? (
                             <tr>
                                 <td colSpan={showDeleted ? 6 : 5} style={{ padding: '32px', textAlign: 'center', color: 'var(--text-muted)' }}>No leads found.</td>
                             </tr>
                         ) : (
-                            leads.map(lead => (
+                            leads.filter(l => statusFilter === 'All' ? true : l.status === statusFilter).map(lead => (
                                 <tr key={lead.id} style={{ borderBottom: '1px solid var(--surface-border)', background: selectedIds.has(lead.id) ? 'var(--surface-sunken)' : 'transparent' }}>
                                     {showDeleted && (
                                         <td style={{ padding: '16px', width: '48px' }}>
