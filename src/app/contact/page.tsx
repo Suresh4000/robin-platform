@@ -75,10 +75,10 @@ Message: ${formData.notes}`;
                 <form id="enquiry-form" onSubmit={handleContactSubmit}>
                   <div className="form-grid">
                     <div className="field"><label htmlFor="fname">First Name</label><input id="fname" name="name" value={formData.name || ''} onChange={e => setFormData({ ...formData, name: e.target.value })} placeholder="Jordan" required={true} type="text" /></div>
-                    <div className="field"><label htmlFor="lname">Last Name</label><input id="lname" name="lname" type="text" placeholder="Doe" value={formData.lname} onChange={e => setFormData({ ...formData, lname: e.target.value })} /></div>
+                    <div className="field"><label htmlFor="lname">Last Name</label><input id="lname" name="lname" type="text" placeholder="Doe" value={formData.lname} onChange={e => setFormData({ ...formData, lname: e.target.value })} required={true} /></div>
                     <div className="field"><label htmlFor="email">Work Email</label><input id="email" name="email" value={formData.email || ''} onChange={e => setFormData({ ...formData, email: e.target.value })} placeholder="jordan@company.com" required={true} type="email" /></div>
-                    <div className="field"><label htmlFor="org">Organization</label><input id="org" name="company" value={formData.company || ''} onChange={e => setFormData({ ...formData, company: e.target.value })} placeholder="Company name" type="text" /></div>
-                    <div className="field" style={{ "gridColumn": "1 / -1" }}><label htmlFor="role">Role / Title</label><input id="role" name="role" type="text" placeholder="CEO, Founder, VP..." value={formData.role} onChange={e => setFormData({ ...formData, role: e.target.value })} /></div>
+                    <div className="field"><label htmlFor="org">Organization</label><input id="org" name="company" value={formData.company || ''} onChange={e => setFormData({ ...formData, company: e.target.value })} placeholder="Company name" type="text" required={true} /></div>
+                    <div className="field" style={{ "gridColumn": "1 / -1" }}><label htmlFor="role">Role / Title</label><input id="role" name="role" type="text" placeholder="CEO, Founder, VP..." value={formData.role} onChange={e => setFormData({ ...formData, role: e.target.value })} required={true} /></div>
                   </div>
                   <div className="field">
                     <label id="topicLabel">What would you like to discuss?</label>
@@ -134,11 +134,11 @@ Message: ${formData.notes}`;
                   </div>
                   <div className="field">
                     <label htmlFor="msg">What challenge, opportunity, or question are you currently exploring?</label>
-                    <textarea id="msg" name="notes" value={formData.notes || ''} onChange={e => setFormData({ ...formData, notes: e.target.value })} placeholder="A few sentences is plenty to start."></textarea>
+                    <textarea id="msg" name="notes" value={formData.notes || ''} onChange={e => setFormData({ ...formData, notes: e.target.value })} placeholder="A few sentences is plenty to start." required={true}></textarea>
                   </div>
                   <div className="field">
                     <label htmlFor="timing">Preferred engagement timing</label>
-                    <select id="timing" name="timing" value={formData.timing} onChange={e => setFormData({ ...formData, timing: e.target.value })}>
+                    <select id="timing" name="timing" value={formData.timing} onChange={e => setFormData({ ...formData, timing: e.target.value })} required={true}>
                       <option value="">Select an option</option>
                       <option>Exploring</option>
                       <option>Within the next month</option>
