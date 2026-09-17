@@ -66,6 +66,7 @@ export function LeadPipeline() {
     const [showDeleted, setShowDeleted] = useState(false);
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
     const [statusFilter, setStatusFilter] = useState<string>('All');
+    const [globalSchedulingUrl, setGlobalSchedulingUrl] = useState<string>('https://calendly.com/robin-jones/alignment');
 
     // Meet Scheduling & Email Flow
     const [meetFlowState, setMeetFlowState] = useState<{
@@ -114,8 +115,18 @@ export function LeadPipeline() {
             });
     };
 
+    const fetchConfig = () => {
+        fetch('/api/ops/settings')
+            .then(res => res.json())
+            .then(data => {
+                if (data.schedulingUrl) setGlobalSchedulingUrl(data.schedulingUrl);
+            })
+            .catch(() => { });
+    };
+
     useEffect(() => {
         fetchLeads(showDeleted);
+        if (!showDeleted) fetchConfig();
     }, [showDeleted]);
 
     const updateLeadStatus = async (id: string, newStatus: string) => {
@@ -164,7 +175,7 @@ export function LeadPipeline() {
                 setMeetFlowState({ lead: leadToUpdate, intent: 'general-email', templateTitle: 'Automated Postponed' });
                 setMeetLinkInput('');
                 setMeetSubjectInput(`Rescheduling our Alignment Call - Robin Jones`);
-                setMeetMessageInput(`Hi ${leadToUpdate.name.split(' ')[0]},\n\nIt looks like we'll need to reschedule our upcoming conversation. I know how remarkably busy things can get.\n\nTo make this as seamless as possible, you can select a new time that works best for you directly from my calendar here:\nhttps://calendly.com/robin-jones/alignment\n\nAlternatively, if none of those times align, please let me know and we will manually find a slot that works.\n\nLooking forward to speaking soon,\nRobin Jones`);
+                setMeetMessageInput(`Hi ${leadToUpdate.name.split(' ')[0]},\n\nIt looks like we'll need to reschedule our upcoming conversation. I know how remarkably busy things can get.\n\nTo make this as seamless as possible, you can select a new time that works best for you directly from my calendar here:\n${globalSchedulingUrl}\n\nAlternatively, if none of those times align, please let me know and we will manually find a slot that works.\n\nLooking forward to speaking soon,\nRobin Jones`);
             } else if (newStatus === 'Not Connected' && oldStatus !== newStatus && leadToUpdate) {
                 setMeetFlowState({ lead: leadToUpdate, intent: 'not-connected' });
                 setMeetLinkInput(''); // No meeting link sent on not connected
@@ -612,7 +623,7 @@ export function LeadPipeline() {
                             onClick={() => loadDraftFromTemplate(
                                 "3. Meeting Postponed",
                                 `Rescheduling our Alignment Call - Robin Jones`,
-                                `Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0AIt looks like we'll need to reschedule our upcoming conversation. I know how remarkably busy things can get.%0D%0A%0D%0ATo make this as seamless as possible, you can select a new time that works best for you directly from my calendar here:%0D%0Ahttps://calendly.com/robin-jones/alignment%0D%0A%0D%0AAlternatively, if none of those times align, please let me know and we will manually find a slot that works.%0D%0A%0D%0ALooking forward to speaking soon,%0D%0ARobin Jones`
+                                `Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0AIt looks like we'll need to reschedule our upcoming conversation. I know how remarkably busy things can get.%0D%0A%0D%0ATo make this as seamless as possible, you can select a new time that works best for you directly from my calendar here:%0D%0A${globalSchedulingUrl}%0D%0A%0D%0AAlternatively, if none of those times align, please let me know and we will manually find a slot that works.%0D%0A%0D%0ALooking forward to speaking soon,%0D%0ARobin Jones`
                             )}
                         />
 

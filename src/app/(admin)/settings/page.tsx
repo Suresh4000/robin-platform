@@ -1,13 +1,51 @@
 'use client';
 
-import React from 'react';
-import { Save, User, Shield, Bell } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Save, User, Shield, Bell, Calendar as CalIcon, Loader2 } from 'lucide-react';
 import formStyles from '@/shared/components/forms/forms.module.css';
 import styles from '@/features/portfolio/components/PortfolioList.module.css';
 
 export default function SettingsPage() {
+    const [schedulingUrl, setSchedulingUrl] = useState('');
+    const [isSaving, setIsSaving] = useState(false);
+    const [toast, setToast] = useState('');
+
+    useEffect(() => {
+        fetch('/api/ops/settings')
+            .then(res => res.json())
+            .then(data => {
+                if (data.schedulingUrl) setSchedulingUrl(data.schedulingUrl);
+            });
+    }, []);
+
+    const handleSave = async () => {
+        setIsSaving(true);
+        try {
+            await fetch('/api/ops/settings', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ schedulingUrl })
+            });
+            setToast('Settings saved successfully');
+            setTimeout(() => setToast(''), 3000);
+        } catch (e) {
+            setToast('Failed to save settings');
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
     return (
         <div className={styles.container}>
+            <style dangerouslySetInnerHTML={{ __html: `@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } } .spinner { animation: spin 1s linear infinite; }` }} />
+
+            {/* Global Toast */}
+            {toast && (
+                <div style={{ position: 'fixed', top: '32px', right: '32px', background: '#10b981', color: '#fff', padding: '16px 24px', borderRadius: '8px', zIndex: 9999 }}>
+                    {toast}
+                </div>
+            )}
+
             <header className={styles.header}>
                 <div>
                     <h1 className={styles.title}>System Settings</h1>
@@ -15,13 +53,34 @@ export default function SettingsPage() {
                         Manage platform configuration and access control
                     </p>
                 </div>
-                <button className={styles.btnPrimary}>
-                    <Save size={16} />
-                    Save Changes
+                <button className={styles.btnPrimary} onClick={handleSave} disabled={isSaving}>
+                    {isSaving ? <Loader2 size={16} className="spinner" /> : <Save size={16} />}
+                    {isSaving ? 'Saving...' : 'Save Changes'}
                 </button>
             </header>
 
             <div style={{ display: 'grid', gap: '32px', gridTemplateColumns: '1fr', maxWidth: '800px' }}>
+
+                {/* Integration Settings */}
+                <div style={{ background: 'var(--surface-default)', padding: '24px', borderRadius: '12px', border: '1px solid var(--surface-border)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                        <CalIcon size={20} style={{ color: 'var(--color-primary)' }} />
+                        <h2 style={{ fontSize: '18px', fontWeight: 600 }}>Calendar Integrations</h2>
+                    </div>
+                    <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '24px' }}>
+                        Set your global scheduling link (Calendly, SavvyCal, etc). This will automatically be appended to relevant Email Templates when leads need to reschedule.
+                    </p>
+
+                    <div className={formStyles.formGroup}>
+                        <label className={formStyles.label}>Scheduling Link (URL)</label>
+                        <input
+                            className={formStyles.input}
+                            placeholder="e.g. https://calendly.com/robin-jones"
+                            value={schedulingUrl}
+                            onChange={(e) => setSchedulingUrl(e.target.value)}
+                        />
+                    </div>
+                </div>
 
                 {/* Profile Settings */}
                 <div style={{ background: 'var(--surface-default)', padding: '24px', borderRadius: '12px', border: '1px solid var(--surface-border)' }}>
