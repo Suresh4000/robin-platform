@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/shared/lib/prisma';
 import { google } from 'googleapis';
+import { logActivity } from '@/shared/lib/audit';
 
 export async function GET(request: Request) {
     try {
@@ -61,8 +62,12 @@ export async function GET(request: Request) {
                     expiryDate: tokens.expiry_date || existingIntegration.expiryDate,
                 }
             });
+            await logActivity("UPDATE", "Settings", existingIntegration.id, {
+                title: "Google Calendar",
+                message: `Re-authorized connection to Google account ${email}`
+            });
         } else {
-            await prisma.googleIntegration.create({
+            const newAcc = await prisma.googleIntegration.create({
                 data: {
                     adminId: admin.id,
                     email: email,
@@ -70,6 +75,10 @@ export async function GET(request: Request) {
                     refreshToken: tokens.refresh_token,
                     expiryDate: tokens.expiry_date,
                 }
+            });
+            await logActivity("CREATE", "Settings", newAcc.id, {
+                title: "Google Calendar",
+                message: `Connected new Google Account: ${email}`
             });
         }
 

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/shared/lib/prisma';
 import { cookies } from 'next/headers';
 import { verifyToken } from '@/shared/lib/jwt';
+import { logActivity } from '@/shared/lib/audit';
 
 export async function GET() {
     try {
@@ -38,6 +39,12 @@ export async function PATCH(request: Request) {
                     googleClientSecret: body.googleClientSecret,
                 }
             });
+
+            await logActivity("UPDATE", "Settings", admins[0].id, {
+                title: "Google OAuth Client Credentials",
+                message: "Updated Global OAuth integration settings"
+            });
+
             return NextResponse.json({ success: true });
         }
         return NextResponse.json({ error: 'No admin found' }, { status: 404 });
