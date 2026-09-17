@@ -50,7 +50,7 @@ export default function LoginPage() {
                         className={styles.input}
                         value={email}
                         onChange={e => setEmail(e.target.value)}
-                        placeholder="robinjones@gmail.com"
+                        placeholder="johndoe@gmail.com"
                         required
                     />
                 </div>
