@@ -11,10 +11,18 @@ export default function EmbedContactForm() {
     const [formStatus, setFormStatus] = useState('');
     const [msOpen, setMsOpen] = useState(false);
 
+    const [isAttempted, setIsAttempted] = useState(false);
+
     const todayDateString = new Date().toISOString().split('T')[0];
 
     const handleContactSubmit = async (e: any) => {
         e.preventDefault();
+        setIsAttempted(true);
+
+        if (!e.currentTarget.checkValidity()) {
+            return;
+        }
+
         setFormStatus('Submitting...');
         try {
             const formattedNotes = `Role: ${formData.role}
@@ -64,7 +72,15 @@ Message: ${formData.notes}`;
 
     return (
         <div style={{ padding: '24px', background: 'transparent' }}>
-            <form id="enquiry-form" onSubmit={handleContactSubmit}>
+            <style dangerouslySetInnerHTML={{
+                __html: `
+                .was-validated input:invalid,
+                .was-validated textarea:invalid,
+                .was-validated select:invalid {
+                    border: 1px solid red !important;
+                }
+            `}} />
+            <form id="enquiry-form" onSubmit={handleContactSubmit} noValidate className={isAttempted ? 'was-validated' : ''}>
                 <div className="form-grid">
                     <div className="field"><label htmlFor="fname">First Name</label><input id="fname" name="name" value={formData.name || ''} onChange={e => setFormData({ ...formData, name: e.target.value })} placeholder="Jordan" required={true} type="text" /></div>
                     <div className="field"><label htmlFor="lname">Last Name</label><input id="lname" name="lname" type="text" placeholder="Doe" value={formData.lname} onChange={e => setFormData({ ...formData, lname: e.target.value })} required={true} /></div>
