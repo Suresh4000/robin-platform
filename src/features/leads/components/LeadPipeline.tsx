@@ -164,7 +164,7 @@ export function LeadPipeline() {
                 setMeetFlowState({ lead: leadToUpdate, intent: 'general-email', templateTitle: 'Automated Postponed' });
                 setMeetLinkInput('');
                 setMeetSubjectInput(`Rescheduling our Alignment Call - Robin Jones`);
-                setMeetMessageInput(`Hi ${leadToUpdate.name.split(' ')[0]},\n\nIt looks like we'll need to reschedule our upcoming conversation. I know how remarkably busy things can get.\n\nTo make this as seamless as possible, you can select a new time that works best for you directly from my calendar here:\n[INSERT_CALENDLY_OR_SCHEDULING_LINK]\n\nAlternatively, if none of those times align, please let me know and we will manually find a slot that works.\n\nLooking forward to speaking soon,\nRobin Jones`);
+                setMeetMessageInput(`Hi ${leadToUpdate.name.split(' ')[0]},\n\nIt looks like we'll need to reschedule our upcoming conversation. I know how remarkably busy things can get.\n\nTo make this as seamless as possible, you can select a new time that works best for you directly from my calendar here:\nhttps://calendly.com/robin-jones/alignment\n\nAlternatively, if none of those times align, please let me know and we will manually find a slot that works.\n\nLooking forward to speaking soon,\nRobin Jones`);
             } else if (newStatus === 'Not Connected' && oldStatus !== newStatus && leadToUpdate) {
                 setMeetFlowState({ lead: leadToUpdate, intent: 'not-connected' });
                 setMeetLinkInput(''); // No meeting link sent on not connected
@@ -612,7 +612,7 @@ export function LeadPipeline() {
                             onClick={() => loadDraftFromTemplate(
                                 "3. Meeting Postponed",
                                 `Rescheduling our Alignment Call - Robin Jones`,
-                                `Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0AIt looks like we'll need to reschedule our upcoming conversation. I know how remarkably busy things can get.%0D%0A%0D%0ATo make this as seamless as possible, you can select a new time that works best for you directly from my calendar here:%0D%0A[INSERT_CALENDLY_OR_SCHEDULING_LINK]%0D%0A%0D%0AAlternatively, if none of those times align, please let me know and we will manually find a slot that works.%0D%0A%0D%0ALooking forward to speaking soon,%0D%0ARobin Jones`
+                                `Hi ${activeMailLead.name.split(' ')[0]},%0D%0A%0D%0AIt looks like we'll need to reschedule our upcoming conversation. I know how remarkably busy things can get.%0D%0A%0D%0ATo make this as seamless as possible, you can select a new time that works best for you directly from my calendar here:%0D%0Ahttps://calendly.com/robin-jones/alignment%0D%0A%0D%0AAlternatively, if none of those times align, please let me know and we will manually find a slot that works.%0D%0A%0D%0ALooking forward to speaking soon,%0D%0ARobin Jones`
                             )}
                         />
 
