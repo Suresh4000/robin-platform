@@ -117,7 +117,7 @@ export default function HistoryPage() {
                             {selectedIds.size} selected
                         </span>
                     </div>
-                    {selectedIds.size > 0 && (
+                    {/* selectedIds.size > 0 && (
                         <div style={{ display: 'flex', gap: '12px' }}>
                             <button onClick={() => handleBulkAction('restore')} style={{ padding: '6px 16px', background: '#e0f2fe', color: '#0284c7', border: 'none', borderRadius: '6px', fontWeight: 600, fontSize: '13px', cursor: 'pointer', display: 'flex', gap: '6px' }}>
                                 <RefreshCcw size={14} /> Restore Selected
@@ -126,7 +126,7 @@ export default function HistoryPage() {
                                 <Trash2 size={14} /> Delete Selected
                             </button>
                         </div>
-                    )}
+                    ) */}
                 </div>
 
                 <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
