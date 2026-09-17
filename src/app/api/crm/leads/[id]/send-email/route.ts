@@ -1,12 +1,11 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/shared/lib/prisma';
 import { sendNotificationEmail } from '@/shared/lib/email';
-import { createGoogleCalendarEvent } from '@/shared/lib/gcal';
 
 export async function POST(request: Request, { params }: { params: { id: string } }) {
     try {
         const body = await request.json();
-        let { subject, message, meetLink, useNativeGcal, meetingDateObj } = body;
+        let { subject, message, meetLink } = body;
 
         const lead = await prisma.lead.findUnique({
             where: { id: params.id }
@@ -16,30 +15,15 @@ export async function POST(request: Request, { params }: { params: { id: string 
             return NextResponse.json({ error: 'Lead not found or has no email address.' }, { status: 404 });
         }
 
-        if (useNativeGcal && meetingDateObj) {
-            try {
-                const gcalEvent = await createGoogleCalendarEvent({
-                    leadEmail: lead.email,
-                    leadName: lead.name,
-                    subject: subject,
-                    description: message,
-                    startDateObj: new Date(meetingDateObj),
-                    durationMinutes: 30
-                });
-                if (gcalEvent.hangoutLink) {
-                    meetLink = gcalEvent.hangoutLink;
-                }
-            } catch (err) {
-                console.error("Google Calendar Native Sync Failed:", err);
-                // Gracefully fallback to old logic
-            }
+        let emailContent = message;
+        if (meetLink) {
+            emailContent = emailContent.replace('[INSERT_CALENDAR_LINK_OR_PROPOSE_TIME]', meetLink);
         }
 
         // Build the HTML for the email
         const htmlContent = `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #171b29;">
-                <p>Hi ${lead.name.split(' ')[0]},</p>
-                <p style="white-space: pre-wrap;">${message}</p>
+                <p style="white-space: pre-wrap;">${emailContent}</p>
                 
                 ${meetLink ? `
                 <div style="margin: 32px 0; padding: 24px; background-color: #f1f3f7; border-radius: 8px; text-align: center;">
@@ -48,8 +32,6 @@ export async function POST(request: Request, { params }: { params: { id: string 
                     <p style="margin-top: 16px; font-size: 13px; color: #5b6478;">Or copy the link directly: <br><a href="${meetLink}">${meetLink}</a></p>
                 </div>
                 ` : ''}
-                
-                <p>Best regards,<br>Robin</p>
             </div>
         `;
 

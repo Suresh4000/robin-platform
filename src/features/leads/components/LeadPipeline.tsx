@@ -66,7 +66,7 @@ export function LeadPipeline() {
     const [showDeleted, setShowDeleted] = useState(false);
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
     const [statusFilter, setStatusFilter] = useState<string>('All');
-    const [isGcalBackendConfigured, setIsGcalBackendConfigured] = useState(false);
+    const [bookingIframe, setBookingIframe] = useState<string>('');
 
     // Meet Scheduling & Email Flow
     const [meetFlowState, setMeetFlowState] = useState<{
@@ -119,7 +119,7 @@ export function LeadPipeline() {
         fetch('/api/ops/settings')
             .then(res => res.json())
             .then(data => {
-                if (data.isGcalBackendConfigured) setIsGcalBackendConfigured(data.isGcalBackendConfigured);
+                if (data.bookingIframe) setBookingIframe(data.bookingIframe);
             })
             .catch(() => { });
     };
@@ -145,10 +145,6 @@ export function LeadPipeline() {
 
             showToast(`Moved to ${newStatus}`);
 
-            // Trigger automated specific workflows for scheduling based on the status change
-            // Automatically generate a valid Google Meet formatted link constraint
-            const generateMeetLink = () => `https://meet.google.com/${Math.random().toString(36).substring(2, 5)}-${Math.random().toString(36).substring(2, 6)}-${Math.random().toString(36).substring(2, 5)}`;
-
             // Parse existing date/time from explicit mapping (with fallback to old notes format for legacy)
             let initialDate = new Date().toISOString().split('T')[0];
             let initialTime = "10:00";
@@ -166,9 +162,7 @@ export function LeadPipeline() {
 
             if ((newStatus === 'Qualified' || newStatus === 'Meeting Scheduled') && oldStatus !== newStatus && leadToUpdate) {
                 setMeetFlowState({ lead: leadToUpdate, intent: 'schedule' });
-                setMeetLinkInput(generateMeetLink());
-                setMeetDateInput(initialDate);
-                setMeetTimeInput(initialTime);
+                setMeetLinkInput('');
                 setMeetSubjectInput(`Confirmed: Alignment Call - Robin Jones`);
                 setMeetMessageInput(`Hi ${leadToUpdate.name.split(' ')[0]},\n\nI'm looking forward to our upcoming conversation. \n\nOur meeting is confirmed, and you can join at the scheduled time using the Google Meet link below. To ensure we make the most of our time, please have any relevant context regarding your team's friction points prepared in advance.\n\nBest regards,\nRobin Jones`);
             } else if (newStatus === 'Postponed' && oldStatus !== newStatus && leadToUpdate) {
@@ -183,7 +177,7 @@ export function LeadPipeline() {
                 setMeetMessageInput(`Hi ${leadToUpdate.name.split(' ')[0]},\n\nI just jumped onto our scheduled Google Meet but it looks like we missed each other.\n\nI know things can get remarkably busy! If you're still interested in aligning on your growth systems, please let me know when you might be free to reschedule our conversation.\n\nBest regards,\nRobin Jones`);
             } else if (newStatus === 'Rescheduled' && oldStatus !== newStatus && leadToUpdate) {
                 setMeetFlowState({ lead: leadToUpdate, intent: 'reschedule' });
-                setMeetLinkInput(generateMeetLink());
+                setMeetLinkInput('');
                 setMeetDateInput(initialDate);
                 setMeetTimeInput(initialTime);
                 setMeetSubjectInput(`Updated: Rescheduled Alignment Call`);
@@ -265,7 +259,7 @@ export function LeadPipeline() {
                     subject: meetSubjectInput,
                     message: meetMessageInput,
                     meetLink: meetLinkInput,
-                    useNativeGcal: isGcalBackendConfigured && (meetFlowState.intent === 'schedule' || meetFlowState.intent === 'reschedule'),
+                    useNativeGcal: false,
                     meetingDateObj: meetDateInput && meetTimeInput ? new Date(`${meetDateInput}T${meetTimeInput}:00`).toISOString() : null
                 })
             });
@@ -348,7 +342,6 @@ export function LeadPipeline() {
         })));
         showToast(`Restored ${ids.length} leads`);
     };
-
 
     // Reset selection when switching views
     useEffect(() => {
@@ -705,33 +698,29 @@ export function LeadPipeline() {
                                     </div>
                                 </div>
                                 <p style={{ margin: '0 0 12px 0', fontSize: '13px', color: '#4f46e5' }}>
-                                    {isGcalBackendConfigured
-                                        ? "Google Calendar Auto-Sync is ACTIVE. We will construct the Google Calendar invite silently and insert the correct meeting link to the email automatically."
-                                        : meetFlowState.intent === 'reschedule'
-                                            ? "Selecting the new date updates your Master Calendar locally. Next, open Google Calendar to update the existing event."
-                                            : "Create the Google Calendar event and securely lock the date into your CRM Master Calendar."}
+                                    {meetFlowState.intent === 'reschedule'
+                                        ? "Selecting the new date updates your Master Calendar locally. Next, open Google Calendar to update the existing event."
+                                        : "Create the Google Calendar event and securely lock the date into your CRM Master Calendar."}
                                 </p>
-                                {!isGcalBackendConfigured && (
-                                    <div style={{ display: 'flex', gap: '8px' }}>
-                                        <button
-                                            onClick={() => openGCalTemplate(meetFlowState.lead, meetDateInput, meetTimeInput)}
-                                            style={{ background: '#4f46e5', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: 600, flex: 1 }}
-                                        >
-                                            Open Google Calendar
-                                        </button>
-                                        <button
-                                            onClick={confirmMeetingDate}
-                                            disabled={isSendingMeet}
-                                            style={{ background: '#fff', color: '#4f46e5', border: '1px solid #c7d2fe', padding: '8px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: 600, flex: 1 }}
-                                        >
-                                            {isSendingMeet ? 'Saving...' : 'Only Confirm Date'}
-                                        </button>
-                                    </div>
-                                )}
+                                <div style={{ display: 'flex', gap: '8px' }}>
+                                    <button
+                                        onClick={() => openGCalTemplate(meetFlowState.lead, meetDateInput, meetTimeInput)}
+                                        style={{ background: '#4f46e5', color: '#fff', border: 'none', padding: '8px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: 600, flex: 1 }}
+                                    >
+                                        Open Google Calendar
+                                    </button>
+                                    <button
+                                        onClick={confirmMeetingDate}
+                                        disabled={isSendingMeet}
+                                        style={{ background: '#fff', color: '#4f46e5', border: '1px solid #c7d2fe', padding: '8px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: 600, flex: 1 }}
+                                    >
+                                        {isSendingMeet ? 'Saving...' : 'Only Confirm Date'}
+                                    </button>
+                                </div>
                             </div>
                         )}
 
-                        {!isGcalBackendConfigured && meetFlowState.intent !== 'not-connected' && meetFlowState.intent !== 'general-email' && (
+                        {meetFlowState.intent !== 'not-connected' && meetFlowState.intent !== 'general-email' && (
                             <div>
                                 <label style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: 600, color: 'var(--text-primary)' }}>
                                     Step 2: Paste Google Meet Link
@@ -743,6 +732,11 @@ export function LeadPipeline() {
                                     placeholder="https://meet.google.com/xxx-xxxx-xxx (Optional)"
                                     style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--surface-border)', borderRadius: '6px', fontSize: '14px', outline: 'none' }}
                                 />
+                                {bookingIframe && (
+                                    <div style={{ marginTop: '12px', fontSize: '12px', color: '#10b981' }}>
+                                        ✓ Booking setup detected. Clients can also book via your public scheduling tools if needed.
+                                    </div>
+                                )}
                             </div>
                         )}
 

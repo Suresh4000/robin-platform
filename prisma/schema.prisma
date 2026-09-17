@@ -12,6 +12,7 @@ model Admin {
   email         String   @unique
   password      String
   schedulingUrl   String?
+  bookingIframe   String?
   gcalClientEmail String?
   gcalPrivateKey  String?
   gcalCalendarId  String?

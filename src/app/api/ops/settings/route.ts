@@ -9,11 +9,7 @@ export async function GET() {
         if (adminUsers.length === 0) return NextResponse.json({});
         const admin = adminUsers[0];
         return NextResponse.json({
-            schedulingUrl: admin.schedulingUrl || '',
-            gcalClientEmail: admin.gcalClientEmail || '',
-            gcalPrivateKey: admin.gcalPrivateKey || '',
-            gcalCalendarId: admin.gcalCalendarId || '',
-            isGcalBackendConfigured: !!(admin.gcalClientEmail && admin.gcalPrivateKey && admin.gcalCalendarId)
+            bookingIframe: admin.schedulingUrl || ''
         });
     } catch {
         return NextResponse.json({});
@@ -36,10 +32,7 @@ export async function PATCH(request: Request) {
             await (prisma as any).admin.update({
                 where: { id: admins[0].id },
                 data: {
-                    schedulingUrl: body.schedulingUrl,
-                    gcalClientEmail: body.gcalClientEmail,
-                    gcalPrivateKey: body.gcalPrivateKey,
-                    gcalCalendarId: body.gcalCalendarId
+                    schedulingUrl: body.bookingIframe,
                 }
             });
             return NextResponse.json({ success: true });
