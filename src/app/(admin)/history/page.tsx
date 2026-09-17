@@ -40,49 +40,7 @@ export default function HistoryPage() {
     }, []);
 
     const filteredItems = items.filter(item => activeFilter === 'All' ? true : item.type === activeFilter);
-    const filterOptions = ['All', 'Lead', 'Project', 'Task', 'Invoice', 'Event'];
-
-    const toggleSelect = (id: string) => {
-        const next = new Set(selectedIds);
-        if (next.has(id)) next.delete(id);
-        else next.add(id);
-        setSelectedIds(next);
-    };
-
-    const toggleSelectAll = () => {
-        if (selectedIds.size === filteredItems.length && filteredItems.length > 0) {
-            setSelectedIds(new Set());
-        } else {
-            setSelectedIds(new Set(filteredItems.map(i => i.id)));
-        }
-    };
-
-    const handleBulkAction = async (action: 'restore' | 'delete') => {
-        if (selectedIds.size === 0) return;
-        const msg = action === 'restore'
-            ? `Restore ${selectedIds.size} selected items?`
-            : `Permanently delete ${selectedIds.size} items? This cannot be undone.`;
-        if (!confirm(msg)) return;
-
-        const itemsToProcess = Array.from(selectedIds).map(id => {
-            const item = items.find(i => i.id === id);
-            return { id, type: item?.type };
-        });
-
-        try {
-            const res = await fetch('/api/ops/history', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ items: itemsToProcess, action })
-            });
-            if (res.ok) {
-                setSelectedIds(new Set());
-                fetchHistory();
-            }
-        } catch (e) {
-            console.error(e);
-        }
-    };
+    const filterOptions = ['All', 'Lead', 'Project', 'Task', 'Invoice', 'Event', 'Client', 'Media'];
 
     return (
         <div className={styles.container}>
@@ -99,7 +57,7 @@ export default function HistoryPage() {
                 {filterOptions.map(filter => (
                     <button
                         key={filter}
-                        onClick={() => { setActiveFilter(filter); setSelectedIds(new Set()); }}
+                        onClick={() => { setActiveFilter(filter); }}
                         style={{ background: activeFilter === filter ? 'var(--color-primary)' : 'var(--surface-sunken)', color: activeFilter === filter ? '#fff' : 'inherit', border: '1px solid var(--surface-border)', padding: '6px 12px', borderRadius: '20px', cursor: 'pointer', fontSize: '13px', fontWeight: 500 }}
                     >
                         {filter === 'All' ? 'All Modules' : `${filter}s`}
@@ -108,39 +66,18 @@ export default function HistoryPage() {
             </div>
 
             <div style={{ background: 'var(--surface-default)', border: '1px solid var(--surface-border)', borderRadius: '12px', overflow: 'hidden' }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid var(--surface-border)', background: 'var(--surface-hover)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <button onClick={toggleSelectAll} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)' }}>
-                            {selectedIds.size === filteredItems.length && filteredItems.length > 0 ? <CheckSquare size={18} /> : <Square size={18} />}
-                        </button>
-                        <span style={{ fontSize: '14px', fontWeight: 500 }}>
-                            {selectedIds.size} selected
-                        </span>
-                    </div>
-                    {/* selectedIds.size > 0 && (
-                        <div style={{ display: 'flex', gap: '12px' }}>
-                            <button onClick={() => handleBulkAction('restore')} style={{ padding: '6px 16px', background: '#e0f2fe', color: '#0284c7', border: 'none', borderRadius: '6px', fontWeight: 600, fontSize: '13px', cursor: 'pointer', display: 'flex', gap: '6px' }}>
-                                <RefreshCcw size={14} /> Restore Selected
-                            </button>
-                            <button onClick={() => handleBulkAction('delete')} style={{ padding: '6px 16px', background: '#fee2e2', color: '#dc2626', border: 'none', borderRadius: '6px', fontWeight: 600, fontSize: '13px', cursor: 'pointer', display: 'flex', gap: '6px' }}>
-                                <Trash2 size={14} /> Delete Selected
-                            </button>
-                        </div>
-                    ) */}
+                <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--surface-border)', background: 'var(--surface-hover)', fontSize: '14px', fontWeight: 500, color: 'var(--text-secondary)' }}>
+                    System Audit Trail (Latest Updates)
                 </div>
 
                 <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                     {isLoading ? (
                         <li style={{ padding: '32px', textAlign: 'center', color: 'var(--text-muted)' }}>Analyzing system history...</li>
                     ) : filteredItems.length === 0 ? (
-                        <li style={{ padding: '32px', textAlign: 'center', color: 'var(--text-muted)' }}>No deleted items found for this module.</li>
+                        <li style={{ padding: '32px', textAlign: 'center', color: 'var(--text-muted)' }}>No logs found. Modifying items will trigger logs here.</li>
                     ) : (
                         filteredItems.map(item => (
-                            <li key={item.id} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px 20px', borderBottom: '1px solid var(--surface-border)', background: selectedIds.has(item.id) ? 'var(--surface-hover)' : 'var(--surface-default)' }}>
-                                <button onClick={() => toggleSelect(item.id)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: selectedIds.has(item.id) ? 'var(--color-primary)' : 'var(--text-muted)' }}>
-                                    {selectedIds.has(item.id) ? <CheckSquare size={18} /> : <Square size={18} />}
-                                </button>
-
+                            <li key={item.id} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px 20px', borderBottom: '1px solid var(--surface-border)', background: 'var(--surface-default)' }}>
                                 <div style={{ background: 'var(--surface-sunken)', color: 'var(--text-primary)', padding: '8px', borderRadius: '8px' }}>
                                     <History size={20} />
                                 </div>

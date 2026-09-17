@@ -194,3 +194,15 @@ model Media {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+// ------------------------------------
+// System History & Audit
+// ------------------------------------
+model AuditLog {
+  id        String   @id @default(cuid())
+  entity    String
+  entityId  String
+  action    String
+  details   String?
+  createdAt DateTime @default(now())
+}
