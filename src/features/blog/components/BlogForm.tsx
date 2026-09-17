@@ -28,7 +28,7 @@ export function BlogForm({ onSuccess, initialData }: { onSuccess: () => void; in
         resolver: zodResolver(initialData ? updateBlogSchema : createBlogSchema),
         defaultValues: initialData ? {
             ...initialData,
-            publishedAt: initialData.publishedAt ? new Date(initialData.publishedAt).toISOString().split('T')[0] : ''
+            publishedAt: initialData.publishedAt ? new Date(initialData.publishedAt).toISOString().slice(0, 16) : ''
         } : {
             status: 'Draft',
             category: 'Thoughts',
@@ -86,7 +86,7 @@ export function BlogForm({ onSuccess, initialData }: { onSuccess: () => void; in
         if (initialData) {
             reset({
                 ...initialData,
-                publishedAt: initialData.publishedAt ? new Date(initialData.publishedAt).toISOString().split('T')[0] : ''
+                publishedAt: initialData.publishedAt ? new Date(initialData.publishedAt).toISOString().slice(0, 16) : ''
             });
         } else {
             reset({
@@ -183,11 +183,11 @@ export function BlogForm({ onSuccess, initialData }: { onSuccess: () => void; in
             {/* Scheduled Publish Date (only show if Draft) */}
             {watchStatus === 'Draft' && (
                 <div className={styles.formGroup} style={{ margin: 0, padding: '16px', background: 'var(--surface-sunken)', borderRadius: '8px', border: '1px solid var(--surface-border)' }}>
-                    <label className={styles.label} style={{ color: 'var(--color-primary)' }}>📅 Scheduled Publish Date (Optional)</label>
+                    <label className={styles.label} style={{ color: 'var(--color-primary)' }}>📅 Scheduled Publish Date & Time (Optional)</label>
                     <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px' }}>
-                        If you set a date here, the system will automatically auto-publish this post on that exact date. Leave empty if you want it strictly as a Draft.
+                        If you set a date and time here, the system will automatically auto-publish this post exactly at that moment. Leave empty if you want it strictly as a Draft.
                     </p>
-                    <input type="date" className={styles.input} {...register('publishedAt')} />
+                    <input type="datetime-local" className={styles.input} {...register('publishedAt')} />
                 </div>
             )}
 
