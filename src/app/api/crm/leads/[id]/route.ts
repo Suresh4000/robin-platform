@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 import { updateLeadSchema } from '@/features/leads/schema';
+import { logActivity } from '@/shared/lib/audit';
 
 const prisma = new PrismaClient();
 
@@ -22,6 +23,12 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
 
         // Removed Discovery Call event creation logic as Discovery Calls form part of Lead management.
 
+        await logActivity("UPDATE", "Lead", updatedLead.id, {
+            name: updatedLead.name,
+            status: validatedData.status || updatedLead.status,
+            message: `Updated Lead details for ${updatedLead.name}`
+        });
+
         return NextResponse.json({ data: updatedLead });
     } catch (error: any) {
         if (error.code === 'P2025') {
@@ -38,13 +45,26 @@ export async function DELETE(request: Request, context: { params: Promise<{ id: 
         const hardDelete = searchParams.get('hardDelete') === 'true';
 
         if (hardDelete) {
+            const lead = await prisma.lead.findUnique({ where: { id: params.id } });
             await prisma.lead.delete({
                 where: { id: params.id }
             });
+            if (lead) {
+                await logActivity("DELETE", "Lead", params.id, {
+                    name: lead.name,
+                    title: lead.company,
+                    message: `Permanently deleted lead ${lead.name}`
+                });
+            }
         } else {
-            await prisma.lead.update({
+            const lead = await prisma.lead.update({
                 where: { id: params.id },
                 data: { isDeleted: true }
+            });
+            await logActivity("DELETE", "Lead", params.id, {
+                name: lead.name,
+                title: lead.company,
+                message: `Sent lead ${lead.name} to the recycle bin`
             });
         }
         return NextResponse.json({ success: true });

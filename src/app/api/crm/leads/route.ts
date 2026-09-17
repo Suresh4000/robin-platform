@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/shared/lib/prisma';
 import { createLeadSchema } from '@/features/leads/schema';
 import { sendNotificationEmail } from '@/shared/lib/email';
+import { logActivity } from '@/shared/lib/audit';
 
 
 export async function GET(request: Request) {
@@ -26,6 +27,13 @@ export async function POST(request: Request) {
 
         const newLead = await prisma.lead.create({
             data: validatedData,
+        });
+
+        await logActivity("CREATE", "Lead", newLead.id, {
+            name: validatedData.name,
+            email: validatedData.email,
+            status: validatedData.status,
+            message: `Captured a new lead enquiry from ${validatedData.name}`
         });
 
         await prisma.notification.create({
