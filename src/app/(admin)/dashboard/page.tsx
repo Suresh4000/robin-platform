@@ -98,6 +98,22 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
 
     return (
         <div className={styles.container}>
+            <style dangerouslySetInnerHTML={{
+                __html: `
+                .action-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 20px;
+                }
+                @media (max-width: 768px) {
+                    .action-header {
+                        flex-direction: column;
+                        align-items: flex-start;
+                        gap: 16px;
+                    }
+                }
+            `}} />
             <header className={styles.header}>
                 <div>
                     <h1 className={styles.title}>Welcome back, Robin</h1>
@@ -183,11 +199,11 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
 
             {/* Calendar & Tasks List View */}
             <div style={{ marginTop: '48px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                <div className="action-header">
                     <h2 style={{ fontSize: '20px', fontFamily: 'var(--font-heading)', color: 'var(--text-title)' }}>
                         Action Items & Recent Activity
                     </h2>
-                    <div style={{ display: 'flex', gap: '4px', background: 'var(--surface-default)', padding: '4px', borderRadius: '8px', border: '1px solid var(--surface-border)' }}>
+                    <div style={{ display: 'flex', gap: '4px', background: 'var(--surface-default)', padding: '4px', borderRadius: '8px', border: '1px solid var(--surface-border)', flexWrap: 'wrap' }}>
                         <ViewFilterLink value="all" label="All" />
                         <ViewFilterLink value="events" label="Events" />
                         <ViewFilterLink value="blog" label="Blog" />
@@ -196,7 +212,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                    
+
                     {/* Events View */}
                     {(view === 'all' || view === 'events') && (
                         <>
@@ -258,7 +274,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                             )}
                         </>
                     )}
-                    
+
                     {/* Schedules View */}
                     {(view === 'all' || view === 'schedules') && (
                         <>
