@@ -4,6 +4,17 @@ import { createBlogSchema } from '@/features/blog/schema';
 
 export async function GET() {
     try {
+        // LAZY EXECUTOR: Auto-publish any scheduled drafts whose time has arrived!
+        await prisma.blogPost.updateMany({
+            where: {
+                status: 'Draft',
+                publishedAt: { lte: new Date() } // Published at is strictly in the past
+            },
+            data: {
+                status: 'Published'
+            }
+        });
+
         const items = await prisma.blogPost.findMany({
             orderBy: { createdAt: 'desc' }
         });
@@ -18,10 +29,21 @@ export async function POST(request: Request) {
         const body = await request.json();
         const validatedData = createBlogSchema.parse(body);
 
+        let finalPublishedAt = null;
+        if (validatedData.status === 'Published') {
+            finalPublishedAt = new Date();
+        } else if (validatedData.publishedAt) {
+            // User supplied a specific date for auto-publishing
+            finalPublishedAt = new Date(validatedData.publishedAt);
+        }
+
+        const dataToSave = { ...validatedData };
+        delete dataToSave.publishedAt; // handled manually
+
         const newItem = await prisma.blogPost.create({
             data: {
-                ...validatedData,
-                publishedAt: validatedData.status === 'Published' ? new Date() : null,
+                ...dataToSave,
+                publishedAt: finalPublishedAt,
             },
         });
 

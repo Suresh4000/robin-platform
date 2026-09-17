@@ -24,6 +24,12 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
         const dataToUpdate: any = { ...validatedData };
         if (validatedData.status === 'Published') {
             dataToUpdate.publishedAt = new Date();
+        } else if (validatedData.publishedAt) {
+            // Re-scheduling a draft for future auto-publish
+            dataToUpdate.publishedAt = new Date(validatedData.publishedAt);
+        } else {
+            // Status was set back to draft with no explicit schedule
+            dataToUpdate.publishedAt = null;
         }
 
         const updatedItem = await prisma.blogPost.update({

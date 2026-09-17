@@ -8,6 +8,12 @@ import { prisma } from "@/shared/lib/prisma";
 export const dynamic = 'force-dynamic';
 
 export default async function Page() {
+  // LAZY Auto-publish executor
+  await prisma.blogPost.updateMany({
+    where: { status: 'Draft', publishedAt: { lte: new Date() } },
+    data: { status: 'Published' }
+  });
+
   const initialPosts = await prisma.blogPost.findMany({ where: { status: "Published" }, orderBy: { publishedAt: "desc" } });
   const caseStudies = await prisma.blogPost.findMany({
     where: { status: "Published", category: "Case Studies" },

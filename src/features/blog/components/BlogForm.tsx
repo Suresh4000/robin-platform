@@ -26,15 +26,20 @@ export function BlogForm({ onSuccess, initialData }: { onSuccess: () => void; in
 
     const { register, handleSubmit, control, watch, formState: { errors }, setError, reset } = rhmUseForm<any>({
         resolver: zodResolver(initialData ? updateBlogSchema : createBlogSchema),
-        defaultValues: initialData || {
+        defaultValues: initialData ? {
+            ...initialData,
+            publishedAt: initialData.publishedAt ? new Date(initialData.publishedAt).toISOString().split('T')[0] : ''
+        } : {
             status: 'Draft',
             category: 'Thoughts',
             content: '',
             coverImage: '',
+            publishedAt: ''
         }
     });
 
     const watchCover = watch('coverImage');
+    const watchStatus = watch('status');
     useEffect(() => { setCoverPreview(watchCover || ''); }, [watchCover]);
 
     const handleCoverUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -79,7 +84,10 @@ export function BlogForm({ onSuccess, initialData }: { onSuccess: () => void; in
 
     useEffect(() => {
         if (initialData) {
-            reset(initialData);
+            reset({
+                ...initialData,
+                publishedAt: initialData.publishedAt ? new Date(initialData.publishedAt).toISOString().split('T')[0] : ''
+            });
         } else {
             reset({
                 status: 'Draft',
@@ -88,7 +96,8 @@ export function BlogForm({ onSuccess, initialData }: { onSuccess: () => void; in
                 coverImage: '',
                 title: '',
                 slug: '',
-                excerpt: ''
+                excerpt: '',
+                publishedAt: ''
             });
         }
     }, [initialData, reset]);
@@ -165,11 +174,22 @@ export function BlogForm({ onSuccess, initialData }: { onSuccess: () => void; in
                 <div className={styles.formGroup} style={{ margin: 0 }}>
                     <label className={styles.label}>Status</label>
                     <select className={styles.select} {...register('status')}>
-                        <option value="Draft">Draft (Hidden)</option>
-                        <option value="Published">Published (Live)</option>
+                        <option value="Draft">Draft (with Auto-Publish date)</option>
+                        <option value="Published">Published (Live instantly)</option>
                     </select>
                 </div>
             </div>
+
+            {/* Scheduled Publish Date (only show if Draft) */}
+            {watchStatus === 'Draft' && (
+                <div className={styles.formGroup} style={{ margin: 0, padding: '16px', background: 'var(--surface-sunken)', borderRadius: '8px', border: '1px solid var(--surface-border)' }}>
+                    <label className={styles.label} style={{ color: 'var(--color-primary)' }}>📅 Scheduled Publish Date (Optional)</label>
+                    <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px' }}>
+                        If you set a date here, the system will automatically auto-publish this post on that exact date. Leave empty if you want it strictly as a Draft.
+                    </p>
+                    <input type="date" className={styles.input} {...register('publishedAt')} />
+                </div>
+            )}
 
             {/* Excerpt */}
             <div className={styles.formGroup} style={{ margin: 0 }}>

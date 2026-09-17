@@ -8,6 +8,15 @@ import { prisma } from "@/shared/lib/prisma";
 export const dynamic = 'force-dynamic';
 
 export default async function Page() {
+  // LAZY Auto-publish executor: check if any scheduled drafts should be published right now
+  await prisma.blogPost.updateMany({
+    where: {
+      status: 'Draft',
+      publishedAt: { lte: new Date() }
+    },
+    data: { status: 'Published' }
+  });
+
   const initialPosts = await prisma.blogPost.findMany({
     where: {
       status: "Published",
