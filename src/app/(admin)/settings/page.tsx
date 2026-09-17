@@ -66,6 +66,51 @@ export default function SettingsPage() {
 
             <div style={{ display: 'grid', gap: '32px', gridTemplateColumns: '1fr', maxWidth: '800px' }}>
 
+                <style>{`
+                    .info-tooltip {
+                        position: relative;
+                        display: inline-flex;
+                        cursor: help;
+                    }
+                    .info-tooltip .tooltip-text {
+                        visibility: hidden;
+                        width: 280px;
+                        background: var(--surface-sunken);
+                        color: var(--text-primary);
+                        border: 1px solid var(--surface-border);
+                        text-align: left;
+                        border-radius: 6px;
+                        padding: 12px;
+                        position: absolute;
+                        z-index: 999;
+                        bottom: 150%;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        font-size: 13px;
+                        font-weight: 400;
+                        line-height: 1.4;
+                        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+                        opacity: 0;
+                        transition: opacity 0.2s, bottom 0.2s;
+                        pointer-events: none;
+                    }
+                    .info-tooltip .tooltip-text::after {
+                        content: "";
+                        position: absolute;
+                        top: 100%;
+                        left: 50%;
+                        margin-left: -6px;
+                        border-width: 6px;
+                        border-style: solid;
+                        border-color: var(--surface-border) transparent transparent transparent;
+                    }
+                    .info-tooltip:hover .tooltip-text {
+                        visibility: visible;
+                        opacity: 1;
+                        bottom: 130%;
+                    }
+                `}</style>
+
                 {/* Master Calendar Auto-Sync */}
                 <div style={{ background: 'var(--surface-default)', padding: '24px', borderRadius: '12px', border: '1px solid var(--surface-border)' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
@@ -79,7 +124,10 @@ export default function SettingsPage() {
                     <div className={formStyles.formGroup}>
                         <label className={formStyles.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                             Target Calendar ID (Email)
-                            <span title="The specific email address of the Google Calendar you want the events pushed to (e.g., your primary Google Workspace email)."><Info size={14} style={{ color: 'var(--text-muted)' }} /></span>
+                            <span className="info-tooltip">
+                                <Info size={14} style={{ color: 'var(--text-muted)' }} />
+                                <span className="tooltip-text">The specific email address of the Google Calendar you want the events pushed to (e.g., your primary Google Workspace email).</span>
+                            </span>
                         </label>
                         <input
                             className={formStyles.input}
@@ -92,7 +140,10 @@ export default function SettingsPage() {
                     <div className={formStyles.formGroup} style={{ marginTop: '16px' }}>
                         <label className={formStyles.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                             Google Cloud Server Email (Client Email)
-                            <span title="Found in your Google Cloud Console -> IAM & Admin -> Service Accounts. Format looks like: app-name@project-id.iam.gserviceaccount.com"><Info size={14} style={{ color: 'var(--text-muted)' }} /></span>
+                            <span className="info-tooltip">
+                                <Info size={14} style={{ color: 'var(--text-muted)' }} />
+                                <span className="tooltip-text">Found in your Google Cloud Console &gt; IAM &amp; Admin &gt; Service Accounts. Format looks like: app-name@project-id.iam.gserviceaccount.com</span>
+                            </span>
                         </label>
                         <input
                             className={formStyles.input}
@@ -105,7 +156,10 @@ export default function SettingsPage() {
                     <div className={formStyles.formGroup} style={{ marginTop: '16px' }}>
                         <label className={formStyles.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                             RSA Private Key
-                            <span title="Generated when creating a new JSON Key for your Service Account in Google Cloud. Make sure to copy the entire block including the -----BEGIN PRIVATE KEY----- lines."><Info size={14} style={{ color: 'var(--text-muted)' }} /></span>
+                            <span className="info-tooltip">
+                                <Info size={14} style={{ color: 'var(--text-muted)' }} />
+                                <span className="tooltip-text">Generated when creating a new JSON Key for your Service Account in Google Cloud. Make sure to copy the entire block including the -----BEGIN PRIVATE KEY----- lines.</span>
+                            </span>
                         </label>
                         <textarea
                             className={formStyles.textarea}
