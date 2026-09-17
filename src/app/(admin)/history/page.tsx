@@ -14,24 +14,39 @@ type HistoryItem = {
 export default function HistoryPage() {
     const [items, setItems] = useState<HistoryItem[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [isLoadingMore, setIsLoadingMore] = useState(false);
+    const [hasMore, setHasMore] = useState(false);
     const [activeFilter, setActiveFilter] = useState<string>('All');
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
-    const fetchHistory = async () => {
-        setIsLoading(true);
+    const fetchHistory = async (skip = 0, isLoadMore = false) => {
+        if (isLoadMore) {
+            setIsLoadingMore(true);
+        } else {
+            setIsLoading(true);
+        }
+
         try {
-            const res = await fetch('/api/ops/history');
+            const res = await fetch(`/api/ops/history?take=30&skip=${skip}`);
             const data = await res.json();
             if (data.data) {
-                setItems(data.data.map((item: any) => ({
+                const newItems = data.data.map((item: any) => ({
                     ...item,
                     date: new Date(item.date)
-                })));
+                }));
+
+                if (isLoadMore) {
+                    setItems(prev => [...prev, ...newItems]);
+                } else {
+                    setItems(newItems);
+                }
+                setHasMore(data.hasMore);
             }
         } catch (e) {
             console.error('Failed to fetch history', e);
         } finally {
             setIsLoading(false);
+            setIsLoadingMore(false);
         }
     };
 
@@ -97,6 +112,27 @@ export default function HistoryPage() {
                         ))
                     )}
                 </ul>
+
+                {hasMore && (
+                    <div style={{ padding: '16px', textAlign: 'center', borderTop: '1px solid var(--surface-border)' }}>
+                        <button
+                            onClick={() => fetchHistory(items.length, true)}
+                            disabled={isLoadingMore}
+                            style={{
+                                background: 'transparent',
+                                border: '1px solid var(--surface-border)',
+                                color: 'var(--text-primary)',
+                                padding: '8px 24px',
+                                borderRadius: '20px',
+                                cursor: isLoadingMore ? 'not-allowed' : 'pointer',
+                                fontSize: '14px',
+                                fontWeight: 500
+                            }}
+                        >
+                            {isLoadingMore ? 'Loading...' : 'Load More'}
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );

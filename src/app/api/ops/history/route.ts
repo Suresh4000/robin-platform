@@ -3,13 +3,21 @@ import { prisma } from '@/shared/lib/prisma';
 
 export async function GET(request: Request) {
     try {
-        // Fetch 50 most recent global system logs
+        const { searchParams } = new URL(request.url);
+        const take = parseInt(searchParams.get('take') || '30', 10);
+        const skip = parseInt(searchParams.get('skip') || '0', 10);
+
+        // Fetch recent global system logs with pagination
         const auditLogs = await prisma.auditLog.findMany({
             orderBy: { createdAt: 'desc' },
-            take: 50
+            take: take + 1, // Fetch one extra to determine if hasMore is true
+            skip: skip
         });
 
-        const historyItems = auditLogs.map(log => {
+        const hasMore = auditLogs.length > take;
+        const subsetToReturn = auditLogs.slice(0, take);
+
+        const historyItems = subsetToReturn.map((log: any) => {
             let descriptiveTitle = `${log.action} action performed on ${log.entity}`;
 
             try {
@@ -30,7 +38,7 @@ export async function GET(request: Request) {
             };
         });
 
-        return NextResponse.json({ data: historyItems });
+        return NextResponse.json({ data: historyItems, hasMore });
     } catch (error: any) {
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
