@@ -18,17 +18,29 @@ export async function GET(request: Request) {
         const subsetToReturn = auditLogs.slice(0, take);
 
         const historyItems = subsetToReturn.map((log: any) => {
-            let descriptiveTitle = `${log.action} action performed on ${log.entity}`;
+            let itemIdentifier = 'a record';
 
             try {
                 if (log.details) {
                     const parsed = JSON.parse(log.details);
                     // Extract meaningful identifier if present
-                    if (parsed.title) descriptiveTitle = `[${log.action}] ${parsed.title}`;
-                    else if (parsed.name) descriptiveTitle = `[${log.action}] ${parsed.name}`;
-                    else if (parsed.invoiceNumber) descriptiveTitle = `[${log.action}] Invoice ${parsed.invoiceNumber}`;
+                    if (parsed.title) itemIdentifier = `"${parsed.title}"`;
+                    else if (parsed.name) itemIdentifier = `"${parsed.name}"`;
+                    else if (parsed.invoiceNumber) itemIdentifier = `Invoice #${parsed.invoiceNumber}`;
                 }
             } catch (e) { }
+
+            let formattedAction = "Modified";
+            if (log.action === "CREATE") formattedAction = "Created new";
+            if (log.action === "UPDATE") formattedAction = "Updated details for";
+            if (log.action === "DELETE") formattedAction = "Permanently deleted";
+            if (log.action === "DELETE_MANY") formattedAction = "Bulk deleted multiple";
+            if (log.action === "UPDATE_MANY") formattedAction = "Bulk updated multiple";
+
+            let descriptiveTitle = `${formattedAction} ${log.entity || 'System'} ${itemIdentifier !== 'a record' ? itemIdentifier : 'record'}`;
+            if (log.action.includes("MANY")) {
+                descriptiveTitle = `${formattedAction} ${log.entity} records`;
+            }
 
             return {
                 id: log.id,
