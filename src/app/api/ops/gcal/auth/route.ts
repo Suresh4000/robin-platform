@@ -10,7 +10,9 @@ export async function GET(request: Request) {
         const admin = admins[0];
 
         if (!admin.googleClientId || !admin.googleClientSecret) {
-            return NextResponse.json({ error: 'OAuth credentials not set in settings.' }, { status: 400 });
+            const url = new URL(request.url);
+            const baseUrl = `${url.protocol}//${url.host}`;
+            return NextResponse.redirect(`${baseUrl}/settings`);
         }
 
         const url = new URL(request.url);

@@ -18,19 +18,26 @@ export default function CalendarPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [activeFilter, setActiveFilter] = useState<'All' | 'Events' | 'Tasks' | 'Calls'>('All');
     const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
+    const [connectedAccounts, setConnectedAccounts] = useState<any[]>([]);
 
     useEffect(() => {
         const fetchCalendarData = async () => {
             try {
-                const [eventsRes, tasksRes, leadsRes] = await Promise.all([
+                const [eventsRes, tasksRes, leadsRes, settingsRes] = await Promise.all([
                     fetch('/api/ops/events'),
                     fetch('/api/ops/tasks'),
-                    fetch('/api/crm/leads')
+                    fetch('/api/crm/leads'),
+                    fetch('/api/ops/settings')
                 ]);
 
                 const eventsData = await eventsRes.json();
                 const tasksData = await tasksRes.json();
                 const leadsData = await leadsRes.json();
+                const settingsData = await settingsRes.json();
+
+                if (settingsData.googleAccounts) {
+                    setConnectedAccounts(settingsData.googleAccounts);
+                }
 
                 const combined: CalendarItem[] = [];
 
@@ -137,7 +144,27 @@ export default function CalendarPage() {
                         Synchronized operations schedule (Google Workspace Integrated)
                     </p>
                 </div>
+                <button
+                    onClick={() => window.location.href = '/api/ops/gcal/auth'}
+                    className={styles.btnPrimary}
+                    style={{ display: 'flex', alignItems: 'center', gap: '8px', border: 'none', background: 'var(--color-primary)', color: '#fff', cursor: 'pointer', padding: '10px 16px', borderRadius: '8px', fontWeight: 500 }}
+                >
+                    <Calendar size={16} />
+                    + Connect Calendar
+                </button>
             </header>
+
+            {connectedAccounts.length > 0 && (
+                <div style={{ display: 'flex', gap: '8px', marginBottom: '24px', flexWrap: 'wrap', alignItems: 'center' }}>
+                    <span style={{ fontSize: '14px', color: 'var(--text-secondary)', fontWeight: 500 }}>Active Integrations:</span>
+                    {connectedAccounts.map(acc => (
+                        <div key={acc.id} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#dcfce7', color: '#166534', padding: '4px 12px', borderRadius: '16px', fontSize: '13px', fontWeight: 600, border: '1px solid #bbf7d0' }}>
+                            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#16a34a' }}></div>
+                            {acc.email}
+                        </div>
+                    ))}
+                </div>
+            )}
 
             <div style={{
                 backgroundColor: 'var(--surface-default)',
