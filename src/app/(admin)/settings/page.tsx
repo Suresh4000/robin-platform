@@ -29,11 +29,12 @@ export default function SettingsPage() {
     const handleSave = async () => {
         setIsSaving(true);
         try {
-            await fetch('/api/ops/settings', {
+            const res = await fetch('/api/ops/settings', {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ googleClientId, googleClientSecret })
             });
+            if (!res.ok) throw new Error('Failed');
             setToast('Settings saved successfully');
             setTimeout(() => setToast(''), 3000);
         } catch (e) {
@@ -143,8 +144,22 @@ export default function SettingsPage() {
                         )}
 
                         <button
-                            disabled={!googleClientId || !googleClientSecret}
-                            onClick={() => window.location.href = '/api/ops/gcal/auth'}
+                            disabled={!googleClientId || !googleClientSecret || isSaving}
+                            onClick={async () => {
+                                setIsSaving(true);
+                                try {
+                                    const res = await fetch('/api/ops/settings', {
+                                        method: 'PATCH',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ googleClientId, googleClientSecret })
+                                    });
+                                    if (!res.ok) throw new Error('Network error');
+                                    window.location.href = '/api/ops/gcal/auth';
+                                } catch (e) {
+                                    setToast('Failed to save settings');
+                                    setIsSaving(false);
+                                }
+                            }}
                             style={{ background: (!googleClientId || !googleClientSecret) ? '#e2e8f0' : '#4f46e5', color: (!googleClientId || !googleClientSecret) ? '#94a3b8' : '#fff', border: 'none', padding: '10px 16px', borderRadius: '8px', cursor: (!googleClientId || !googleClientSecret) ? 'not-allowed' : 'pointer', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}
                         >
                             + Connect Google Account
