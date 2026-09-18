@@ -35,7 +35,7 @@ export async function PATCH(request: Request) {
             await prisma.admin.update({
                 where: { id: admins[0].id },
                 data: {
-                    googleClientId: typeof body.googleClientId === 'string' ? body.googleClientId.trim() : body.googleClientId,
+                    googleClientId: typeof body.googleClientId === 'string' ? body.googleClientId.replace(/^https?:\/\//, '').trim() : body.googleClientId,
                     googleClientSecret: typeof body.googleClientSecret === 'string' ? body.googleClientSecret.trim() : body.googleClientSecret,
                 }
             });
