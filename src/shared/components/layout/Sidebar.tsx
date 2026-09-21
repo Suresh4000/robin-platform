@@ -50,10 +50,10 @@ export function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
             )}
 
             <aside className={`${styles.sidebar} ${isOpen ? styles.open : ''}`}>
-                <div className={styles.brand}>
+                {/* <div className={styles.brand}>
                     <div className={styles.brandDot} />
                     <div className={styles.brandText}>Robin Platform</div>
-                </div>
+                </div> */}
 
                 <nav className={styles.nav}>
                     <NotificationBell />
