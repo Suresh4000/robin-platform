@@ -47,35 +47,35 @@ export async function POST(req: Request) {
             reply = "Because every organization's needs are unique, Robin's Fractional Executive and Advisory services are custom-quoted. I'd highly recommend booking a discovery conversation so we can understand your specific growth goals! Could I get your email address?";
             links.push({ label: 'Book a Conversation', url: '/contact' });
         }
-        else if (lowerMsg.includes('service') || lowerMsg.includes('offer') || lowerMsg.includes('help')) {
+        else if (lowerMsg.includes('service') || lowerMsg.includes('offer') || lowerMsg.includes('help') || lowerMsg.includes('do you do') || lowerMsg.includes('provide')) {
             reply = "Robin offers three primary ways to engage: 1. Advise (Strategic Growth & Partnerships). 2. Operate (Fractional Executive Leadership). 3. Navigate (Executive Advisory). Which of these areas are you most interested in?";
             links.push({ label: 'View All Services', url: '/services' });
         }
-        else if (lowerMsg.includes('about') || lowerMsg.includes('who is') || lowerMsg.includes('background') || lowerMsg.includes('profile')) {
+        else if (lowerMsg.includes('about') || lowerMsg.includes('who is') || lowerMsg.includes('background') || lowerMsg.includes('profile') || lowerMsg.includes('who are')) {
             reply = "Robin Jones is a Fractional Executive and Strategic Growth Advisor with 26+ years of experience driving growth, partnerships, and transformation across business, government, and mission-driven organizations. Would you like to know more about his specific services?";
             links.push({ label: 'About Robin', url: '/about' });
         }
-        else if (lowerMsg.includes('experi') || lowerMsg.includes('impact') || lowerMsg.includes('portfolio') || lowerMsg.includes('work') || lowerMsg.includes('case ')) {
+        else if (lowerMsg.includes('experi') || lowerMsg.includes('impact') || lowerMsg.includes('portfolio') || lowerMsg.includes('work') || lowerMsg.includes('case') || lowerMsg.includes('client') || lowerMsg.includes('result')) {
             reply = "Robin has a rich portfolio of 26+ years of executive leadership, focusing on enterprise value, operational alignment, and strategic partnerships. You can view detailed case studies on the 'Experience & Impact' page, or provide your email here to discuss your organization's specific needs!";
             links.push({ label: 'Experience & Impact', url: '/portfolio' });
         }
-        else if (lowerMsg.includes('blog') || lowerMsg.includes('article') || lowerMsg.includes('read') || lowerMsg.includes('insight')) {
+        else if (lowerMsg.includes('blog') || lowerMsg.includes('article') || lowerMsg.includes('read') || lowerMsg.includes('insight') || lowerMsg.includes('post')) {
             reply = "Robin regularly shares thoughts on leadership, growth, and transformation. You can head over to our 'Insights & Media' or 'Blog' sections at the top of the page to read the latest articles. Let me know if you want to be added to our mailing list by dropping your email!";
             links.push({ label: 'Read the Blog', url: '/blog' }, { label: 'Insights & Media', url: '/insights' });
         }
-        else if (lowerMsg.includes('advise') || lowerMsg.includes('partnership')) {
+        else if (lowerMsg.includes('advise') || lowerMsg.includes('partnership') || lowerMsg.includes('strategic growth')) {
             reply = "Our 'Advise' service focuses on strategic growth and building partnership ecosystems that you can actually execute. It's perfect for scaling your market reach. Would you like to schedule a call to discuss this?";
             links.push({ label: 'Advise Service', url: '/advise' });
         }
-        else if (lowerMsg.includes('operate') || lowerMsg.includes('fractional')) {
+        else if (lowerMsg.includes('operate') || lowerMsg.includes('fractional') || lowerMsg.includes('executive')) {
             reply = "The 'Operate' service embeds Robin as a Fractional Executive in your team! You gain senior leadership capability without a long-term permanent hire. It's highly effective for growth pushes. Should I flag your email for a follow-up?";
             links.push({ label: 'Operate Service', url: '/operate' });
         }
-        else if (lowerMsg.includes('navigate') || lowerMsg.includes('advisory')) {
+        else if (lowerMsg.includes('navigate') || lowerMsg.includes('advisory') || lowerMsg.includes('advice') || lowerMsg.includes('confidant')) {
             reply = "For 'Navigate', Robin provides experienced executive advisory perspectives on specific challenges—without a full project engagement. It's essentially having a high-level confidant for your boardroom decisions.";
             links.push({ label: 'Navigate Service', url: '/navigate' });
         }
-        else if (lowerMsg.includes('contact') || lowerMsg.includes('book') || lowerMsg.includes('talk') || lowerMsg.includes('schedule') || lowerMsg.includes('meeting') || lowerMsg.includes('reach out')) {
+        else if (lowerMsg.includes('contact') || lowerMsg.includes('book') || lowerMsg.includes('talk') || lowerMsg.includes('schedule') || lowerMsg.includes('meeting') || lowerMsg.includes('reach out') || lowerMsg.includes('connect') || lowerMsg.includes('speak') || lowerMsg.includes('get in touch')) {
             reply = "I can certainly help you get in touch. Please provide your email address right here in the chat, or you can use the 'Book a Conversation' button at the top of the website!";
             links.push({ label: 'Contact Page', url: '/contact' });
         }
