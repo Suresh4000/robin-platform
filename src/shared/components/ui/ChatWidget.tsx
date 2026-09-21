@@ -116,6 +116,7 @@ export function ChatWidget() {
             {isOpen && (
                 <div style={{
                     width: '380px',
+                    maxWidth: 'calc(100vw - 48px)',
                     height: '550px',
                     maxHeight: '80vh',
                     backgroundColor: '#fff',
