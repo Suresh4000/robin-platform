@@ -9,18 +9,18 @@ import styles from './Sidebar.module.css';
 import { NotificationBell } from './NotificationBell';
 
 const ROUTES = [
-    { path: '/dashboard', label: 'Dashboard', Icon: LayoutDashboard, num: '01' },
-    { path: '/crm/leads', label: 'Lead Management', Icon: Briefcase, num: '02' },
-    { path: '/crm/clients', label: 'Client Workspace', Icon: Users, num: '03' },
-    { path: '/ops/projects', label: 'Projects', Icon: HardHat, num: '04' },
-    { path: '/ops/calendar', label: 'Calendar', Icon: Calendar, num: '05' },
-    { path: '/ops/events', label: 'Events', Icon: Building, num: '06' },
-    { path: '/ops/documents', label: 'Documents', Icon: FolderOpen, num: '07' },
-    { path: '/ops/invoices', label: 'Billing/Invoices', Icon: DollarSign, num: '08' },
-    { path: '/content/blog', label: 'Blog CMS', Icon: FileText, num: '09' },
-    { path: '/content/media', label: 'Media', Icon: ImageIcon, num: '10' },
-    { path: '/settings', label: 'Settings', Icon: Settings, num: '11' },
-    { path: '/history', label: 'History / Bin', Icon: History, num: '12' },
+    { path: '/dashboard', label: 'Dashboard', Icon: LayoutDashboard },
+    { path: '/crm/leads', label: 'Lead Management', Icon: Briefcase },
+    { path: '/crm/clients', label: 'Client Workspace', Icon: Users },
+    { path: '/ops/projects', label: 'Projects', Icon: HardHat },
+    { path: '/ops/calendar', label: 'Calendar', Icon: Calendar },
+    { path: '/ops/events', label: 'Events', Icon: Building },
+    { path: '/ops/documents', label: 'Documents', Icon: FolderOpen },
+    { path: '/ops/invoices', label: 'Billing/Invoices', Icon: DollarSign },
+    { path: '/content/blog', label: 'Blog CMS', Icon: FileText },
+    { path: '/content/media', label: 'Media', Icon: ImageIcon },
+    { path: '/settings', label: 'Settings', Icon: Settings },
+    { path: '/history', label: 'History / Bin', Icon: History },
 ];
 
 export function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
@@ -67,7 +67,6 @@ export function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
                                 className={`${styles.navLink} ${isActive ? styles.active : ''}`}
                                 onClick={() => { if (window.innerWidth <= 900) onClose(); }}
                             >
-                                <span className={styles.navNumber}>{route.num}</span>
                                 <route.Icon size={18} />
                                 {route.label}
                             </Link>

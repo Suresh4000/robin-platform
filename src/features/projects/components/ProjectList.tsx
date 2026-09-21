@@ -5,6 +5,8 @@ import styles from './ProjectList.module.css';
 import { SlideDrawer } from '@/shared/components/ui/Modal';
 import { ProjectForm } from './ProjectForm';
 import { Trash2, Folder } from 'lucide-react';
+import { ExportButton } from '@/shared/components/ui/ExportButton';
+import { FilterBar } from '@/shared/components/ui/FilterBar';
 
 /* ── Inline SVGs ── */
 const IcoPlus = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" width={16} height={16}><path d="M12 5v14M5 12h14" /></svg>;
@@ -264,6 +266,10 @@ export function ProjectList() {
     const [activeProject, setActiveProject] = useState<Project | null>(null);
     const [showDeleted, setShowDeleted] = useState(false);
 
+    // Filters
+    const [searchQuery, setSearchQuery] = useState('');
+    const [statusFilter, setStatusFilter] = useState('All');
+
     const fetchProjects = useCallback((deleted = false) => {
         setIsLoading(true);
         fetch(`/api/ops/projects?isDeleted=${deleted}`).then(r => r.json()).then(data => {
@@ -308,6 +314,28 @@ export function ProjectList() {
                     </p>
                 </div>
                 <div style={{ display: 'flex', gap: '12px' }}>
+                    {!showDeleted && (
+                        <ExportButton
+                            data={projects.filter(p => {
+                                const q = searchQuery.toLowerCase();
+                                const matchesSearch = p.title.toLowerCase().includes(q) || p.client.name.toLowerCase().includes(q) || p.client.company.toLowerCase().includes(q);
+                                const matchesStatus = statusFilter === 'All' || p.status === statusFilter;
+                                return matchesSearch && matchesStatus;
+                            }).map(p => ({
+                                title: p.title,
+                                clientName: p.client.name,
+                                clientCompany: p.client.company,
+                                status: p.status
+                            }))}
+                            columns={[
+                                { key: 'title', label: 'Project Name' },
+                                { key: 'clientName', label: 'Client Contact' },
+                                { key: 'clientCompany', label: 'Company' },
+                                { key: 'status', label: 'Status' }
+                            ]}
+                            fileName={`Projects_Export_${new Date().toISOString().split('T')[0]}`}
+                        />
+                    )}
                     <button
                         onClick={() => setShowDeleted(!showDeleted)}
                         style={{
@@ -323,13 +351,37 @@ export function ProjectList() {
                 </div>
             </header>
 
+            {!showDeleted && (
+                <div style={{ marginBottom: '24px' }}>
+                    <FilterBar
+                        searchQuery={searchQuery}
+                        onSearchChange={setSearchQuery}
+                        searchPlaceholder="Search projects or clients..."
+                        dropdowns={[
+                            {
+                                key: 'status',
+                                label: 'Status',
+                                value: statusFilter,
+                                onChange: setStatusFilter,
+                                options: ['All', 'Planning', 'In Progress', 'On Hold', 'Completed', 'Cancelled']
+                            }
+                        ]}
+                    />
+                </div>
+            )}
+
             {isLoading ? (
                 <div className={styles.loading}>Loading…</div>
             ) : projects.length === 0 ? (
                 <div className={styles.empty}>No projects yet. Click "New Project" to start one.</div>
             ) : (
                 <div className={styles.grid}>
-                    {projects.map(project => (
+                    {projects.filter(p => {
+                        const q = searchQuery.toLowerCase();
+                        const matchesSearch = p.title.toLowerCase().includes(q) || p.client.name.toLowerCase().includes(q) || p.client.company.toLowerCase().includes(q);
+                        const matchesStatus = statusFilter === 'All' || p.status === statusFilter;
+                        return matchesSearch && matchesStatus;
+                    }).map(project => (
                         <div key={project.id} className={styles.card} onClick={() => setActiveProject(project)} style={{ cursor: 'pointer' }}>
                             <div className={styles.cardHeader}>
                                 <div style={{ flex: 1, minWidth: 0 }}>

@@ -5,6 +5,8 @@ import { Plus, Users, Edit, Trash2, RefreshCw, Folder } from 'lucide-react';
 import styles from './ClientList.module.css';
 import { SlideDrawer } from '@/shared/components/ui/Modal';
 import { ClientForm } from './ClientForm';
+import { ExportButton } from '@/shared/components/ui/ExportButton';
+import { FilterBar } from '@/shared/components/ui/FilterBar';
 
 type Client = {
     id: string;
@@ -20,6 +22,10 @@ export function ClientList() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<Client | null>(null);
     const [showDeleted, setShowDeleted] = useState(false);
+
+    // Filters
+    const [searchQuery, setSearchQuery] = useState('');
+    const [statusFilter, setStatusFilter] = useState('All');
 
     const openEditModal = (item: Client) => {
         setEditingItem(item);
@@ -84,6 +90,23 @@ export function ClientList() {
                     </p>
                 </div>
                 <div style={{ display: 'flex', gap: '12px' }}>
+                    {!showDeleted && (
+                        <ExportButton
+                            data={clients.filter(client => {
+                                const matchesSearch = client.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                    client.company.toLowerCase().includes(searchQuery.toLowerCase());
+                                const matchesStatus = statusFilter === 'All' || client.status === statusFilter;
+                                return matchesSearch && matchesStatus;
+                            })}
+                            columns={[
+                                { key: 'name', label: 'Client' },
+                                { key: 'company', label: 'Company' },
+                                { key: 'email', label: 'Contact Email' },
+                                { key: 'status', label: 'Status' }
+                            ]}
+                            fileName={`Clients_Export_${new Date().toISOString().split('T')[0]}`}
+                        />
+                    )}
                     <button
                         onClick={() => setShowDeleted(!showDeleted)}
                         style={{
@@ -102,6 +125,25 @@ export function ClientList() {
                 </div>
             </header>
 
+            {!showDeleted && (
+                <div style={{ marginBottom: '24px' }}>
+                    <FilterBar
+                        searchQuery={searchQuery}
+                        onSearchChange={setSearchQuery}
+                        searchPlaceholder="Search clients by name or company..."
+                        dropdowns={[
+                            {
+                                key: 'status',
+                                label: 'Status',
+                                value: statusFilter,
+                                onChange: setStatusFilter,
+                                options: ['All', 'Active', 'On Hold', 'Completed']
+                            }
+                        ]}
+                    />
+                </div>
+            )}
+
             <div className={styles.tableWrapper}>
                 <table className={styles.table}>
                     <thead>
@@ -119,7 +161,12 @@ export function ClientList() {
                         ) : clients.length === 0 ? (
                             <tr><td colSpan={4} style={{ textAlign: 'center', padding: '24px', color: 'var(--text-muted)' }}>No clients found.</td></tr>
                         ) : (
-                            clients.map(client => (
+                            clients.filter(client => {
+                                const matchesSearch = client.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                    client.company.toLowerCase().includes(searchQuery.toLowerCase());
+                                const matchesStatus = statusFilter === 'All' || client.status === statusFilter;
+                                return matchesSearch && matchesStatus;
+                            }).map(client => (
                                 <tr key={client.id}>
                                     <td>
                                         <div className={styles.clientName}>

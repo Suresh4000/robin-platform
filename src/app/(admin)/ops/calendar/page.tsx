@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from '@/features/portfolio/components/PortfolioList.module.css';
 import { Calendar, Clock, Video, Info, LayoutGrid, List, PhoneCall } from 'lucide-react';
+import { FilterBar } from '@/shared/components/ui/FilterBar';
 
 type CalendarItem = {
     id: string;
@@ -17,23 +18,26 @@ export default function CalendarPage() {
     const [items, setItems] = useState<CalendarItem[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [activeFilter, setActiveFilter] = useState<'All' | 'Events' | 'Tasks' | 'Calls'>('All');
+    const [searchQuery, setSearchQuery] = useState('');
     const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
     const [connectedAccounts, setConnectedAccounts] = useState<any[]>([]);
 
     useEffect(() => {
         const fetchCalendarData = async () => {
             try {
-                const [eventsRes, tasksRes, leadsRes, settingsRes] = await Promise.all([
+                const [eventsRes, tasksRes, leadsRes, settingsRes, gcalRes] = await Promise.all([
                     fetch('/api/ops/events'),
                     fetch('/api/ops/tasks'),
                     fetch('/api/crm/leads'),
-                    fetch('/api/ops/settings')
+                    fetch('/api/ops/settings'),
+                    fetch('/api/ops/gcal/events')
                 ]);
 
                 const eventsData = await eventsRes.json();
                 const tasksData = await tasksRes.json();
                 const leadsData = await leadsRes.json();
                 const settingsData = await settingsRes.json();
+                const gcalData = await gcalRes.json();
 
                 if (settingsData.googleAccounts) {
                     setConnectedAccounts(settingsData.googleAccounts);
@@ -106,6 +110,19 @@ export default function CalendarPage() {
                     });
                 }
 
+                if (gcalData.data) {
+                    gcalData.data.forEach((g: any) => {
+                        combined.push({
+                            id: g.id,
+                            type: 'Event',
+                            title: g.title,
+                            date: new Date(g.date),
+                            status: 'External',
+                            details: `Synced from Google (${g.sourceEmail})`
+                        });
+                    });
+                }
+
                 // Filter out past entries (before start of today)
                 const now = new Date();
                 now.setHours(0, 0, 0, 0);
@@ -124,7 +141,11 @@ export default function CalendarPage() {
         fetchCalendarData();
     }, []);
 
-    const filteredItems = items.filter(item => activeFilter === 'All' ? true : item.type === activeFilter.slice(0, -1));
+    const filteredItems = items.filter(item => {
+        const matchesFilter = activeFilter === 'All' ? true : item.type === activeFilter.slice(0, -1);
+        const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase());
+        return matchesFilter && matchesSearch;
+    });
 
     const getIconInfo = (type: string) => {
         switch (type) {
@@ -133,6 +154,31 @@ export default function CalendarPage() {
             case 'Task':
             default: return { bg: '#ecfdf5', text: '#10b981', icon: <Calendar size={24} /> };
         }
+    };
+
+    const generateIframeUrl = () => {
+        const base = 'https://calendar.google.com/calendar/embed?ctz=UTC&showTitle=0';
+        let sources = '';
+
+        // Define a palette of distinct Google Calendar hex colors
+        const colors = ['%23039BE5', '%2333B679', '%23D50000', '%238E24AA', '%23F6BF26', '%23F4511E', '%233F51B5'];
+
+        // Ensure the Master Calendar is always included
+        sources += `&src=${encodeURIComponent('suresh6374000@gmail.com')}&color=${colors[0]}`;
+
+        // Add integrated accounts layered on top
+        if (connectedAccounts && connectedAccounts.length > 0) {
+            let colorIndex = 1;
+            connectedAccounts.forEach((acc) => {
+                if (acc.email !== 'suresh6374000@gmail.com') {
+                    const color = colors[colorIndex % colors.length];
+                    sources += `&src=${encodeURIComponent(acc.email)}&color=${color}`;
+                    colorIndex++;
+                }
+            });
+        }
+
+        return base + sources;
     };
 
     return (
@@ -150,7 +196,7 @@ export default function CalendarPage() {
                     style={{ display: 'flex', alignItems: 'center', gap: '8px', border: 'none', background: 'var(--color-primary)', color: '#fff', cursor: 'pointer', padding: '10px 16px', borderRadius: '8px', fontWeight: 500 }}
                 >
                     <Calendar size={16} />
-                    + Connect Calendar
+                    + Connect Calendar (OAuth)
                 </button>
             </header>
 
@@ -160,7 +206,20 @@ export default function CalendarPage() {
                     {connectedAccounts.map(acc => (
                         <div key={acc.id} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#dcfce7', color: '#166534', padding: '4px 12px', borderRadius: '16px', fontSize: '13px', fontWeight: 600, border: '1px solid #bbf7d0' }}>
                             <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#16a34a' }}></div>
-                            {acc.email}
+                            <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                {acc.email}
+                                <button
+                                    onClick={async () => {
+                                        if (confirm(`Remove ${acc.email} from the calendar?`)) {
+                                            await fetch(`/api/ops/gcal/disconnect?id=${acc.id}`, { method: 'DELETE' });
+                                            window.location.reload();
+                                        }
+                                    }}
+                                    style={{ background: 'none', border: 'none', color: '#166534', cursor: 'pointer', opacity: 0.6, padding: '0 4px', fontSize: '16px', lineHeight: 1 }}
+                                >
+                                    &times;
+                                </button>
+                            </span>
                         </div>
                     ))}
                 </div>
@@ -174,9 +233,9 @@ export default function CalendarPage() {
                 boxShadow: 'var(--shadow-sm)',
                 marginBottom: '40px'
             }}>
-                {/* Google Calendar Iframe */}
+                {/* Dynamic Google Calendar Iframe */}
                 <iframe
-                    src="https://calendar.google.com/calendar/embed?src=suresh6374000%40gmail.com&ctz=UTC&showTitle=0"
+                    src={generateIframeUrl()}
                     style={{ border: 0, width: '100%', height: '700px', borderRadius: '8px' }}
                     frameBorder="0"
                     scrolling="no">
@@ -207,32 +266,22 @@ export default function CalendarPage() {
                 </div>
             </div>
 
-            {/* Filter Pills */}
-            <div style={{ display: 'flex', gap: '8px', marginBottom: '24px', flexWrap: 'wrap' }}>
-                <button
-                    onClick={() => setActiveFilter('All')}
-                    style={{ background: activeFilter === 'All' ? 'var(--color-primary)' : 'var(--surface-sunken)', color: activeFilter === 'All' ? '#fff' : 'inherit', border: '1px solid var(--surface-border)', padding: '6px 12px', borderRadius: '20px', cursor: 'pointer', fontSize: '13px', fontWeight: 500 }}
-                >
-                    All Entries
-                </button>
-                <button
-                    onClick={() => setActiveFilter('Events')}
-                    style={{ background: activeFilter === 'Events' ? 'var(--color-primary)' : 'var(--surface-sunken)', color: activeFilter === 'Events' ? '#fff' : 'inherit', border: '1px solid var(--surface-border)', padding: '6px 12px', borderRadius: '20px', cursor: 'pointer', fontSize: '13px', fontWeight: 500 }}
-                >
-                    Events Only
-                </button>
-                <button
-                    onClick={() => setActiveFilter('Tasks')}
-                    style={{ background: activeFilter === 'Tasks' ? 'var(--color-primary)' : 'var(--surface-sunken)', color: activeFilter === 'Tasks' ? '#fff' : 'inherit', border: '1px solid var(--surface-border)', padding: '6px 12px', borderRadius: '20px', cursor: 'pointer', fontSize: '13px', fontWeight: 500 }}
-                >
-                    Tasks Only
-                </button>
-                <button
-                    onClick={() => setActiveFilter('Calls')}
-                    style={{ background: activeFilter === 'Calls' ? 'var(--color-primary)' : 'var(--surface-sunken)', color: activeFilter === 'Calls' ? '#fff' : 'inherit', border: '1px solid var(--surface-border)', padding: '6px 12px', borderRadius: '20px', cursor: 'pointer', fontSize: '13px', fontWeight: 500 }}
-                >
-                    Meetings / Calls
-                </button>
+            {/* Filter */}
+            <div style={{ marginBottom: '24px' }}>
+                <FilterBar
+                    searchQuery={searchQuery}
+                    onSearchChange={setSearchQuery}
+                    searchPlaceholder="Search calendar entries by title..."
+                    dropdowns={[
+                        {
+                            key: 'type',
+                            label: 'Type',
+                            value: activeFilter,
+                            onChange: (val) => setActiveFilter(val as any),
+                            options: ['All', 'Events', 'Tasks', 'Calls']
+                        }
+                    ]}
+                />
             </div>
 
             <div style={{ paddingBottom: '40px' }}>

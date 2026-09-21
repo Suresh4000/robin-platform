@@ -14,6 +14,9 @@ const IcoEye = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" 
 const IcoMail = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width={14} height={14}><rect width="20" height="16" x="2" y="4" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /></svg>;
 const IcoCalendar = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" width={16} height={16}><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>;
 
+import { ExportButton } from '@/shared/components/ui/ExportButton';
+import { FilterBar } from '@/shared/components/ui/FilterBar';
+
 type Lead = {
     id: string;
     name: string;
@@ -66,6 +69,7 @@ export function LeadPipeline() {
     const [showDeleted, setShowDeleted] = useState(false);
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
     const [statusFilter, setStatusFilter] = useState<string>('All');
+    const [searchQuery, setSearchQuery] = useState<string>('');
     const [googleAccounts, setGoogleAccounts] = useState<any[]>([]);
     const [selectedGoogleAccount, setSelectedGoogleAccount] = useState<string>('');
 
@@ -353,6 +357,13 @@ export function LeadPipeline() {
         setSelectedIds(new Set());
     }, [showDeleted]);
 
+    const filteredLeads = leads.filter(l => {
+        const q = searchQuery.toLowerCase();
+        const matchesSearch = l.name.toLowerCase().includes(q) || (l.company || '').toLowerCase().includes(q);
+        const matchesStatus = statusFilter === 'All' ? true : l.status === statusFilter;
+        return matchesSearch && matchesStatus;
+    });
+
     return (
         <div className={styles.container}>
             <header className={styles.header}>
@@ -394,28 +405,35 @@ export function LeadPipeline() {
             </header>
 
             {!showDeleted && (
-                <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '24px' }}>
-                    <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-secondary)' }}>Filter by Status:</span>
-                    <select
-                        value={statusFilter}
-                        onChange={(e) => setStatusFilter(e.target.value)}
-                        style={{
-                            padding: '8px 16px',
-                            borderRadius: '8px',
-                            border: '1px solid var(--surface-border)',
-                            background: 'var(--surface-default)',
-                            color: 'var(--text-primary)',
-                            fontSize: '14px',
-                            outline: 'none',
-                            cursor: 'pointer',
-                            minWidth: '200px'
-                        }}
-                    >
-                        <option value="All">All Active Leads</option>
-                        {LEAD_STAGES.map(stage => (
-                            <option key={stage} value={stage}>{stage}</option>
-                        ))}
-                    </select>
+                <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', marginBottom: '24px', flexWrap: 'wrap', justifyContent: 'space-between' }}>
+                    <div style={{ flex: 1 }}>
+                        <FilterBar
+                            searchQuery={searchQuery}
+                            onSearchChange={setSearchQuery}
+                            searchPlaceholder="Search leads by name or company..."
+                            dropdowns={[
+                                {
+                                    key: 'status',
+                                    label: 'Status',
+                                    value: statusFilter,
+                                    onChange: setStatusFilter,
+                                    options: ['All', ...LEAD_STAGES]
+                                }
+                            ]}
+                        />
+                    </div>
+                    <div style={{ marginTop: '2px' }}>
+                        <ExportButton
+                            data={filteredLeads}
+                            columns={[
+                                { key: 'name', label: 'Lead Name' },
+                                { key: 'company', label: 'Company' },
+                                { key: 'source', label: 'Source' },
+                                { key: 'status', label: 'Status' }
+                            ]}
+                            fileName={`Leads_Export_${new Date().toISOString().split('T')[0]}`}
+                        />
+                    </div>
                 </div>
             )}
 
@@ -445,12 +463,12 @@ export function LeadPipeline() {
                             <tr>
                                 <td colSpan={showDeleted ? 6 : 5} style={{ padding: '32px', textAlign: 'center', color: 'var(--text-muted)' }}>Loading...</td>
                             </tr>
-                        ) : leads.filter(l => statusFilter === 'All' ? true : l.status === statusFilter).length === 0 ? (
+                        ) : filteredLeads.length === 0 ? (
                             <tr>
                                 <td colSpan={showDeleted ? 6 : 5} style={{ padding: '32px', textAlign: 'center', color: 'var(--text-muted)' }}>No leads found.</td>
                             </tr>
                         ) : (
-                            leads.filter(l => statusFilter === 'All' ? true : l.status === statusFilter).map(lead => (
+                            filteredLeads.map(lead => (
                                 <tr key={lead.id} style={{ borderBottom: '1px solid var(--surface-border)', background: selectedIds.has(lead.id) ? 'var(--surface-sunken)' : 'transparent' }}>
                                     {showDeleted && (
                                         <td style={{ padding: '16px', width: '48px' }}>

@@ -6,6 +6,7 @@ import styles from './EventList.module.css';
 import { SlideDrawer } from '@/shared/components/ui/Modal';
 import { EventForm } from './EventForm';
 import { AttendeesList } from './AttendeesList';
+import { FilterBar } from '@/shared/components/ui/FilterBar';
 
 type EventData = {
     id: string;
@@ -26,6 +27,8 @@ export function EventList() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<EventData | null>(null);
     const [viewingAttendeesId, setViewingAttendeesId] = useState<string | null>(null);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [typeFilter, setTypeFilter] = useState('All');
 
     const openEditModal = (item: EventData) => {
         setEditingItem(item);
@@ -120,6 +123,25 @@ export function EventList() {
                 </div>
             </header>
 
+            {!isLoading && view === 'Active' && (
+                <div style={{ marginBottom: '24px' }}>
+                    <FilterBar
+                        searchQuery={searchQuery}
+                        onSearchChange={setSearchQuery}
+                        searchPlaceholder="Search events by title..."
+                        dropdowns={[
+                            {
+                                key: 'type',
+                                label: 'Type',
+                                value: typeFilter,
+                                onChange: setTypeFilter,
+                                options: ['All', 'Webinar', 'Workshop', 'Conference', 'Meeting']
+                            }
+                        ]}
+                    />
+                </div>
+            )}
+
             {isLoading ? (
                 <div style={{ color: 'var(--text-muted)' }}>Loading records...</div>
             ) : (view === 'Active' ? events.filter(e => e.status !== 'Trash') : events.filter(e => e.status === 'Trash')).length === 0 ? (
@@ -128,104 +150,112 @@ export function EventList() {
                 </div>
             ) : (
                 <div className={styles.grid}>
-                    {(view === 'Active' ? events.filter(e => e.status !== 'Trash') : events.filter(e => e.status === 'Trash')).map(event => {
-                        const dateObj = new Date(event.date);
-                        const month = dateObj.toLocaleString('default', { month: 'short' });
-                        const day = dateObj.getDate();
-                        const time = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    {(view === 'Active' ? events.filter(e => e.status !== 'Trash') : events.filter(e => e.status === 'Trash'))
+                        .filter(e => {
+                            if (view === 'Trash') return true;
+                            const q = searchQuery.toLowerCase();
+                            const matchesSearch = e.title.toLowerCase().includes(q);
+                            const matchesType = typeFilter === 'All' || e.type === typeFilter;
+                            return matchesSearch && matchesType;
+                        })
+                        .map(event => {
+                            const dateObj = new Date(event.date);
+                            const month = dateObj.toLocaleString('default', { month: 'short' });
+                            const day = dateObj.getDate();
+                            const time = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-                        return (
-                            <div key={event.id} className={styles.card}>
-                                <div className={styles.cardHeader}>
-                                    <div style={{ display: 'flex', gap: '16px' }}>
-                                        <div className={styles.cardDate}>
-                                            <span className={styles.month}>{month}</span>
-                                            <span className={styles.day}>{day}</span>
-                                        </div>
-                                        <div>
-                                            <h3 className={styles.cardTitle}>{event.title}</h3>
-                                            <div className={styles.cardType}>
-                                                <Calendar size={14} />
-                                                {event.type}
+                            return (
+                                <div key={event.id} className={styles.card}>
+                                    <div className={styles.cardHeader}>
+                                        <div style={{ display: 'flex', gap: '16px' }}>
+                                            <div className={styles.cardDate}>
+                                                <span className={styles.month}>{month}</span>
+                                                <span className={styles.day}>{day}</span>
+                                            </div>
+                                            <div>
+                                                <h3 className={styles.cardTitle}>{event.title}</h3>
+                                                <div className={styles.cardType}>
+                                                    <Calendar size={14} />
+                                                    {event.type}
+                                                </div>
+                                            </div>
+                                            <div>
+                                                {view === 'Active' ? (
+                                                    <>
+                                                        <button
+                                                            onClick={() => openEditModal(event)}
+                                                            style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '4px', marginLeft: '8px' }}
+                                                            title="Edit Event"
+                                                        >
+                                                            <Edit size={14} />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleMoveToTrash(event.id, event.title)}
+                                                            style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px', marginLeft: '4px' }}
+                                                            title="Move to Trash"
+                                                        >
+                                                            <Trash2 size={14} />
+                                                        </button>
+                                                        <a
+                                                            href={`/events/${event.id}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '4px', marginLeft: '4px', display: 'inline-flex', alignItems: 'center' }}
+                                                            title="View Public Event Page"
+                                                        >
+                                                            <Globe size={14} />
+                                                        </a>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <button
+                                                            onClick={() => handleRestore(event.id, event.title)}
+                                                            style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '4px', marginLeft: '8px' }}
+                                                            title="Restore"
+                                                        >
+                                                            <RefreshCw size={14} />
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleHardDelete(event.id, event.title)}
+                                                            style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px', marginLeft: '4px' }}
+                                                            title="Delete Forever"
+                                                        >
+                                                            <Trash2 size={14} />
+                                                        </button>
+                                                    </>
+                                                )}
                                             </div>
                                         </div>
-                                        <div>
-                                            {view === 'Active' ? (
-                                                <>
-                                                    <button
-                                                        onClick={() => openEditModal(event)}
-                                                        style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '4px', marginLeft: '8px' }}
-                                                        title="Edit Event"
-                                                    >
-                                                        <Edit size={14} />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleMoveToTrash(event.id, event.title)}
-                                                        style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px', marginLeft: '4px' }}
-                                                        title="Move to Trash"
-                                                    >
-                                                        <Trash2 size={14} />
-                                                    </button>
-                                                    <a
-                                                        href={`/events/${event.id}`}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '4px', marginLeft: '4px', display: 'inline-flex', alignItems: 'center' }}
-                                                        title="View Public Event Page"
-                                                    >
-                                                        <Globe size={14} />
-                                                    </a>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <button
-                                                        onClick={() => handleRestore(event.id, event.title)}
-                                                        style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', padding: '4px', marginLeft: '8px' }}
-                                                        title="Restore"
-                                                    >
-                                                        <RefreshCw size={14} />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleHardDelete(event.id, event.title)}
-                                                        style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px', marginLeft: '4px' }}
-                                                        title="Delete Forever"
-                                                    >
-                                                        <Trash2 size={14} />
-                                                    </button>
-                                                </>
-                                            )}
+                                        <span className={`${styles.statusBadge} ${event.status === 'Published' ? styles.statusPublished : ''}`}>
+                                            {event.status}
+                                        </span>
+                                    </div>
+
+                                    <div className={styles.details}>
+                                        <div className={styles.detailRow}>
+                                            <Clock size={14} />
+                                            {time} ({event.duration} mins)
+                                        </div>
+                                        <div className={styles.detailRow}>
+                                            <MapPin size={14} />
+                                            {event.location}
                                         </div>
                                     </div>
-                                    <span className={`${styles.statusBadge} ${event.status === 'Published' ? styles.statusPublished : ''}`}>
-                                        {event.status}
-                                    </span>
-                                </div>
 
-                                <div className={styles.details}>
-                                    <div className={styles.detailRow}>
-                                        <Clock size={14} />
-                                        {time} ({event.duration} mins)
-                                    </div>
-                                    <div className={styles.detailRow}>
-                                        <MapPin size={14} />
-                                        {event.location}
-                                    </div>
-                                </div>
-
-                                <div className={styles.metrics}>
-                                    <div
-                                        className={styles.metric}
-                                        style={{ cursor: 'pointer', color: 'var(--accent)' }}
-                                        onClick={() => setViewingAttendeesId(event.id)}
-                                        title="View Attendees"
-                                    >
-                                        <Users size={14} />
-                                        <b style={{ textDecoration: 'underline' }}>{event._count.attendees} Registered</b> / {event.capacity} Capacity
+                                    <div className={styles.metrics}>
+                                        <div
+                                            className={styles.metric}
+                                            style={{ cursor: 'pointer', color: 'var(--accent)' }}
+                                            onClick={() => setViewingAttendeesId(event.id)}
+                                            title="View Attendees"
+                                        >
+                                            <Users size={14} />
+                                            <b style={{ textDecoration: 'underline' }}>{event._count.attendees} Registered</b> / {event.capacity} Capacity
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        );
-                    })}
+                            );
+                        })}
                 </div>
             )}
 

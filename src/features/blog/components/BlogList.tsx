@@ -5,6 +5,7 @@ import { Plus, Edit, Globe, Trash2, RefreshCw, Folder } from 'lucide-react';
 import styles from '@/features/portfolio/components/PortfolioList.module.css'; // Reusing layout
 import { SlideDrawer } from '@/shared/components/ui/Modal';
 import { BlogForm } from './BlogForm';
+import { FilterBar } from '@/shared/components/ui/FilterBar';
 
 type BlogPost = {
     id: string;
@@ -21,6 +22,8 @@ export function BlogList() {
     const [isLoading, setIsLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<BlogPost | null>(null);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [statusFilter, setStatusFilter] = useState('All');
 
     const openEditModal = (item: BlogPost) => {
         setEditingItem(item);
@@ -111,6 +114,25 @@ export function BlogList() {
                 </div>
             </header>
 
+            {!isLoading && view === 'Active' && (
+                <div style={{ marginBottom: '24px' }}>
+                    <FilterBar
+                        searchQuery={searchQuery}
+                        onSearchChange={setSearchQuery}
+                        searchPlaceholder="Search posts by title..."
+                        dropdowns={[
+                            {
+                                key: 'status',
+                                label: 'Status',
+                                value: statusFilter,
+                                onChange: setStatusFilter,
+                                options: ['All', 'Draft', 'Published']
+                            }
+                        ]}
+                    />
+                </div>
+            )}
+
             {isLoading ? (
                 <div style={{ color: 'var(--text-muted)' }}>Loading posts...</div>
             ) : (
@@ -131,55 +153,63 @@ export function BlogList() {
                                         No blog posts published yet.
                                     </td>
                                 </tr>
-                            ) : (view === 'Active' ? items.filter(i => i.status !== 'Trash') : items.filter(i => i.status === 'Trash')).map(item => (
-                                <tr key={item.id}>
-                                    <td>
-                                        <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{item.title}</div>
-                                        <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>/{item.slug}</div>
-                                    </td>
-                                    <td>
-                                        <span className={styles.tagBadge}>{item.category}</span>
-                                    </td>
-                                    <td>
-                                        <span className={`${styles.statusBadge} ${item.status === 'Published' ? styles.statusActive : ''}`}>
-                                            {item.status}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <div className={styles.actions}>
-                                            {view === 'Active' ? (
-                                                <>
-                                                    <button className={styles.actionBtn} title="Edit Post" onClick={() => openEditModal(item)}>
-                                                        <Edit size={16} />
-                                                    </button>
-                                                    <button className={styles.actionBtn} title="Move to Trash" onClick={() => handleMoveToTrash(item.id, item.title)} style={{ color: '#ef4444' }}>
-                                                        <Trash2 size={16} />
-                                                    </button>
-                                                    <a
-                                                        href={`/blog/${item.slug}`}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className={styles.actionBtn}
-                                                        title="View Live Post"
-                                                        style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
-                                                    >
-                                                        <Globe size={16} />
-                                                    </a>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <button className={styles.actionBtn} title="Restore" onClick={() => handleRestore(item.id, item.title)}>
-                                                        <RefreshCw size={16} />
-                                                    </button>
-                                                    <button className={styles.actionBtn} title="Delete Forever" onClick={() => handleHardDelete(item.id, item.title)} style={{ color: '#ef4444' }}>
-                                                        <Trash2 size={16} />
-                                                    </button>
-                                                </>
-                                            )}
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
+                            ) : (view === 'Active' ? items.filter(i => i.status !== 'Trash') : items.filter(i => i.status === 'Trash'))
+                                .filter(i => {
+                                    if (view === 'Trash') return true;
+                                    const q = searchQuery.toLowerCase();
+                                    const matchesSearch = i.title.toLowerCase().includes(q) || i.slug.toLowerCase().includes(q);
+                                    const matchesStatus = statusFilter === 'All' || i.status === statusFilter;
+                                    return matchesSearch && matchesStatus;
+                                })
+                                .map(item => (
+                                    <tr key={item.id}>
+                                        <td>
+                                            <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{item.title}</div>
+                                            <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>/{item.slug}</div>
+                                        </td>
+                                        <td>
+                                            <span className={styles.tagBadge}>{item.category}</span>
+                                        </td>
+                                        <td>
+                                            <span className={`${styles.statusBadge} ${item.status === 'Published' ? styles.statusActive : ''}`}>
+                                                {item.status}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div className={styles.actions}>
+                                                {view === 'Active' ? (
+                                                    <>
+                                                        <button className={styles.actionBtn} title="Edit Post" onClick={() => openEditModal(item)}>
+                                                            <Edit size={16} />
+                                                        </button>
+                                                        <button className={styles.actionBtn} title="Move to Trash" onClick={() => handleMoveToTrash(item.id, item.title)} style={{ color: '#ef4444' }}>
+                                                            <Trash2 size={16} />
+                                                        </button>
+                                                        <a
+                                                            href={`/blog/${item.slug}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className={styles.actionBtn}
+                                                            title="View Live Post"
+                                                            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
+                                                        >
+                                                            <Globe size={16} />
+                                                        </a>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <button className={styles.actionBtn} title="Restore" onClick={() => handleRestore(item.id, item.title)}>
+                                                            <RefreshCw size={16} />
+                                                        </button>
+                                                        <button className={styles.actionBtn} title="Delete Forever" onClick={() => handleHardDelete(item.id, item.title)} style={{ color: '#ef4444' }}>
+                                                            <Trash2 size={16} />
+                                                        </button>
+                                                    </>
+                                                )}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
                         </tbody>
                     </table>
                 </div>

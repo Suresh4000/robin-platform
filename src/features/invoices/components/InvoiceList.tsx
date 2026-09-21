@@ -6,6 +6,8 @@ import styles from '@/features/clients/components/ClientList.module.css'; // Reu
 import { SlideDrawer } from '@/shared/components/ui/Modal';
 import { InvoiceGenerator } from './InvoiceGenerator';
 import { InvoicePrintView } from './InvoicePrintView';
+import { ExportButton } from '@/shared/components/ui/ExportButton';
+import { FilterBar } from '@/shared/components/ui/FilterBar';
 
 export function InvoiceList() {
     const [invoices, setInvoices] = useState<any[]>([]);
@@ -13,6 +15,10 @@ export function InvoiceList() {
     const [isGeneratorOpen, setIsGeneratorOpen] = useState(false);
     const [viewingInvoice, setViewingInvoice] = useState<any | null>(null);
     const [showDeleted, setShowDeleted] = useState(false);
+
+    // Filters
+    const [searchQuery, setSearchQuery] = useState('');
+    const [statusFilter, setStatusFilter] = useState('All');
 
     const fetchInvoices = async (deleted = false) => {
         setIsLoading(true);
@@ -77,6 +83,30 @@ export function InvoiceList() {
                     </p>
                 </div>
                 <div style={{ display: 'flex', gap: '12px' }}>
+                    {!showDeleted && (
+                        <ExportButton
+                            data={invoices.filter(i => {
+                                const qs = searchQuery.toLowerCase();
+                                const matchesSearch = i.client.name.toLowerCase().includes(qs) || i.id.toLowerCase().includes(qs);
+                                const matchesStatus = statusFilter === 'All' || i.status === statusFilter;
+                                return matchesSearch && matchesStatus;
+                            }).map(i => ({
+                                id: `INV-${i.id.substring(0, 6).toUpperCase()}`,
+                                clientName: i.client.name,
+                                totalAmount: `$${i.totalAmount.toLocaleString()}`,
+                                dueDate: new Date(i.dueDate).toLocaleDateString(),
+                                status: i.status
+                            }))}
+                            columns={[
+                                { key: 'id', label: 'Invoice ID' },
+                                { key: 'clientName', label: 'Client' },
+                                { key: 'totalAmount', label: 'Total Amount' },
+                                { key: 'dueDate', label: 'Due Date' },
+                                { key: 'status', label: 'Status' }
+                            ]}
+                            fileName={`Invoices_Export_${new Date().toISOString().split('T')[0]}`}
+                        />
+                    )}
                     <button
                         onClick={() => setShowDeleted(!showDeleted)}
                         style={{
@@ -97,6 +127,25 @@ export function InvoiceList() {
                 </div>
             </header>
 
+            {!showDeleted && (
+                <div style={{ marginBottom: '24px' }}>
+                    <FilterBar
+                        searchQuery={searchQuery}
+                        onSearchChange={setSearchQuery}
+                        searchPlaceholder="Search invoices by ID or Client..."
+                        dropdowns={[
+                            {
+                                key: 'status',
+                                label: 'Status',
+                                value: statusFilter,
+                                onChange: setStatusFilter,
+                                options: ['All', 'Draft', 'Sent', 'Paid', 'Overdue']
+                            }
+                        ]}
+                    />
+                </div>
+            )}
+
             <div className={styles.tableWrapper}>
                 <table className={styles.table}>
                     <thead>
@@ -114,7 +163,12 @@ export function InvoiceList() {
                         ) : invoices.length === 0 ? (
                             <tr><td colSpan={5} style={{ textAlign: 'center', padding: '24px', color: 'var(--text-muted)' }}>No invoices found.</td></tr>
                         ) : (
-                            invoices.map(inv => (
+                            invoices.filter(i => {
+                                const qs = searchQuery.toLowerCase();
+                                const matchesSearch = i.client.name.toLowerCase().includes(qs) || i.id.toLowerCase().includes(qs);
+                                const matchesStatus = statusFilter === 'All' || i.status === statusFilter;
+                                return matchesSearch && matchesStatus;
+                            }).map(inv => (
                                 <tr key={inv.id}>
                                     <td>
                                         <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>INV-{inv.id.substring(0, 6).toUpperCase()}</div>
