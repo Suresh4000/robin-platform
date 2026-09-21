@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/shared/lib/prisma';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import fs from 'fs';
+import path from 'path';
 
 export async function POST(req: Request) {
     try {
@@ -30,17 +32,30 @@ export async function POST(req: Request) {
             }
         }
 
-        // 2. CHECK FOR GEMINI API KEY
-        if (!process.env.GEMINI_API_KEY) {
+        // 2. CHECK FOR GEMINI API KEY (Dynamically read to avoid server restart issues)
+        let geminiKey = process.env.GEMINI_API_KEY;
+        if (!geminiKey) {
+            try {
+                const envContent = fs.readFileSync(path.join(process.cwd(), '.env'), 'utf8');
+                const match = envContent.match(/GEMINI_API_KEY=['"]?([^'"\n\r]+)['"]?/m);
+                if (match && match[1]) {
+                    geminiKey = match[1];
+                }
+            } catch (fsError) {
+                console.error("Could not read .env file dynamically", fsError);
+            }
+        }
+
+        if (!geminiKey) {
             return NextResponse.json({
                 reply: crmActionAdded
-                    ? "Thank you! I have saved your contact details. Someone from our team will reach out soon! *(Admin Note: Lead saved to CRM. Please add GEMINI_API_KEY to your .env to enable the Free conversational AI.)*"
-                    : "I am ready to help, but the administrator still needs to add their FREE `GEMINI_API_KEY` to the `.env` file! Until then, my AI brain is resting."
+                    ? "Thank you! I have saved your contact details. Someone from our team will reach out soon! *(Admin Note: Please add GEMINI_API_KEY to your .env to enable the AI.)*"
+                    : "I am ready to help, but the administrator still needs to add their `GEMINI_API_KEY` to the `.env` file! Until then, my AI brain is resting."
             });
         }
 
         // 3. GENERATE GEMINI RESPONSE (100% FREE TIER)
-        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+        const genAI = new GoogleGenerativeAI(geminiKey);
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
         const systemInstruction = `You are the official AI Assistant for Robin Jones (Robin Business Hub). 
