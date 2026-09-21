@@ -105,7 +105,7 @@ export function ChatWidget() {
     return (
         <div style={{
             position: 'fixed',
-            bottom: '24px',
+            bottom: '34px',
             right: '24px',
             zIndex: 9999,
             display: 'flex',
@@ -324,14 +324,14 @@ export function ChatWidget() {
                 <button
                     onClick={() => setIsOpen(true)}
                     style={{
-                        width: '64px',
-                        height: '64px',
+                        width: '54px',
+                        height: '54px',
                         borderRadius: '50%',
                         background: 'linear-gradient(135deg, #153835 0%, #1e4d49 100%)',
                         color: '#fff',
                         border: 'none',
                         cursor: 'pointer',
-                        boxShadow: '0 8px 24px rgba(21, 56, 53, 0.4)',
+                        boxShadow: '0 8px 16px rgba(21, 56, 53, 0.3)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -340,7 +340,7 @@ export function ChatWidget() {
                     onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
                     onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
                 >
-                    <MessageSquare size={28} />
+                    <MessageSquare size={24} />
                 </button>
             )}
         </div>
