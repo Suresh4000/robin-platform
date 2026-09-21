@@ -24,7 +24,7 @@ export function BlogForm({ onSuccess, initialData }: { onSuccess: () => void; in
     const [isUploading, setIsUploading] = useState(false);
     const coverInputRef = useRef<HTMLInputElement>(null);
 
-    const { register, handleSubmit, control, watch, formState: { errors }, setError, reset } = rhmUseForm<any>({
+    const { register, handleSubmit, control, watch, formState: { errors }, setError, reset, setValue } = rhmUseForm<any>({
         resolver: zodResolver(initialData ? updateBlogSchema : createBlogSchema),
         defaultValues: initialData ? {
             ...initialData,
@@ -46,7 +46,22 @@ export function BlogForm({ onSuccess, initialData }: { onSuccess: () => void; in
 
     const watchCover = watch('coverImage');
     const watchStatus = watch('status');
+    const watchTitle = watch('title');
+    const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(!!initialData); // If editing existing, don't auto-override slug
+
     useEffect(() => { setCoverPreview(watchCover || ''); }, [watchCover]);
+
+    useEffect(() => {
+        if (!isSlugManuallyEdited && watchTitle) {
+            const generatedSlug = watchTitle
+                .toLowerCase()
+                .trim()
+                .replace(/[^\w\s-]/g, '')
+                .replace(/[\s_-]+/g, '-')
+                .replace(/^-+|-+$/g, '');
+            setValue('slug', generatedSlug, { shouldValidate: true });
+        }
+    }, [watchTitle, isSlugManuallyEdited, setValue]);
 
     const handleCoverUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -204,7 +219,10 @@ export function BlogForm({ onSuccess, initialData }: { onSuccess: () => void; in
                 </div>
                 <div className={styles.formGroup} style={{ margin: 0 }}>
                     <label className={styles.label}>URL Slug *</label>
-                    <input className={styles.input} {...register('slug')} placeholder="how-to-scale-operations" />
+                    <input className={styles.input} {...register('slug')} placeholder="how-to-scale-operations" onChange={(e) => {
+                        setIsSlugManuallyEdited(true);
+                        setValue('slug', e.target.value, { shouldValidate: true });
+                    }} />
                     {errors.slug && <span className={styles.errorText}>{errors.slug.message as string}</span>}
                 </div>
             </div>

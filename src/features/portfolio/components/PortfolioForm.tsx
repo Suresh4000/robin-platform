@@ -9,12 +9,27 @@ import styles from '@/shared/components/forms/forms.module.css';
 export function PortfolioForm({ onSuccess, initialData }: { onSuccess: () => void; initialData?: any }) {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const { register, handleSubmit, formState: { errors }, setError, reset } = rhmUseForm<any>({
+    const { register, handleSubmit, watch, setValue, formState: { errors }, setError, reset } = rhmUseForm<any>({
         resolver: zodResolver(initialData ? updatePortfolioItemSchema : createPortfolioItemSchema),
         defaultValues: initialData || {
             status: 'Draft',
         }
     });
+
+    const watchTitle = watch('title');
+    const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(!!initialData);
+
+    useEffect(() => {
+        if (!isSlugManuallyEdited && watchTitle) {
+            const generatedSlug = watchTitle
+                .toLowerCase()
+                .trim()
+                .replace(/[^\w\s-]/g, '')
+                .replace(/[\s_-]+/g, '-')
+                .replace(/^-+|-+$/g, '');
+            setValue('slug', generatedSlug, { shouldValidate: true });
+        }
+    }, [watchTitle, isSlugManuallyEdited, setValue]);
 
     const onSubmit = async (data: any) => {
         setIsSubmitting(true);
@@ -58,7 +73,10 @@ export function PortfolioForm({ onSuccess, initialData }: { onSuccess: () => voi
 
             <div className={styles.formGroup}>
                 <label className={styles.label}>URL Slug *</label>
-                <input className={styles.input} {...register('slug')} placeholder="acme-redesign" />
+                <input className={styles.input} {...register('slug')} placeholder="acme-redesign" onChange={(e) => {
+                    setIsSlugManuallyEdited(true);
+                    setValue('slug', e.target.value, { shouldValidate: true });
+                }} />
                 {errors.slug && <span className={styles.errorText}>{errors.slug.message as string}</span>}
             </div>
 
