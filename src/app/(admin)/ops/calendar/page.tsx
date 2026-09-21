@@ -157,20 +157,20 @@ export default function CalendarPage() {
     };
 
     const generateIframeUrl = () => {
-        const base = 'https://calendar.google.com/calendar/embed?ctz=UTC&showTitle=0';
+        const base = 'https://calendar.google.com/calendar/embed?ctz=Asia%2FKolkata&showTitle=0';
         let sources = '';
 
         // Define a palette of distinct Google Calendar hex colors
         const colors = ['%23039BE5', '%2333B679', '%23D50000', '%238E24AA', '%23F6BF26', '%23F4511E', '%233F51B5'];
 
         // Ensure the Master Calendar is always included
-        sources += `&src=${encodeURIComponent('suresh6374000@gmail.com')}&color=${colors[0]}`;
+        sources += `&src=${encodeURIComponent('svaanwebsitedevelopmentteam@gmail.com')}&color=${colors[0]}`;
 
         // Add integrated accounts layered on top
         if (connectedAccounts && connectedAccounts.length > 0) {
             let colorIndex = 1;
             connectedAccounts.forEach((acc) => {
-                if (acc.email !== 'suresh6374000@gmail.com') {
+                if (acc.email !== 'svaanwebsitedevelopmentteam@gmail.com') {
                     const color = colors[colorIndex % colors.length];
                     sources += `&src=${encodeURIComponent(acc.email)}&color=${color}`;
                     colorIndex++;
