@@ -106,7 +106,7 @@ export function ChatWidget() {
         <div style={{
             position: 'fixed',
             bottom: '34px',
-            right: '24px',
+            right: '10px',
             zIndex: 9999,
             display: 'flex',
             flexDirection: 'column',
@@ -148,8 +148,8 @@ export function ChatWidget() {
                         alignItems: 'center'
                     }}>
                         <div>
-                            <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <div style={{ width: '8px', height: '8px', background: '#10b981', borderRadius: '50%', boxShadow: '0 0 8px #10b981' }}></div>
+                            <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px', color: '#fff' }}>
+                                <div style={{ width: '8px', height: '8px', background: '#10b981', borderRadius: '50%', boxShadow: '0 0 8px #10b981', color: '#fff' }}></div>
                                 AI Assistant
                             </h3>
                             {/* <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: '#a7f3d0' }}>Lead Gen & Consultant</p> */}
@@ -325,10 +325,10 @@ export function ChatWidget() {
                 <button
                     onClick={() => setIsOpen(true)}
                     style={{
-                        width: '54px',
-                        height: '54px',
+                        width: '50px',
+                        height: '50px',
                         borderRadius: '50%',
-                        background: 'linear-gradient(135deg, #153835 0%, #1e4d49 100%)',
+                        background: 'rgb(106 143 107)',
                         color: '#fff',
                         border: 'none',
                         cursor: 'pointer',

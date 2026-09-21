@@ -130,9 +130,9 @@ export default function Page() {
               <div className="step"><div className="dot">04</div><h4>Act</h4><p>Build the strategy, roadmap, or transformation plan.</p></div>
               <div className="step"><div className="dot">05</div><h4>Support</h4><p>Work alongside leadership to turn strategy into progress.</p></div>
             </div>
-            <div className="reveal" style={{ "marginTop": "44px", "position": "relative", "borderRadius": "20px", "overflow": "hidden", "aspectRatio": "21/8", "boxShadow": "0 30px 60px -20px rgba(20,15,5,.28)" }}>
+            {/* <div className="reveal" style={{ "marginTop": "44px", "position": "relative", "borderRadius": "20px", "overflow": "hidden", "aspectRatio": "21/8", "boxShadow": "0 30px 60px -20px rgba(20,15,5,.28)" }}>
               <Image width={800} height={800} alt="Team meeting around a table in a modern conference room" src="https://images.unsplash.com/photo-1769739576456-0aefcff3f4b9?q=80&w=1600&auto=format&fit=crop" style={{ "width": "100%", "height": "100%", "objectFit": "cover" }} />
-            </div>
+            </div> */}
           </div>
         </section>
         {/*  ===================== READY =====================  */}
