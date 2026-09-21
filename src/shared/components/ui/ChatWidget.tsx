@@ -1,12 +1,14 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageSquare, X, Send, Volume2, VolumeX, Loader2, Minimize2 } from 'lucide-react';
+import { MessageSquare, X, Send, Volume2, VolumeX, Loader2, Minimize2, Trash2, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 
 type Message = {
     id: string;
     role: 'user' | 'assistant';
     content: string;
+    links?: { label: string, url: string }[];
 };
 
 export function ChatWidget() {
@@ -74,7 +76,7 @@ export function ChatWidget() {
         setIsTyping(true);
 
         try {
-            // Replace with real LLM endpoint when Step 2 is implemented
+            // Send request to updated API endpoint
             const response = await fetch('/api/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -82,15 +84,17 @@ export function ChatWidget() {
             });
 
             let assistantMsg = '';
+            let assistantLinks = [];
 
             try {
                 const data = await response.json();
                 assistantMsg = data.reply || "I'm sorry, I couldn't process that response.";
+                if (data.links) assistantLinks = data.links;
             } catch (e) {
                 assistantMsg = "I'm having trouble reaching the server right now. Please make sure the backend is fully restarted.";
             }
 
-            setMessages(prev => [...prev, { id: Date.now().toString(), role: 'assistant', content: assistantMsg }]);
+            setMessages(prev => [...prev, { id: Date.now().toString(), role: 'assistant', content: assistantMsg, links: assistantLinks }]);
         } catch (error) {
             setMessages(prev => [...prev, { id: Date.now().toString(), role: 'assistant', content: "An error occurred connecting to the AI system." }]);
         } finally {
@@ -150,6 +154,13 @@ export function ChatWidget() {
                             <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: '#a7f3d0' }}>Lead Gen & Consultant</p>
                         </div>
                         <div style={{ display: 'flex', gap: '8px' }}>
+                            <button
+                                onClick={() => setMessages([{ id: Date.now().toString(), role: 'assistant', content: 'Hello! I am the automated Robin Business Hub Assistant. How can I help you today?' }])}
+                                title="Clear Chat"
+                                style={{ background: 'rgba(255,255,255,0.2)', border: 'none', color: '#fff', cursor: 'pointer', padding: '6px', borderRadius: '50%' }}
+                            >
+                                <Trash2 size={16} />
+                            </button>
                             {isSpeaking && (
                                 <button onClick={stopSpeaking} style={{ background: 'rgba(255,255,255,0.2)', border: 'none', color: '#fff', cursor: 'pointer', padding: '6px', borderRadius: '50%' }}>
                                     <VolumeX size={16} />
@@ -198,6 +209,31 @@ export function ChatWidget() {
                                     }}>
                                         {msg.content}
                                     </div>
+
+
+                                    {/* Link Recommendations (if any) */}
+                                    {msg.role === 'assistant' && msg.links && msg.links.length > 0 && (
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '8px' }}>
+                                            {msg.links.map((link, idx) => (
+                                                <Link key={idx} href={link.url} style={{
+                                                    display: 'inline-flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'space-between',
+                                                    background: '#153835',
+                                                    color: '#fff',
+                                                    padding: '8px 12px',
+                                                    borderRadius: '8px',
+                                                    fontSize: '12px',
+                                                    textDecoration: 'none',
+                                                    fontWeight: 500,
+                                                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                                                    transition: 'background 0.2s'
+                                                }}>
+                                                    {link.label} <ArrowRight size={14} />
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    )}
 
                                     {/* Text to Speech Button for Assistant Messages */}
                                     {msg.role === 'assistant' && (
