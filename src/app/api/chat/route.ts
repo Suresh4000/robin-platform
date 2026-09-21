@@ -1,12 +1,10 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/shared/lib/prisma';
-import { GoogleGenerativeAI } from '@google/generative-ai';
-import fs from 'fs';
-import path from 'path';
 
 export async function POST(req: Request) {
     try {
         const { message, history } = await req.json();
+        const lowerMsg = message.toLowerCase();
 
         // 1. EXTRACT EMAIL using regex to inject into CRM
         const emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/gi;
@@ -16,7 +14,6 @@ export async function POST(req: Request) {
 
         if (foundEmails && foundEmails.length > 0) {
             const email = foundEmails[0];
-            // Check if lead already exists
             const existingLead = await prisma.lead.findFirst({ where: { email } });
             if (!existingLead) {
                 await prisma.lead.create({
@@ -32,82 +29,47 @@ export async function POST(req: Request) {
             }
         }
 
-        // 2. CHECK FOR GEMINI API KEY (Dynamically read to avoid server restart issues)
-        let geminiKey = process.env.GEMINI_API_KEY;
-        if (!geminiKey) {
-            try {
-                const envContent = fs.readFileSync(path.join(process.cwd(), '.env'), 'utf8');
-                const match = envContent.match(/GEMINI_API_KEY=['"]?([^'"\n\r]+)['"]?/m);
-                if (match && match[1]) {
-                    geminiKey = match[1];
-                }
-            } catch (fsError) {
-                console.error("Could not read .env file dynamically", fsError);
-            }
+        // 2. ADVANCED RULE-BASED ENGINE (ZERO-API-KEY REQUIRED)
+        let reply = "";
+
+        if (crmActionAdded) {
+            reply = "Thank you! I have securely saved your contact details into the CRM. Robin's team will be in touch with you shortly. Is there anything else I can help clarify?";
+        }
+        else if (lowerMsg.includes('price') || lowerMsg.includes('cost') || lowerMsg.includes('fee')) {
+            reply = "Because every organization's needs are unique, Robin's Fractional Executive and Advisory services are custom-quoted. I'd highly recommend booking a discovery conversation so we can understand your specific growth goals! Could I get your email address?";
+        }
+        else if (lowerMsg.includes('service') || lowerMsg.includes('offer') || lowerMsg.includes('help')) {
+            reply = "Robin offers three primary ways to engage: 1. Advise (Strategic Growth & Partnerships). 2. Operate (Fractional Executive Leadership). 3. Navigate (Executive Advisory). Which of these areas are you most interested in?";
+        }
+        else if (lowerMsg.includes('advise') || lowerMsg.includes('partnership')) {
+            reply = "Our 'Advise' service focuses on strategic growth and building partnership ecosystems that you can actually execute. It's perfect for scaling your market reach. Would you like to schedule a call to discuss this?";
+        }
+        else if (lowerMsg.includes('operate') || lowerMsg.includes('fractional')) {
+            reply = "The 'Operate' service embeds Robin as a Fractional Executive in your team! You gain senior leadership capability without a long-term permanent hire. It's highly effective for growth pushes. Should I flag your email for a follow-up?";
+        }
+        else if (lowerMsg.includes('navigate') || lowerMsg.includes('advisory')) {
+            reply = "For 'Navigate', Robin provides experienced executive advisory perspectives on specific challenges—without a full project engagement. It's essentially having a high-level confidant for your boardroom decisions.";
+        }
+        else if (lowerMsg.includes('contact') || lowerMsg.includes('book') || lowerMsg.includes('talk') || lowerMsg.includes('schedule') || lowerMsg.includes('meeting')) {
+            reply = "I can certainly help you get in touch. Please provide your email address right here in the chat, or you can use the 'Book a Conversation' button at the top of the website!";
+        }
+        else if (lowerMsg.includes('hello') || lowerMsg.includes('hi ') || lowerMsg.includes('hi!') || lowerMsg.includes('hey')) {
+            reply = "Hello there! I am the automated Robin Business Hub Assistant. Whether you're looking for Fractional Leadership or Strategic Growth Advisory, I'm here to help. What brings you here today?";
+        }
+        else if (lowerMsg.includes('thank')) {
+            reply = "You are very welcome! If you need anything else, I'm always here.";
+        }
+        else {
+            reply = "That's an interesting point! As an automated assistant, my expertise revolves around Robin's Fractional Executive services, Strategic Growth, and Advisory. Could I get your email address so a real human on the team can reach out and give you a more tailored answer?";
         }
 
-        if (!geminiKey) {
-            return NextResponse.json({
-                reply: crmActionAdded
-                    ? "Thank you! I have saved your contact details. Someone from our team will reach out soon! *(Admin Note: Please add GEMINI_API_KEY to your .env to enable the AI.)*"
-                    : "I am ready to help, but the administrator still needs to add their `GEMINI_API_KEY` to the `.env` file! Until then, my AI brain is resting."
-            });
-        }
-
-        // 3. GENERATE GEMINI RESPONSE (100% FREE TIER)
-        const genAI = new GoogleGenerativeAI(geminiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-        const systemInstruction = `You are the official AI Assistant for Robin Jones (Robin Business Hub). 
-Robin is a Fractional Executive and Strategic Growth Advisor with 26+ years of experience helping CEOs, Founders, Boards, and Mission-Driven Organizations build enterprise value. 
-Robin's main services include:
-1. Advise (Strategic Growth & Partnerships)
-2. Operate (Fractional Executive Leadership)
-3. Navigate (Executive Advisory)
-
-Your persona: Professional, intelligent, concise, and incredibly helpful. You speak as a representative of Robin.
-Goal: Answer questions about Robin's business. If a user seems interested in booking a consultation or working with Robin, politely ask for their email address so Robin's team can reach out.
-If the user provides an email address, thank them and tell them their information was securely saved for Robin. Never use markdown formatting in your responses, just plain text.`;
-
-        // Format history for Gemini (Gemini uses 'user' and 'model' roles)
-        // Format history for Gemini (Gemini uses 'user' and 'model' roles)
-        let formattedHistory = (history || [])
-            .filter((msg: any) => msg.role !== 'system')
-            .map((msg: any) => ({
-                role: msg.role === 'assistant' ? 'model' : 'user',
-                parts: [{ text: msg.content }]
-            }));
-
-        // Gemini history MUST start with a 'user' role.
-        if (formattedHistory.length > 0 && formattedHistory[0].role === 'model') {
-            formattedHistory = [
-                { role: 'user', parts: [{ text: 'Hello' }] },
-                ...formattedHistory
-            ];
-        }
-
-        // Gemini requires the system prompt to be passed in differently, but we can easily prepend it to the history
-        // Wait, for gemini-1.5-flash we can use the `systemInstruction` natively!
-        const modelWithSystem = genAI.getGenerativeModel({
-            model: "gemini-1.5-flash",
-            systemInstruction: systemInstruction
-        });
-
-        const chat = modelWithSystem.startChat({
-            history: formattedHistory,
-            generationConfig: {
-                maxOutputTokens: 300,
-                temperature: 0.7,
-            }
-        });
-
-        const result = await chat.sendMessage(message);
-        const reply = result.response.text();
+        // Add a slight artificial delay to make it feel "human" like it's typing
+        await new Promise(resolve => setTimeout(resolve, 1200));
 
         return NextResponse.json({ reply });
 
     } catch (error: any) {
         console.error('Chat API Error:', error);
-        return NextResponse.json({ reply: "I'm having a little trouble connecting to my neural network right now. Please try again later." }, { status: 500 });
+        return NextResponse.json({ reply: "I am having temporary system difficulties. Please try again later." }, { status: 500 });
     }
 }
