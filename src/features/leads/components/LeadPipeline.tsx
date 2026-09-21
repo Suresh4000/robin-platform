@@ -71,7 +71,6 @@ export function LeadPipeline() {
     const [statusFilter, setStatusFilter] = useState<string>('All');
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [googleAccounts, setGoogleAccounts] = useState<any[]>([]);
-    const [selectedGoogleAccount, setSelectedGoogleAccount] = useState<string>('');
 
     // Meet Scheduling & Email Flow
     const [meetFlowState, setMeetFlowState] = useState<{
@@ -126,7 +125,6 @@ export function LeadPipeline() {
             .then(data => {
                 if (data.googleAccounts && data.googleAccounts.length > 0) {
                     setGoogleAccounts(data.googleAccounts);
-                    setSelectedGoogleAccount(data.googleAccounts[0].id);
                 }
             })
             .catch(() => { });
@@ -267,8 +265,8 @@ export function LeadPipeline() {
                     subject: meetSubjectInput,
                     message: meetMessageInput,
                     meetLink: meetLinkInput,
-                    useNativeGcal: !!selectedGoogleAccount,
-                    googleIntegrationId: selectedGoogleAccount,
+                    useNativeGcal: googleAccounts.length > 0,
+                    googleIntegrationId: googleAccounts.length > 0 ? (googleAccounts.find(a => a.email === (localStorage.getItem('activeCalendarAccount') || googleAccounts[0].email)) || googleAccounts[0]).id : null,
                     meetingDateObj: meetDateInput && meetTimeInput ? new Date(`${meetDateInput}T${meetTimeInput}:00`).toISOString() : null
                 })
             });
@@ -728,22 +726,41 @@ export function LeadPipeline() {
                                             : "Create the Google Calendar event and securely lock the date into your CRM Master Calendar."}
                                 </p>
 
-                                {googleAccounts.length > 0 && (
-                                    <div style={{ marginBottom: '16px' }}>
-                                        <label style={{ display: 'block', fontSize: '14px', fontWeight: 600, marginBottom: '8px', color: '#10b981' }}>Select Organizer Account</label>
-                                        <select
-                                            value={selectedGoogleAccount}
-                                            onChange={(e) => setSelectedGoogleAccount(e.target.value)}
-                                            style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #10b981', outline: 'none' }}
-                                        >
-                                            {googleAccounts.map(acc => (
-                                                <option key={acc.id} value={acc.id}>{acc.email}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                )}
+                                {googleAccounts.length > 0 ? (
+                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                        <button
+                                            onClick={async () => {
+                                                await confirmMeetingDate();
+                                                setIsSendingMeet(true);
+                                                try {
+                                                    const activeEmail = localStorage.getItem('activeCalendarAccount') || googleAccounts[0].email;
+                                                    const targetAccount = googleAccounts.find(a => a.email === activeEmail) || googleAccounts[0];
 
-                                {googleAccounts.length === 0 && (
+                                                    await fetch('/api/ops/gcal/events', {
+                                                        method: 'POST',
+                                                        headers: { 'Content-Type': 'application/json' },
+                                                        body: JSON.stringify({
+                                                            accountId: targetAccount.id,
+                                                            leadId: meetFlowState.lead.id,
+                                                            summary: meetSubjectInput || `Meeting with ${meetFlowState.lead.name}`,
+                                                            description: meetMessageInput || 'Business consultation',
+                                                            date: meetDateInput,
+                                                            time: meetTimeInput
+                                                        })
+                                                    });
+                                                    showToast(`Saved to ${targetAccount.email} Calendar!`);
+                                                } catch (e) {
+                                                    console.error(e);
+                                                }
+                                                setIsSendingMeet(false);
+                                            }}
+                                            disabled={isSendingMeet}
+                                            style={{ background: '#4f46e5', color: '#fff', border: 'none', padding: '10px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '14px', fontWeight: 600, flex: 1 }}
+                                        >
+                                            {isSendingMeet ? 'Saving...' : 'Save Date to Calendar'}
+                                        </button>
+                                    </div>
+                                ) : (
                                     <div style={{ display: 'flex', gap: '8px' }}>
                                         <button
                                             onClick={() => openGCalTemplate(meetFlowState.lead, meetDateInput, meetTimeInput)}

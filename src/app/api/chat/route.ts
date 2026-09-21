@@ -40,6 +40,12 @@ export async function POST(req: Request) {
         let reply = "";
         let links: { label: string, url: string }[] = [];
 
+        let userName = "";
+        const nameMatch = lowerMsg.match(/(?:my name is|i'm|im|i am)\s+([a-zA-Z]+)(?=\s|$|\.|!|,)/i);
+        if (nameMatch && nameMatch[1] && !['looking', 'interested', 'here', 'not', 'just', 'a', 'an'].includes(nameMatch[1].toLowerCase())) {
+            userName = nameMatch[1].charAt(0).toUpperCase() + nameMatch[1].slice(1);
+        }
+
         if (emailAcknowledged) {
             reply = "Thank you! I have securely saved your email address. Robin's team will be in touch with you shortly. Is there anything else I can help clarify?";
         }
@@ -80,7 +86,14 @@ export async function POST(req: Request) {
             links.push({ label: 'Contact Page', url: '/contact' });
         }
         else if (/\b(hello|hi|hey|greetings)\b/i.test(lowerMsg)) {
-            reply = "Hello there! I am the automated RobinJones Assistant. Whether you're looking for Fractional Leadership or Strategic Growth Advisory, I'm here to help. What brings you here today?";
+            if (userName) {
+                reply = `Nice to meet you, ${userName}! I am the automated RobinJones Assistant. Whether you're looking for Fractional Leadership or Strategic Growth Advisory, I'm here to help. What brings you here today?`;
+            } else {
+                reply = "Hello there! I am the automated RobinJones Assistant. Whether you're looking for Fractional Leadership or Strategic Growth Advisory, I'm here to help. What brings you here today?";
+            }
+        }
+        else if (userName) {
+            reply = `Nice to meet you, ${userName}! I am the automated RobinJones Assistant. Please feel free to ask me any questions about Robin's services, or drop your email to connect with the team.`;
         }
         else if (lowerMsg.includes('thank')) {
             reply = "You are very welcome! If you need anything else, I'm always here.";

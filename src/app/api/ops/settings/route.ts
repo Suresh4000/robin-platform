@@ -14,7 +14,10 @@ export async function GET() {
         return NextResponse.json({
             googleClientId: admin.googleClientId || '',
             googleClientSecret: admin.googleClientSecret || '',
-            googleAccounts: admin.googleAccounts || []
+            googleAccounts: (admin.googleAccounts || []).map((acc: any) => ({
+                ...acc,
+                expiryDate: acc.expiryDate ? Number(acc.expiryDate) : null
+            }))
         });
     } catch {
         return NextResponse.json({});

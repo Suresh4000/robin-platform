@@ -21,6 +21,21 @@ export default function CalendarPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
     const [connectedAccounts, setConnectedAccounts] = useState<any[]>([]);
+    const [activeAccountEmail, setActiveAccountEmail] = useState<string>('suresh6374000@gmail.com');
+
+    // Retrieve saved state on initial mount
+    useEffect(() => {
+        const savedAccount = localStorage.getItem('activeCalendarAccount');
+        if (savedAccount) {
+            setActiveAccountEmail(savedAccount);
+        }
+    }, []);
+
+    // Hardcoded master accounts array combined with dynamic ones later
+    const baseAccounts = [
+        { id: 'master1', email: 'suresh6374000@gmail.com' },
+        { id: 'master2', email: 'svaanwebsitedevelopmentteam@gmail.com' },
+    ];
 
     useEffect(() => {
         const fetchCalendarData = async () => {
@@ -132,7 +147,7 @@ export default function CalendarPage() {
                 upcomingCombined.sort((a, b) => a.date.getTime() - b.date.getTime());
                 setItems(upcomingCombined);
             } catch (error) {
-                console.error("Failed to load operations schedule");
+                console.error("Failed to load operations schedule:", error);
             } finally {
                 setIsLoading(false);
             }
@@ -158,28 +173,13 @@ export default function CalendarPage() {
 
     const generateIframeUrl = () => {
         const base = 'https://calendar.google.com/calendar/embed?ctz=Asia%2FKolkata&showTitle=0';
-        let sources = '';
-
-        // Define a palette of distinct Google Calendar hex colors
-        const colors = ['%23039BE5', '%2333B679', '%23D50000', '%238E24AA', '%23F6BF26', '%23F4511E', '%233F51B5'];
-
-        // Ensure the Master Calendar is always included
-        sources += `&src=${encodeURIComponent('svaanwebsitedevelopmentteam@gmail.com')}&color=${colors[0]}`;
-
-        // Add integrated accounts layered on top
-        if (connectedAccounts && connectedAccounts.length > 0) {
-            let colorIndex = 1;
-            connectedAccounts.forEach((acc) => {
-                if (acc.email !== 'svaanwebsitedevelopmentteam@gmail.com') {
-                    const color = colors[colorIndex % colors.length];
-                    sources += `&src=${encodeURIComponent(acc.email)}&color=${color}`;
-                    colorIndex++;
-                }
-            });
-        }
-
-        return base + sources;
+        return `${base}&src=${encodeURIComponent(activeAccountEmail)}&color=%23039BE5`;
     };
+
+    const combinedAccountList = [
+        ...baseAccounts,
+        ...connectedAccounts.filter(acc => !baseAccounts.find(b => b.email === acc.email))
+    ];
 
     return (
         <div className={styles.container}>
@@ -200,30 +200,24 @@ export default function CalendarPage() {
                 </button>
             </header>
 
-            {connectedAccounts.length > 0 && (
-                <div style={{ display: 'flex', gap: '8px', marginBottom: '24px', flexWrap: 'wrap', alignItems: 'center' }}>
-                    <span style={{ fontSize: '14px', color: 'var(--text-secondary)', fontWeight: 500 }}>Active Integrations:</span>
-                    {connectedAccounts.map(acc => (
-                        <div key={acc.id} style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#dcfce7', color: '#166534', padding: '4px 12px', borderRadius: '16px', fontSize: '13px', fontWeight: 600, border: '1px solid #bbf7d0' }}>
-                            <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#16a34a' }}></div>
-                            <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                {acc.email}
-                                <button
-                                    onClick={async () => {
-                                        if (confirm(`Remove ${acc.email} from the calendar?`)) {
-                                            await fetch(`/api/ops/gcal/disconnect?id=${acc.id}`, { method: 'DELETE' });
-                                            window.location.reload();
-                                        }
-                                    }}
-                                    style={{ background: 'none', border: 'none', color: '#166534', cursor: 'pointer', opacity: 0.6, padding: '0 4px', fontSize: '16px', lineHeight: 1 }}
-                                >
-                                    &times;
-                                </button>
-                            </span>
-                        </div>
-                    ))}
-                </div>
-            )}
+            <div style={{ display: 'flex', gap: '16px', marginBottom: '24px', flexWrap: 'wrap', alignItems: 'center' }}>
+                <span style={{ fontSize: '15px', color: 'var(--ink-dark)', fontWeight: 600 }}>Active Calendar Source:</span>
+                {combinedAccountList.map(acc => (
+                    <label key={acc.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', background: activeAccountEmail === acc.email ? '#dcfce7' : 'var(--surface-sunken)', color: activeAccountEmail === acc.email ? '#166534' : 'var(--ink-soft)', padding: '8px 16px', borderRadius: '8px', fontSize: '14px', fontWeight: 600, border: `1px solid ${activeAccountEmail === acc.email ? '#bbf7d0' : 'var(--surface-border)'}` }}>
+                        <input
+                            type="radio"
+                            name="activeCalendar"
+                            checked={activeAccountEmail === acc.email}
+                            onChange={() => {
+                                setActiveAccountEmail(acc.email);
+                                localStorage.setItem('activeCalendarAccount', acc.email);
+                            }}
+                            style={{ cursor: 'pointer' }}
+                        />
+                        {acc.email}
+                    </label>
+                ))}
+            </div>
 
             <div style={{
                 backgroundColor: 'var(--surface-default)',
@@ -233,7 +227,6 @@ export default function CalendarPage() {
                 boxShadow: 'var(--shadow-sm)',
                 marginBottom: '40px'
             }}>
-                {/* Dynamic Google Calendar Iframe */}
                 <iframe
                     src={generateIframeUrl()}
                     style={{ border: 0, width: '100%', height: '700px', borderRadius: '8px' }}
