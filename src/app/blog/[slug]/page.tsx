@@ -51,6 +51,7 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
                 <div className="section" style={{ border: 'none', padding: 0 }}>
                     <div
                         className="prose"
+                        suppressHydrationWarning
                         style={{ fontSize: '1.15rem', lineHeight: '1.8', color: 'var(--ink)' }}
                         dangerouslySetInnerHTML={{
                             __html: post.content.replace(/&lt;/g, '<').replace(/&gt;/g, '>')

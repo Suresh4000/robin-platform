@@ -83,6 +83,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
 
                     <div
                         className="prose"
+                        suppressHydrationWarning
                         style={{ fontSize: '17px', lineHeight: 1.7, color: 'var(--ink-soft)' }}
                         dangerouslySetInnerHTML={{ __html: event.description || '<p>No additional details provided.</p>' }}
                     />
