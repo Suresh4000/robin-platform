@@ -36,82 +36,91 @@ export async function POST(req: Request) {
             }
         }
 
-        // 2. ADVANCED RULE-BASED ENGINE (ZERO-API-KEY REQUIRED)
-        let reply = "";
+        // 2. GROQ AI ENGINE
+        const groqApiKey = process.env.GROQ_API_KEY;
+        if (!groqApiKey) {
+            return NextResponse.json({
+                reply: "The Groq AI engine has been installed! However, you need to add your `GROQ_API_KEY` to the `.env` file for me to respond intelligently.",
+                links: []
+            });
+        }
+
+        // Format history for Groq API
+        const groqMessages = [{
+            role: "system",
+            content: `You are the automated RobinJones Assistant. You manage inquiries for Robin Jones. 
+            
+CRITICAL FACTS ABOUT ROBIN TO MEMORIZE:
+- Robin has 26+ years of experience driving growth, partnerships, and transformation across business, government, and mission-driven organizations. (Do NOT say 20, say 26+).
+- Core Services: 1. Advise (Strategic Growth), 2. Operate (Fractional Executive), 3. Navigate (Executive Advisory).
+
+CRITICAL RULES:
+1. You MUST ONLY answer questions related to Robin Jones, his 26+ years of experience, his fractional executive services, strategic advisory, leadership, or business transformation. 
+2. If a user asks ANYTHING unrelated to Robin Jones or his business, you MUST politely decline and pivot back to Robin's services.
+3. Be highly concise, professional, warm, and helpful. 
+4. If a user provides an email, acknowledge it and say the team will follow up.`
+        }];
+
+        if (history && history.length > 0) {
+            history.forEach((msg: any) => {
+                groqMessages.push({
+                    role: msg.sender === 'user' ? 'user' : 'assistant',
+                    content: msg.text
+                });
+            });
+        }
+        groqMessages.push({ role: "user", content: message });
+
+        const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${groqApiKey}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                model: "openai/gpt-oss-120b",
+                messages: groqMessages,
+                temperature: 0.7,
+                max_tokens: 1024,
+            })
+        });
+
+        if (!groqRes.ok) {
+            const errBody = await groqRes.text();
+            throw new Error(`Groq API Error: ${errBody}`);
+        }
+
+        const groqData = await groqRes.json();
+        const aiReply = groqData.choices[0]?.message?.content || "I am currently processing your request.";
+
+        // --- DYNAMIC RELATABLE LINKS SCANNER ---
+        // We scan the AI's final natural language response to inject interactive buttons for the user
         let links: { label: string, url: string }[] = [];
+        const lowerReply = aiReply.toLowerCase();
 
-        let userName = "";
-        const nameMatch = lowerMsg.match(/(?:my name is|i'm|im|i am)\s+([a-zA-Z]+)(?=\s|$|\.|!|,)/i);
-        if (nameMatch && nameMatch[1] && !['looking', 'interested', 'here', 'not', 'just', 'a', 'an'].includes(nameMatch[1].toLowerCase())) {
-            userName = nameMatch[1].charAt(0).toUpperCase() + nameMatch[1].slice(1);
-        }
-
-        if (emailAcknowledged) {
-            reply = "Thank you! I have securely saved your email address. Robin's team will be in touch with you shortly. Is there anything else I can help clarify?";
-        }
-        else if (lowerMsg.includes('price') || lowerMsg.includes('cost') || lowerMsg.includes('fee')) {
-            reply = "Because every organization's needs are unique, Robin's Fractional Executive and Advisory services are custom-quoted. I'd highly recommend booking a discovery conversation so we can understand your specific growth goals! Could I get your email address?";
-            links.push({ label: 'Book a Conversation', url: '/contact' });
-        }
-        else if (lowerMsg.includes('service') || lowerMsg.includes('offer') || lowerMsg.includes('help') || lowerMsg.includes('do you do') || lowerMsg.includes('provide')) {
-            reply = "Robin offers three primary ways to engage: 1. Advise (Strategic Growth & Partnerships). 2. Operate (Fractional Executive Leadership). 3. Navigate (Executive Advisory). Which of these areas are you most interested in?";
-            links.push({ label: 'View All Services', url: '/services' });
-        }
-        else if (lowerMsg.includes('about') || lowerMsg.includes('who is') || lowerMsg.includes('background') || lowerMsg.includes('profile') || lowerMsg.includes('who are')) {
-            reply = "Robin Jones is a Fractional Executive and Strategic Growth Advisor with 26+ years of experience driving growth, partnerships, and transformation across business, government, and mission-driven organizations. Would you like to know more about his specific services?";
-            links.push({ label: 'About Robin', url: '/about' });
-        }
-        else if (lowerMsg.includes('experi') || lowerMsg.includes('impact') || lowerMsg.includes('portfolio') || lowerMsg.includes('work') || lowerMsg.includes('case') || lowerMsg.includes('client') || lowerMsg.includes('result')) {
-            reply = "Robin has a rich portfolio of 26+ years of executive leadership, focusing on enterprise value, operational alignment, and strategic partnerships. You can view detailed case studies on the 'Experience & Impact' page, or provide your email here to discuss your organization's specific needs!";
+        if (lowerReply.includes('experience') || lowerReply.includes('portfolio') || lowerReply.includes('case') || lowerReply.includes('year')) {
             links.push({ label: 'Experience & Impact', url: '/portfolio' });
         }
-        else if (lowerMsg.includes('blog') || lowerMsg.includes('article') || lowerMsg.includes('read') || lowerMsg.includes('insight') || lowerMsg.includes('post')) {
-            reply = "Robin regularly shares thoughts on leadership, growth, and transformation. You can head over to our 'Insights & Media' or 'Blog' sections at the top of the page to read the latest articles. Let me know if you want to be added to our mailing list by dropping your email!";
-            links.push({ label: 'Read the Blog', url: '/blog' }, { label: 'Insights & Media', url: '/insights' });
+        if (lowerReply.includes('advise') || lowerReply.includes('operate') || lowerReply.includes('navigate') || lowerReply.includes('service')) {
+            links.push({ label: 'View Services', url: '/services' });
         }
-        else if (lowerMsg.includes('advise') || lowerMsg.includes('partnership') || lowerMsg.includes('strategic growth')) {
-            reply = "Our 'Advise' service focuses on strategic growth and building partnership ecosystems that you can actually execute. It's perfect for scaling your market reach. Would you like to schedule a call to discuss this?";
-            links.push({ label: 'Advise Service', url: '/advise' });
+        if (lowerReply.includes('about') || lowerReply.includes('background') || lowerReply.includes('bio')) {
+            links.push({ label: 'About Robin', url: '/about' });
         }
-        else if (lowerMsg.includes('operate') || lowerMsg.includes('fractional') || lowerMsg.includes('executive')) {
-            reply = "The 'Operate' service embeds Robin as a Fractional Executive in your team! You gain senior leadership capability without a long-term permanent hire. It's highly effective for growth pushes. Should I flag your email for a follow-up?";
-            links.push({ label: 'Operate Service', url: '/operate' });
+        if (lowerReply.includes('contact') || lowerReply.includes('book') || lowerReply.includes('schedule') || lowerReply.includes('reach out')) {
+            links.push({ label: 'Book a Conversation', url: '/contact' });
         }
-        else if (lowerMsg.includes('navigate') || lowerMsg.includes('advisory') || lowerMsg.includes('advice') || lowerMsg.includes('confidant')) {
-            reply = "For 'Navigate', Robin provides experienced executive advisory perspectives on specific challenges—without a full project engagement. It's essentially having a high-level confidant for your boardroom decisions.";
-            links.push({ label: 'Navigate Service', url: '/navigate' });
-        }
-        else if (lowerMsg.includes('contact') || lowerMsg.includes('book') || lowerMsg.includes('talk') || lowerMsg.includes('schedule') || lowerMsg.includes('meeting') || lowerMsg.includes('reach out') || lowerMsg.includes('connect') || lowerMsg.includes('speak') || lowerMsg.includes('get in touch')) {
-            reply = "I can certainly help you get in touch. Please provide your email address right here in the chat, or you can use the 'Book a Conversation' button at the top of the website!";
-            links.push({ label: 'Contact Page', url: '/contact' });
-        }
-        else if (/\b(hello|hi|hey|greetings)\b/i.test(lowerMsg)) {
-            if (userName) {
-                reply = `Nice to meet you, ${userName}! I am the automated RobinJones Assistant. Whether you're looking for Fractional Leadership or Strategic Growth Advisory, I'm here to help. What brings you here today?`;
-            } else {
-                reply = "Hello there! I am the automated RobinJones Assistant. Whether you're looking for Fractional Leadership or Strategic Growth Advisory, I'm here to help. What brings you here today?";
-            }
-        }
-        else if (userName) {
-            reply = `Nice to meet you, ${userName}! I am the automated RobinJones Assistant. Please feel free to ask me any questions about Robin's services, or drop your email to connect with the team.`;
-        }
-        else if (lowerMsg.includes('thank')) {
-            reply = "You are very welcome! If you need anything else, I'm always here.";
-        }
-        else if (/\b(yes|sure|ok|okay|yeah|yep|please)\b/i.test(lowerMsg)) {
-            reply = "Excellent! Please type your best email address right here in the chat, and I will securely send it to Robin's team to set everything up.";
-        }
-        else {
-            reply = "I understand. As an automated assistant, my primary expertise revolves around Robin's Fractional Executive services, Strategic Growth, and Advisory. Could I get your email address so a real human on the team can review this and reach out to you?";
+        if (lowerReply.includes('blog') || lowerReply.includes('insight') || lowerReply.includes('read') || lowerReply.includes('article')) {
+            links.push({ label: 'Insights & Media', url: '/insights' });
         }
 
-        // Add a slight artificial delay to make it feel "human" like it's typing
-        await new Promise(resolve => setTimeout(resolve, 1200));
+        // Limit to maximum 2 buttons so we don't overwhelm the chat interface
+        links = links.slice(0, 2);
 
-        return NextResponse.json({ reply, links });
+        return NextResponse.json({ reply: aiReply, links: links });
 
     } catch (error: any) {
         console.error('Chat API Error:', error);
-        return NextResponse.json({ reply: "I am having temporary system difficulties. Please try again later.", links: [] }, { status: 500 });
+        return NextResponse.json({ reply: "I am having temporary system difficulties connecting to the Groq AI brain. Please try again later.", links: [] }, { status: 500 });
     }
 }
