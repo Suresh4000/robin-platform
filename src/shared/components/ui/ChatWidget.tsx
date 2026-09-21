@@ -14,7 +14,7 @@ type Message = {
 export function ChatWidget() {
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState<Message[]>([
-        { id: '1', role: 'assistant', content: 'Hello! I am the Robin Business Hub AI Assistant. How can I help you today?' }
+        { id: '1', role: 'assistant', content: 'Hello! I am the automated RobinJones Assistant. How can I help you today?' }
     ]);
     const [input, setInput] = useState('');
     const [isTyping, setIsTyping] = useState(false);
@@ -151,11 +151,11 @@ export function ChatWidget() {
                                 <div style={{ width: '8px', height: '8px', background: '#10b981', borderRadius: '50%', boxShadow: '0 0 8px #10b981' }}></div>
                                 AI Assistant
                             </h3>
-                            <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: '#a7f3d0' }}>Lead Gen & Consultant</p>
+                            {/* <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: '#a7f3d0' }}>Lead Gen & Consultant</p> */}
                         </div>
                         <div style={{ display: 'flex', gap: '8px' }}>
                             <button
-                                onClick={() => setMessages([{ id: Date.now().toString(), role: 'assistant', content: 'Hello! I am the automated Robin Business Hub Assistant. How can I help you today?' }])}
+                                onClick={() => setMessages([{ id: Date.now().toString(), role: 'assistant', content: 'Hello! I am the automated RobinJones Assistant. How can I help you today?' }])}
                                 title="Clear Chat"
                                 style={{ background: 'rgba(255,255,255,0.2)', border: 'none', color: '#fff', cursor: 'pointer', padding: '6px', borderRadius: '50%' }}
                             >

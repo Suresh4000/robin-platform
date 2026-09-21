@@ -80,7 +80,7 @@ export async function POST(req: Request) {
             links.push({ label: 'Contact Page', url: '/contact' });
         }
         else if (/\b(hello|hi|hey|greetings)\b/i.test(lowerMsg)) {
-            reply = "Hello there! I am the automated Robin Business Hub Assistant. Whether you're looking for Fractional Leadership or Strategic Growth Advisory, I'm here to help. What brings you here today?";
+            reply = "Hello there! I am the automated RobinJones Assistant. Whether you're looking for Fractional Leadership or Strategic Growth Advisory, I'm here to help. What brings you here today?";
         }
         else if (lowerMsg.includes('thank')) {
             reply = "You are very welcome! If you need anything else, I'm always here.";
