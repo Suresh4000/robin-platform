@@ -41,6 +41,12 @@ export async function POST(req: Request) {
         else if (lowerMsg.includes('service') || lowerMsg.includes('offer') || lowerMsg.includes('help')) {
             reply = "Robin offers three primary ways to engage: 1. Advise (Strategic Growth & Partnerships). 2. Operate (Fractional Executive Leadership). 3. Navigate (Executive Advisory). Which of these areas are you most interested in?";
         }
+        else if (lowerMsg.includes('about') || lowerMsg.includes('who is') || lowerMsg.includes('background')) {
+            reply = "Robin Jones is a Fractional Executive and Strategic Growth Advisor with 26+ years of experience driving growth, partnerships, and transformation across business, government, and mission-driven organizations. Would you like to know more about his specific services?";
+        }
+        else if (lowerMsg.includes('experience') || lowerMsg.includes('impact') || lowerMsg.includes('portfolio') || lowerMsg.includes('work')) {
+            reply = "Robin has a rich portfolio of executive leadership, focusing on enterprise value, operational alignment, and strategic partnerships. You can view detailed case studies on the 'Experience & Impact' page, or provide your email here to discuss your organization's specific needs!";
+        }
         else if (lowerMsg.includes('advise') || lowerMsg.includes('partnership')) {
             reply = "Our 'Advise' service focuses on strategic growth and building partnership ecosystems that you can actually execute. It's perfect for scaling your market reach. Would you like to schedule a call to discuss this?";
         }
@@ -59,8 +65,11 @@ export async function POST(req: Request) {
         else if (lowerMsg.includes('thank')) {
             reply = "You are very welcome! If you need anything else, I'm always here.";
         }
+        else if (lowerMsg === 'yes' || lowerMsg.includes(' sure') || lowerMsg.includes('ok') || lowerMsg.includes('yeah') || lowerMsg === 'yep') {
+            reply = "Excellent! Please type your best email address right here in the chat, and I will securely send it to Robin's team to set everything up.";
+        }
         else {
-            reply = "That's an interesting point! As an automated assistant, my expertise revolves around Robin's Fractional Executive services, Strategic Growth, and Advisory. Could I get your email address so a real human on the team can reach out and give you a more tailored answer?";
+            reply = "I understand. As an automated assistant, my expertise revolves around Robin's Fractional Executive services, Strategic Growth, and Advisory. Could I get your email address so a real human on the team can reach out and give you a more customized answer?";
         }
 
         // Add a slight artificial delay to make it feel "human" like it's typing
