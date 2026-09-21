@@ -3,6 +3,7 @@ import { prisma } from '@/shared/lib/prisma';
 import '@/app/public-contour.css';
 import { notFound } from 'next/navigation';
 import { EventRegistrationForm } from './EventRegistrationForm';
+import { PublicNav, PublicFooter } from '@/app/PublicLayout';
 
 export default async function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const resolvedParams = await params;
@@ -24,13 +25,18 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
 
     return (
         <div className="layout-body" style={{ background: '#F6F3EC', minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+            <PublicNav />
+            <main style={{ flex: 1, padding: '40px 0 80px', paddingTop: '50px' }}>
+                <div className="container" style={{ maxWidth: '1000px', margin: '0 auto' }}>
 
-            <main style={{ flex: 1, padding: '40px 0 80px' }}>
-                <div className="container" style={{ maxWidth: '800px', margin: '0 auto' }}>
-
-                    <a href="/events" className="btn btn-ghost" style={{ display: 'inline-flex', marginBottom: '32px' }}>
-                        &larr; Back to events
-                    </a>
+                    <div style={{ marginBottom: '32px', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13.5px', color: 'var(--ink-soft)', fontWeight: 500, fontFamily: 'var(--mono)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                        <a href="/" style={{ textDecoration: 'none', color: 'inherit', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                            Home
+                        </a>
+                        <span style={{ color: 'var(--line-strong)' }}>/</span>
+                        <a href="/events" style={{ textDecoration: 'none', color: 'inherit' }}>Events</a>
+                    </div>
 
                     {event.bannerImage && (
                         <div style={{ width: '100%', height: '350px', borderRadius: '24px', overflow: 'hidden', marginBottom: '40px', boxShadow: '0 20px 40px -15px rgba(20,15,5,.15)' }}>
@@ -44,7 +50,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
                             {isPast && <span className="tag" style={{ background: '#e2ddd4', color: '#666' }}>Past Event</span>}
                         </div>
 
-                        <h1 style={{ fontSize: '3.2rem', fontWeight: 800, color: 'var(--ink-dark)', lineHeight: 1.1, marginBottom: '24px', letterSpacing: '-0.02em' }}>
+                        <h1 style={{ fontSize: 'clamp(28px, 4vw, 42px)', fontWeight: 800, color: 'var(--ink-dark)', lineHeight: 1.2, marginBottom: '24px', letterSpacing: '-0.02em' }}>
                             {event.title}
                         </h1>
 
@@ -102,6 +108,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
 
                 </div>
             </main>
+            <PublicFooter />
         </div>
     );
 }

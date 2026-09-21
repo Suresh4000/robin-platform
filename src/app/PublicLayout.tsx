@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import './public-contour.css';
 import { ChatWidget } from '@/shared/components/ui/ChatWidget';
 
-export function PublicNav() {
+export function PublicNav({ activeOverride }: { activeOverride?: string } = {}) {
   const pathname = usePathname();
   const [navOpen, setNavOpen] = useState(false);
   const navClass = "nav-links" + (navOpen ? " open" : "");
@@ -34,18 +34,18 @@ export function PublicNav() {
             </span>
           </Link>
           <div className={navClass}>
-            <Link className={pathname.startsWith('/about') ? 'active' : ''} href="/about" onClick={() => setNavOpen(false)}>About</Link>
-            <Link className={pathname.startsWith('/portfolio') ? 'active' : ''} href="/portfolio" onClick={() => setNavOpen(false)}>Experience &amp; Impact</Link>
+            <Link className={(activeOverride === 'about' || (!activeOverride && pathname.startsWith('/about'))) ? 'active' : ''} href="/about" onClick={() => setNavOpen(false)}>About</Link>
+            <Link className={(activeOverride === 'portfolio' || (!activeOverride && pathname.startsWith('/portfolio'))) ? 'active' : ''} href="/portfolio" onClick={() => setNavOpen(false)}>Experience &amp; Impact</Link>
             <div className="nav-item-dropdown">
-              <Link className={pathname.startsWith('/services') ? 'active' : ''} href="/services" onClick={() => setNavOpen(false)}>Services</Link>
+              <Link className={(activeOverride === 'services' || (!activeOverride && pathname.startsWith('/services'))) ? 'active' : ''} href="/services" onClick={() => setNavOpen(false)}>Services</Link>
               <div className="nav-dropdown-menu">
                 <Link className={pathname.startsWith('/advise') ? 'active' : ''} href="/advise" onClick={() => setNavOpen(false)}>Advise</Link>
                 <Link className={pathname.startsWith('/operate') ? 'active' : ''} href="/operate" onClick={() => setNavOpen(false)}>Operate</Link>
                 <Link className={pathname.startsWith('/navigate') ? 'active' : ''} href="/navigate" onClick={() => setNavOpen(false)}>Navigate</Link>
               </div>
             </div>
-            <Link className={pathname.startsWith('/insights') ? 'active' : ''} href="/insights" onClick={() => setNavOpen(false)}>Insights &amp; Media</Link>
-            <Link className={pathname.startsWith('/blog') ? 'active' : ''} href="/blog" onClick={() => setNavOpen(false)}>Blog</Link>
+            <Link className={(activeOverride === 'insights' || (!activeOverride && pathname.startsWith('/insights'))) ? 'active' : ''} href="/insights" onClick={() => setNavOpen(false)}>Insights &amp; Media</Link>
+            <Link className={(activeOverride === 'blog' || (!activeOverride && pathname.startsWith('/blog'))) ? 'active' : ''} href="/blog" onClick={() => setNavOpen(false)}>Blog</Link>
             {/* <Link className={pathname.startsWith('/events') ? 'active' : ''} href="/events" onClick={() => setNavOpen(false)}>Events</Link> */}
           </div>
           <div className="nav-cta">
