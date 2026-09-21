@@ -82,93 +82,95 @@ export default function SettingsPage() {
 
             <div style={{ display: 'grid', gap: '32px', gridTemplateColumns: '1fr', maxWidth: '800px' }}>
 
-                {/* Google Calendar OAuth Integrations */}
-                <div style={{ background: 'var(--surface-default)', padding: '24px', borderRadius: '12px', border: '1px solid var(--surface-border)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                        <CalIcon size={20} style={{ color: '#4f46e5' }} />
-                        <h2 style={{ fontSize: '18px', fontWeight: 600 }}>Google Calendar Integration (OAuth)</h2>
-                    </div>
-                    <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '24px' }}>
-                        Configure your Google Cloud OAuth application credentials, then connect your personal or team Google Calendar accounts.
-                    </p>
+                {/* Google Calendar OAuth Integrations - temporarily hidden per request */}
+                {false && (
+                    <div style={{ background: 'var(--surface-default)', padding: '24px', borderRadius: '12px', border: '1px solid var(--surface-border)' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
+                            <CalIcon size={20} style={{ color: '#4f46e5' }} />
+                            <h2 style={{ fontSize: '18px', fontWeight: 600 }}>Google Calendar Integration (OAuth)</h2>
+                        </div>
+                        <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '24px' }}>
+                            Configure your Google Cloud OAuth application credentials, then connect your personal or team Google Calendar accounts.
+                        </p>
 
-                    <div className={formStyles.formGroup}>
-                        <label className={formStyles.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            Google Client ID
-                            <button onClick={() => setActiveHelp('oauth')} style={{ background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', color: 'var(--color-primary)' }}>
-                                <Info size={16} />
+                        <div className={formStyles.formGroup}>
+                            <label className={formStyles.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                Google Client ID
+                                <button onClick={() => setActiveHelp('oauth')} style={{ background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', color: 'var(--color-primary)' }}>
+                                    <Info size={16} />
+                                </button>
+                            </label>
+                            <input
+                                className={formStyles.input}
+                                placeholder='e.g. 123456789-xxxx.apps.googleusercontent.com'
+                                value={googleClientId}
+                                onChange={(e) => setGoogleClientId(e.target.value)}
+                            />
+                        </div>
+
+                        <div className={formStyles.formGroup} style={{ marginTop: '16px' }}>
+                            <label className={formStyles.label}>
+                                Google Client Secret
+                            </label>
+                            <input
+                                type="password"
+                                className={formStyles.input}
+                                placeholder='e.g. GOCSPX-xxxx'
+                                value={googleClientSecret}
+                                onChange={(e) => setGoogleClientSecret(e.target.value)}
+                            />
+                        </div>
+
+                        <div style={{ marginTop: '32px', paddingTop: '24px', borderTop: '1px solid var(--surface-border)' }}>
+                            <h3 style={{ fontSize: '15px', fontWeight: 600, marginBottom: '16px' }}>Connected Accounts</h3>
+                            {googleAccounts.length === 0 ? (
+                                <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '16px' }}>No calendar accounts connected yet.</p>
+                            ) : (
+                                <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 16px 0', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                    {googleAccounts.map(acc => (
+                                        <li key={acc.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f8fafc', padding: '12px 16px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                                <div style={{ width: '8px', height: '8px', background: '#10b981', borderRadius: '50%' }}></div>
+                                                <span style={{ fontWeight: 500 }}>{acc.email}</span>
+                                            </div>
+                                            <button
+                                                onClick={() => handleDisconnect(acc.id)}
+                                                style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', fontSize: '13px', fontWeight: 500 }}
+                                            >
+                                                Disconnect
+                                            </button>
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+
+                            <button
+                                disabled={!googleClientId || !googleClientSecret || isSaving}
+                                onClick={async () => {
+                                    setIsSaving(true);
+                                    try {
+                                        const res = await fetch('/api/ops/settings', {
+                                            method: 'PATCH',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({ googleClientId, googleClientSecret })
+                                        });
+                                        if (!res.ok) throw new Error('Network error');
+                                        window.location.href = '/api/ops/gcal/auth';
+                                    } catch (e) {
+                                        setToast('Failed to save settings');
+                                        setIsSaving(false);
+                                    }
+                                }}
+                                style={{ background: (!googleClientId || !googleClientSecret) ? '#e2e8f0' : '#4f46e5', color: (!googleClientId || !googleClientSecret) ? '#94a3b8' : '#fff', border: 'none', padding: '10px 16px', borderRadius: '8px', cursor: (!googleClientId || !googleClientSecret) ? 'not-allowed' : 'pointer', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}
+                            >
+                                + Connect Google Account
                             </button>
-                        </label>
-                        <input
-                            className={formStyles.input}
-                            placeholder='e.g. 123456789-xxxx.apps.googleusercontent.com'
-                            value={googleClientId}
-                            onChange={(e) => setGoogleClientId(e.target.value)}
-                        />
+                            {(!googleClientId || !googleClientSecret) && (
+                                <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '8px' }}>Please save your Client ID and Secret above before connecting an account.</p>
+                            )}
+                        </div>
                     </div>
-
-                    <div className={formStyles.formGroup} style={{ marginTop: '16px' }}>
-                        <label className={formStyles.label}>
-                            Google Client Secret
-                        </label>
-                        <input
-                            type="password"
-                            className={formStyles.input}
-                            placeholder='e.g. GOCSPX-xxxx'
-                            value={googleClientSecret}
-                            onChange={(e) => setGoogleClientSecret(e.target.value)}
-                        />
-                    </div>
-
-                    <div style={{ marginTop: '32px', paddingTop: '24px', borderTop: '1px solid var(--surface-border)' }}>
-                        <h3 style={{ fontSize: '15px', fontWeight: 600, marginBottom: '16px' }}>Connected Accounts</h3>
-                        {googleAccounts.length === 0 ? (
-                            <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '16px' }}>No calendar accounts connected yet.</p>
-                        ) : (
-                            <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 16px 0', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                {googleAccounts.map(acc => (
-                                    <li key={acc.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#f8fafc', padding: '12px 16px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                            <div style={{ width: '8px', height: '8px', background: '#10b981', borderRadius: '50%' }}></div>
-                                            <span style={{ fontWeight: 500 }}>{acc.email}</span>
-                                        </div>
-                                        <button
-                                            onClick={() => handleDisconnect(acc.id)}
-                                            style={{ color: '#ef4444', background: 'none', border: 'none', cursor: 'pointer', fontSize: '13px', fontWeight: 500 }}
-                                        >
-                                            Disconnect
-                                        </button>
-                                    </li>
-                                ))}
-                            </ul>
-                        )}
-
-                        <button
-                            disabled={!googleClientId || !googleClientSecret || isSaving}
-                            onClick={async () => {
-                                setIsSaving(true);
-                                try {
-                                    const res = await fetch('/api/ops/settings', {
-                                        method: 'PATCH',
-                                        headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({ googleClientId, googleClientSecret })
-                                    });
-                                    if (!res.ok) throw new Error('Network error');
-                                    window.location.href = '/api/ops/gcal/auth';
-                                } catch (e) {
-                                    setToast('Failed to save settings');
-                                    setIsSaving(false);
-                                }
-                            }}
-                            style={{ background: (!googleClientId || !googleClientSecret) ? '#e2e8f0' : '#4f46e5', color: (!googleClientId || !googleClientSecret) ? '#94a3b8' : '#fff', border: 'none', padding: '10px 16px', borderRadius: '8px', cursor: (!googleClientId || !googleClientSecret) ? 'not-allowed' : 'pointer', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}
-                        >
-                            + Connect Google Account
-                        </button>
-                        {(!googleClientId || !googleClientSecret) && (
-                            <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '8px' }}>Please save your Client ID and Secret above before connecting an account.</p>
-                        )}
-                    </div>
-                </div>
+                )}
 
                 {/* Profile Settings */}
                 <div style={{ background: 'var(--surface-default)', padding: '24px', borderRadius: '12px', border: '1px solid var(--surface-border)' }}>
