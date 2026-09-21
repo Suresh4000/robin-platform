@@ -626,6 +626,7 @@ body.nav-lock {
   padding: 14px 16px;
   box-shadow: 0 20px 40px -16px rgba(20, 15, 5, .25);
   font-family: var(--mono);
+  z-index: 10;
 }
 
 .float-card .n {
@@ -666,14 +667,32 @@ body.nav-lock {
   }
 
   .float-1 {
-    top: -8%;
-    left: -12%;
+    top: -4%;
+    left: -4%;
+  }
+
+  .float-2 {
+    bottom: -2%;
+    right: -4%;
   }
 
   .section {
     padding: 50px 0 !important;
   }
+}
 
+@media (max-width:480px) {
+  .float-1 {
+    top: -6%;
+    left: 2%;
+    /* Bring it inside slightly to avoid bleeding left */
+  }
+
+  .float-2 {
+    bottom: -4%;
+    right: 2%;
+    /* Bring it inside slightly to avoid bleeding right */
+  }
 }
 
 /* ============ SECTION ============ */
