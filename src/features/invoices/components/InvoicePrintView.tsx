@@ -16,7 +16,7 @@ export function InvoicePrintView({ invoice, onClose }: { invoice: any, onClose: 
             filename: `Invoice_${invoice.id.substring(0, 6).toUpperCase()}.pdf`,
             image: { type: 'jpeg' as const, quality: 0.98 },
             html2canvas: { scale: 2 },
-            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' as const }
         };
 
         html2pdf().set(opt).from(element).save();

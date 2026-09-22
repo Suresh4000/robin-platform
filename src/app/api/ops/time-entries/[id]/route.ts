@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 
+const prisma = new PrismaClient();
 
 export async function PATCH(request: Request, context: { params: Promise<{ id: string }> }) {
     const params = await context.params;
