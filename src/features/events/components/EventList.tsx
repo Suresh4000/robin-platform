@@ -7,6 +7,7 @@ import { SlideDrawer } from '@/shared/components/ui/Modal';
 import { EventForm } from './EventForm';
 import { AttendeesList } from './AttendeesList';
 import { FilterBar } from '@/shared/components/ui/FilterBar';
+import { Loader } from '@/shared/components/ui/Loader';
 
 type EventData = {
     id: string;
@@ -143,7 +144,7 @@ export function EventList() {
             )}
 
             {isLoading ? (
-                <div style={{ color: 'var(--text-muted)' }}>Loading records...</div>
+                <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "60vh", width: "100%" }}><Loader width={60} height={60} /></div>
             ) : (view === 'Active' ? events.filter(e => e.status !== 'Trash') : events.filter(e => e.status === 'Trash')).length === 0 ? (
                 <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)', border: '1px dashed var(--surface-border)', borderRadius: '8px' }}>
                     No events here.

@@ -17,10 +17,6 @@ const manrope = Manrope({
 export const metadata: Metadata = {
   title: 'Robin Jones',
   description: 'Business management platform and portfolio for Robin Jones',
-  robots: {
-    index: false,
-    follow: false,
-  }
 };
 
 export default function RootLayout({

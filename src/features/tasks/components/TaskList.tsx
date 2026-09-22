@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import styles from './TaskList.module.css';
 import { Trash2, Folder } from 'lucide-react';
+import { Loader } from '@/shared/components/ui/Loader';
 
 const IcoCheck = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" width={13} height={13}><polyline points="20 6 9 17 4 12" /></svg>;
 const IcoPlus = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" width={16} height={16}><path d="M12 5v14M5 12h14" /></svg>;
@@ -95,7 +96,7 @@ export function TaskList() {
             </header>
 
             {isLoading ? (
-                <div style={{ color: 'var(--text-muted)' }}>Loading tasks...</div>
+                <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "60vh", width: "100%" }}><Loader width={60} height={60} /></div>
             ) : tasks.length === 0 ? (
                 <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)', border: '1px dashed var(--surface-border)', borderRadius: '8px' }}>
                     No active tasks. Add tasks from inside a Project Workspace.
