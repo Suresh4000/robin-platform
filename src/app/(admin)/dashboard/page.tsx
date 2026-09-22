@@ -205,7 +205,6 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                     </h2>
                     <div style={{ display: 'flex', gap: '4px', background: 'var(--surface-default)', padding: '4px', borderRadius: '8px', border: '1px solid var(--surface-border)', flexWrap: 'wrap' }}>
                         <ViewFilterLink value="all" label="All" />
-                        <ViewFilterLink value="events" label="Events" />
                         <ViewFilterLink value="blog" label="Blog" />
                         <ViewFilterLink value="schedules" label="Schedules" />
                     </div>
@@ -213,35 +212,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
 
-                    {/* Events View */}
-                    {(view === 'all' || view === 'events') && (
-                        <>
-                            {upcomingEvents.length > 0 ? upcomingEvents.map(event => (
-                                <div key={event.id} className='activity-row' style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '16px', background: 'var(--surface-default)', border: '1px solid var(--surface-border)', borderRadius: '8px' }}>
-                                    <div style={{ padding: '10px', background: 'var(--surface-sunken)', borderRadius: '8px' }}>
-                                        <Calendar size={18} style={{ color: 'var(--color-primary)' }} />
-                                    </div>
-                                    <div style={{ flex: 1 }}>
-                                        <div style={{ fontWeight: 600, color: 'var(--text-title)' }}>{event.title}</div>
-                                        <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>{event.type} • {event.location}</div>
-                                    </div>
-                                    <div style={{ fontSize: '13.5px', fontWeight: 500, color: 'var(--text-title)' }}>
-                                        {event.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
-                                    </div>
-                                </div>
-                            )) : view === 'events' && (
-                                <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text-muted)', border: '1px dashed var(--surface-border)', borderRadius: '8px' }}>
-                                    No upcoming events.
-                                </div>
-                            )}
-
-                            {view === 'events' && (
-                                <Link href="/ops/events" style={{ display: 'block', textAlign: 'center', padding: '12px', background: 'var(--surface-sunken)', color: 'var(--color-primary)', borderRadius: '8px', textDecoration: 'none', fontWeight: 600, marginTop: '8px' }}>
-                                    View More Events
-                                </Link>
-                            )}
-                        </>
-                    )}
+                    {/* Events View Hidden */}
 
                     {/* Blog View */}
                     {(view === 'all' || view === 'blog') && (

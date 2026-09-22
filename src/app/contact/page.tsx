@@ -199,17 +199,14 @@ Message: ${formData.notes}`;
                     <div className="ic"><svg aria-hidden="true" className="icon-linkedin" fill="currentColor" viewBox="0 0 24 24"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.12 20.45H3.56V9h3.56v11.45Z"></path></svg></div>
                     <div><h5>LinkedIn</h5><p>Connect with Robin directly for updates and conversation.</p></div>
                   </div>
-                  <div className="row">
-                    <div className="ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z" /><path d="M19 10v2a7 7 0 0 1-14 0v-2" /><line x1="12" y1="19" x2="12" y2="22" /></svg></div>
-                    <div><h5>Speaking &amp; Events</h5><p>Available for executive conversations, leadership events, workshops, and panels.</p></div>
-                  </div>
+
                   <div className="row">
                     <div className="ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m11 17 2 2a1 1 0 1 0 3-3" /><path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4" /><path d="m21 3 1 11h-2" /><path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3" /><path d="M3 4h8" /></svg></div>
                     <div><h5>Partnership Enquiries</h5><p>For organisations exploring a strategic partnership or collaboration.</p></div>
                   </div>
                   <div className="row">
                     <div className="ic"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /></svg></div>
-                    <div><h5>Email</h5><p><a href="mailto:robinjones@gmail.com" style={{ "color": "var(--brass-deep)", "fontWeight": "600" }}>robinjones@gmail.com</a></p></div>
+                    <div><h5>Email</h5><p><a href="mailto:robinj@stanfordalumni.org" style={{ "color": "var(--brass-deep)", "fontWeight": "600" }}>robinj@stanfordalumni.org</a></p></div>
                   </div>
                 </div>
               </div>

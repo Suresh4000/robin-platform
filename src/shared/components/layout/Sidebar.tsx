@@ -14,7 +14,6 @@ const ROUTES = [
     { path: '/crm/clients', label: 'Client Workspace', Icon: Users },
     { path: '/ops/projects', label: 'Projects', Icon: HardHat },
     { path: '/ops/calendar', label: 'Calendar', Icon: Calendar },
-    { path: '/ops/events', label: 'Events', Icon: Building },
     { path: '/ops/documents', label: 'Documents', Icon: FolderOpen },
     { path: '/ops/invoices', label: 'Billing/Invoices', Icon: DollarSign },
     { path: '/content/blog', label: 'Blog CMS', Icon: FileText },
