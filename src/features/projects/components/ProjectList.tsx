@@ -7,6 +7,7 @@ import { ProjectForm } from './ProjectForm';
 import { Trash2, Folder } from 'lucide-react';
 import { ExportButton } from '@/shared/components/ui/ExportButton';
 import { FilterBar } from '@/shared/components/ui/FilterBar';
+import { Loader } from '@/shared/components/ui/Loader';
 
 /* ── Inline SVGs ── */
 const IcoPlus = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" width={16} height={16}><path d="M12 5v14M5 12h14" /></svg>;
@@ -169,7 +170,7 @@ function ProjectWorkspace({ project, onBack, onProjectUpdated }: { project: Proj
                 )}
             </div>
 
-            {loading ? <div className={styles.loading}>Loading…</div> : (
+            {loading ? <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "60vh", width: "100%" }}><Loader width={60} height={60} /></div> : (
                 <>
                     {/* ──────── TASKS TAB ──────── */}
                     {activeTab === 'tasks' && (
@@ -371,7 +372,7 @@ export function ProjectList() {
             )}
 
             {isLoading ? (
-                <div className={styles.loading}>Loading…</div>
+                <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "60vh", width: "100%" }}><Loader width={60} height={60} /></div>
             ) : projects.length === 0 ? (
                 <div className={styles.empty}>No projects yet. Click "New Project" to start one.</div>
             ) : (
