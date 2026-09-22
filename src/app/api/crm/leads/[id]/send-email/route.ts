@@ -3,8 +3,9 @@ import { prisma } from '@/shared/lib/prisma';
 import { sendNotificationEmail } from '@/shared/lib/email';
 import { createGoogleCalendarEvent } from '@/shared/lib/gcal';
 
-export async function POST(request: Request, { params }: { params: { id: string } }) {
+export async function POST(request: Request, context: { params: Promise<{ id: string }> }) {
     try {
+        const params = await context.params;
         const body = await request.json();
         let { subject, message, meetLink, useNativeGcal, googleIntegrationId, meetingDateObj } = body;
 

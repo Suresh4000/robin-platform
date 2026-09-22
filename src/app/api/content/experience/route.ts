@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/shared/lib/prisma';
-import { createPortfolioItemSchema } from '@/features/portfolio/schema';
+import { createPortfolioItemSchema } from '@/features/experience/schema';
 
 export async function GET() {
     try {

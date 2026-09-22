@@ -13,8 +13,8 @@ export function EventForm({ onSuccess, initialData }: { onSuccess: () => void; i
     const [isUploading, setIsUploading] = useState(false);
     const bannerInputRef = useRef<HTMLInputElement>(null);
 
-    const { register, handleSubmit, control, watch, formState: { errors }, setError, reset } = rhmUseForm<any>({
-        resolver: zodResolver(initialData ? updateEventSchema : createEventSchema),
+    const { register, handleSubmit, control, formState: { errors }, setError, reset, watch, setValue } = rhmUseForm<any>({
+        resolver: zodResolver((initialData ? updateEventSchema : createEventSchema) as any),
         defaultValues: initialData ? {
             ...initialData,
             date: new Date(initialData.date).toISOString().slice(0, 16)
@@ -227,3 +227,5 @@ export function EventForm({ onSuccess, initialData }: { onSuccess: () => void; i
         </form>
     );
 }
+
+

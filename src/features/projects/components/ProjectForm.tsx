@@ -21,7 +21,7 @@ export function ProjectForm({ onSuccess, initialData }: { onSuccess: () => void;
     }, []);
 
     const { register, handleSubmit, formState: { errors }, setError, reset } = rhmUseForm<any>({
-        resolver: zodResolver(initialData ? updateProjectSchema : createProjectSchema),
+        resolver: zodResolver((initialData ? updateProjectSchema : createProjectSchema) as any),
         defaultValues: initialData || {
             status: 'Planning',
         }
@@ -112,3 +112,5 @@ export function ProjectForm({ onSuccess, initialData }: { onSuccess: () => void;
         </form>
     );
 }
+
+

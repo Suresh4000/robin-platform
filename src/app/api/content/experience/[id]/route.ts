@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-import { updatePortfolioItemSchema } from '@/features/portfolio/schema';
+import { updatePortfolioItemSchema } from '@/features/experience/schema';
 
 const prisma = new PrismaClient();
 

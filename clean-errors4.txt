@@ -1,0 +1,3 @@
+src/app/api/content/portfolio/[id]/route.ts(3,43): error TS2307: Cannot find module '@/features/portfolio/schema' or its corresponding type declarations.
+src/app/api/content/portfolio/route.ts(3,43): error TS2307: Cannot find module '@/features/portfolio/schema' or its corresponding type declarations.
+src/features/portfolio/components/PortfolioForm.tsx(6,70): error TS2307: Cannot find module '../schema' or its corresponding type declarations.

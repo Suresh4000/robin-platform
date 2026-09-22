@@ -10,7 +10,7 @@ export function ClientForm({ onSuccess, initialData }: { onSuccess: () => void; 
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const { register, handleSubmit, formState: { errors }, setError, reset } = rhmUseForm<any>({
-        resolver: zodResolver(initialData ? updateClientSchema : createClientSchema),
+        resolver: zodResolver((initialData ? updateClientSchema : createClientSchema) as any),
         defaultValues: initialData || {
             status: 'Active',
         }
@@ -94,3 +94,5 @@ export function ClientForm({ onSuccess, initialData }: { onSuccess: () => void; 
         </form>
     );
 }
+
+

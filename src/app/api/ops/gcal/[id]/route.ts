@@ -3,9 +3,10 @@ import { prisma } from '@/shared/lib/prisma';
 
 export async function DELETE(
     request: Request,
-    { params }: { params: { id: string } }
+    context: { params: Promise<{ id: string }> }
 ) {
     try {
+        const params = await context.params;
         await prisma.googleIntegration.delete({
             where: { id: params.id }
         });
