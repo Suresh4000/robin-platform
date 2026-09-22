@@ -33,7 +33,7 @@ export function PortfolioList() {
 
     const fetchItems = () => {
         setIsLoading(true);
-        fetch('/api/content/portfolio')
+        fetch('/api/content/experience')
             .then(res => res.json())
             .then(data => {
                 if (data.data) setItems(data.data);

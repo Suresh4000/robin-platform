@@ -2,7 +2,7 @@ import React from 'react';
 import { prisma } from '@/shared/lib/prisma';
 import { Users, HardHat, Target, ArrowRight, Activity, Calendar } from 'lucide-react';
 import Link from 'next/link';
-import styles from '@/features/portfolio/components/PortfolioList.module.css';
+import styles from '@/features/experience/components/PortfolioList.module.css';
 
 export const dynamic = 'force-dynamic';
 

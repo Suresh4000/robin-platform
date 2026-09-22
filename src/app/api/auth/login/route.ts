@@ -28,7 +28,7 @@ export async function POST(request: Request) {
         if (adminCount === 0) {
             await prisma.admin.create({
                 data: {
-                    email: 'robinjones@gmail.com',
+                    email: 'robinj@stanfordalumni.org',
                     password: 'admin@robin',
                 }
             });

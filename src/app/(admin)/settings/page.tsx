@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Save, User, Shield, Bell, Calendar as CalIcon, Loader2, Info } from 'lucide-react';
 import formStyles from '@/shared/components/forms/forms.module.css';
-import styles from '@/features/portfolio/components/PortfolioList.module.css';
+import styles from '@/features/experience/components/PortfolioList.module.css';
 import { SlideDrawer } from '@/shared/components/ui/Modal';
 
 export default function SettingsPage() {

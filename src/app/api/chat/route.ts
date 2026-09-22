@@ -99,7 +99,7 @@ CRITICAL RULES:
         const lowerReply = aiReply.toLowerCase();
 
         if (lowerReply.includes('experience') || lowerReply.includes('portfolio') || lowerReply.includes('case') || lowerReply.includes('year')) {
-            links.push({ label: 'Experience & Impact', url: '/portfolio' });
+            links.push({ label: 'Experience & Impact', url: '/experience' });
         }
         if (lowerReply.includes('advise') || lowerReply.includes('operate') || lowerReply.includes('navigate') || lowerReply.includes('service')) {
             links.push({ label: 'View Services', url: '/services' });

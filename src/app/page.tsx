@@ -23,7 +23,7 @@ export default function Page() {
               <p className="italic-line">26+ years driving growth, partnerships, and transformation across business, government, and mission-driven organizations.</p>
               <div className="hero-actions">
                 <a className="btn btn-brass" href="/contact">Book a Discovery Conversation <svg fill="none" stroke="currentColor" strokeLinecap="round" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"></path></svg></a>
-                <a className="btn btn-ghost" href="/portfolio">View Experience &amp; Impact</a>
+                <a className="btn btn-ghost" href="/experience">View Experience &amp; Impact</a>
               </div>
             </div>
             <div className="hero-visual">
@@ -136,7 +136,7 @@ export default function Page() {
               </div>
               <div className="cta-band-actions">
                 <a className="btn btn-brass" href="/contact">Book a Discovery Conversation</a>
-                <a className="btn btn-ghost-invert" href="/portfolio">View Experience &amp; Impact</a>
+                <a className="btn btn-ghost-invert" href="/experience">View Experience &amp; Impact</a>
               </div>
             </div>
           </div>

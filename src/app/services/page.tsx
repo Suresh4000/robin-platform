@@ -145,7 +145,7 @@ export default function Page() {
               </div>
               <div className="cta-band-actions">
                 <a className="btn btn-brass" href="/contact">Start a Conversation</a>
-                <a className="btn btn-ghost-invert" href="/portfolio">Explore My Experience</a>
+                <a className="btn btn-ghost-invert" href="/experience">Explore My Experience</a>
               </div>
             </div>
           </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import styles from '@/features/portfolio/components/PortfolioList.module.css';
+import styles from '@/features/experience/components/PortfolioList.module.css';
 import { Calendar, Clock, Video, Info, LayoutGrid, List, PhoneCall } from 'lucide-react';
 import { FilterBar } from '@/shared/components/ui/FilterBar';
 

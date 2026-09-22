@@ -19,7 +19,7 @@ export default function Page() {
               <p className="lead">Today, I bring that perspective to leaders who need experienced, independent thinking -without adding another layer of complexity.</p>
               <div className="hero-actions">
                 <a className="btn btn-brass" href="/contact">Work With Me</a>
-                <a className="btn btn-ghost" href="/portfolio">Explore My Experience</a>
+                <a className="btn btn-ghost" href="/experience">Explore My Experience</a>
               </div>
             </div>
           </div>

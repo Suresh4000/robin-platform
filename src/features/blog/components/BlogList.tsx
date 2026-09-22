@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Plus, Edit, Globe, Trash2, RefreshCw, Folder } from 'lucide-react';
-import styles from '@/features/portfolio/components/PortfolioList.module.css'; // Reusing layout
+import styles from '@/features/experience/components/PortfolioList.module.css'; // Reusing layout
 import { SlideDrawer } from '@/shared/components/ui/Modal';
 import { BlogForm } from './BlogForm';
 import { FilterBar } from '@/shared/components/ui/FilterBar';

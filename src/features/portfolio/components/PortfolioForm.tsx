@@ -34,7 +34,7 @@ export function PortfolioForm({ onSuccess, initialData }: { onSuccess: () => voi
     const onSubmit = async (data: any) => {
         setIsSubmitting(true);
         try {
-            const url = initialData ? `/api/content/portfolio/${initialData.id}` : '/api/content/portfolio';
+            const url = initialData ? `/api/content/experience/${initialData.id}` : '/api/content/experience';
             const method = initialData ? 'PATCH' : 'POST';
 
             const res = await fetch(url, {
