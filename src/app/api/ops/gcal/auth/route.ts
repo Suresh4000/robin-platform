@@ -15,8 +15,9 @@ export async function GET(request: Request) {
             return NextResponse.redirect(`${baseUrl}/settings`);
         }
 
-        const url = new URL(request.url);
-        const baseUrl = `${url.protocol}//${url.host}`;
+        const host = request.headers.get('x-forwarded-host') || request.headers.get('host') || new URL(request.url).host;
+        const proto = request.headers.get('x-forwarded-proto') || 'https';
+        const baseUrl = `${proto}://${host}`;
         const redirectUri = `${baseUrl}/api/ops/gcal/callback`;
 
         const oauth2Client = new google.auth.OAuth2(

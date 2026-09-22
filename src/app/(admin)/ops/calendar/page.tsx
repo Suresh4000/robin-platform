@@ -31,11 +31,8 @@ export default function CalendarPage() {
         }
     }, []);
 
-    // Hardcoded master accounts array combined with dynamic ones later
-    const baseAccounts = [
-        { id: 'master1', email: 'suresh6374000@gmail.com' },
-        { id: 'master2', email: 'svaanwebsitedevelopmentteam@gmail.com' },
-    ];
+    // No hardcoded accounts anymore
+    const baseAccounts: { id: string, email: string }[] = [];
 
     useEffect(() => {
         const fetchCalendarData = async () => {
@@ -196,26 +193,45 @@ export default function CalendarPage() {
                     style={{ display: 'flex', alignItems: 'center', gap: '8px', border: 'none', background: 'var(--color-primary)', color: '#fff', cursor: 'pointer', padding: '10px 16px', borderRadius: '8px', fontWeight: 500 }}
                 >
                     <Calendar size={16} />
-                    + Connect Calendar (OAuth)
+                    + Connect Calendar
                 </button>
             </header>
 
             <div style={{ display: 'flex', gap: '16px', marginBottom: '24px', flexWrap: 'wrap', alignItems: 'center' }}>
                 <span style={{ fontSize: '15px', color: 'var(--ink-dark)', fontWeight: 600 }}>Active Calendar Source:</span>
                 {combinedAccountList.map(acc => (
-                    <label key={acc.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', background: activeAccountEmail === acc.email ? '#dcfce7' : 'var(--surface-sunken)', color: activeAccountEmail === acc.email ? '#166534' : 'var(--ink-soft)', padding: '8px 16px', borderRadius: '8px', fontSize: '14px', fontWeight: 600, border: `1px solid ${activeAccountEmail === acc.email ? '#bbf7d0' : 'var(--surface-border)'}` }}>
-                        <input
-                            type="radio"
-                            name="activeCalendar"
-                            checked={activeAccountEmail === acc.email}
-                            onChange={() => {
-                                setActiveAccountEmail(acc.email);
-                                localStorage.setItem('activeCalendarAccount', acc.email);
+                    <div key={acc.id} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: activeAccountEmail === acc.email ? '#dcfce7' : 'var(--surface-sunken)', padding: '4px 8px 4px 16px', borderRadius: '8px', border: `1px solid ${activeAccountEmail === acc.email ? '#bbf7d0' : 'var(--surface-border)'}` }}>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', color: activeAccountEmail === acc.email ? '#166534' : 'var(--ink-soft)', fontSize: '14px', fontWeight: 600 }}>
+                            <input
+                                type="radio"
+                                name="activeCalendar"
+                                checked={activeAccountEmail === acc.email}
+                                onChange={() => {
+                                    setActiveAccountEmail(acc.email);
+                                    localStorage.setItem('activeCalendarAccount', acc.email);
+                                }}
+                                style={{ cursor: 'pointer' }}
+                            />
+                            {acc.email}
+                        </label>
+                        <button
+                            onClick={async () => {
+                                if (confirm(`Remove ${acc.email}?`)) {
+                                    try {
+                                        await fetch(`/api/ops/gcal/${acc.id}`, { method: 'DELETE' });
+                                        setConnectedAccounts(prev => prev.filter(c => c.id !== acc.id));
+                                        if (activeAccountEmail === acc.email) setActiveAccountEmail('');
+                                    } catch (e) {
+                                        console.error('Failed to remove account', e);
+                                    }
+                                }
                             }}
-                            style={{ cursor: 'pointer' }}
-                        />
-                        {acc.email}
-                    </label>
+                            style={{ background: 'transparent', border: 'none', cursor: 'pointer', padding: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ef4444', opacity: 0.8 }}
+                            title="Remove connection"
+                        >
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        </button>
+                    </div>
                 ))}
             </div>
 
